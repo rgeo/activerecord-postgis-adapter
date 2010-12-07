@@ -1,0 +1,88 @@
+== PostGIS ActiveRecord Adapter
+
+This is an ActiveRecord connection adapter for PostGIS. It is based on
+the stock PostgreSQL adapter, but provides built-in support for the
+spatial extensions provided by PostGIS. It uses the RGeo library to
+represent spatial data in Ruby.
+
+=== Summary
+
+The PostGIS ActiveRecord Adapter is an ActiveRecord connection adapter
+based on the standard postgresql adapter. It extends the stock adapter to
+provide support for the spatial extensions provided by PostGIS, mapping
+the values properly to RGeo spatial objects. Like the standard postgresql
+adapter, this requires the pg gem (version 0.10 or later).
+
+To use this adapter, add this gem, "activerecord-postgis-adapter", to
+your Gemfile, and then request the adapter name "postgis" in your
+database connection configuration (which, for a Rails application, is in
+the config/database.yml file). The other database connection configuration
+parameters are the same as for the stock postgresql adapter.
+
+=== Installation
+
+This adapter has the following requirements:
+
+* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
+* ActiveRecord 3.0.3 or later.
+* rgeo-activerecord gem 0.2.0 or later.
+* pg gem 0.10 or later.
+* PostGIS 1.5 or later.
+
+Install this adapter as a gem:
+
+ gem install activerecord-postgis-adapter
+
+See the README for the required "rgeo" gem for further installation
+information.
+
+=== Development and support
+
+Documentation is available at http://virtuoso.rubyforge.org/activerecord-postgis-adapter/README_rdoc.html
+
+Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
+
+Report bugs on Github issues at http://github.org/dazuma/activerecord-postgis-adapter/issues
+
+Contact the author at dazuma at gmail dot com.
+
+=== Acknowledgments
+
+RGeo is written by Daniel Azuma (http://www.daniel-azuma.com).
+
+Development of RGeo is sponsored by GeoPage, Inc. (http://www.geopage.com).
+
+This adapter implementation owes some debt to the spatial_adapter plugin
+(http://github.com/fragility/spatial_adapter). While we made some
+different design decisions for this adapter, studying the spatial_adapter
+source gave us a head start on the implementation.
+
+=== License
+
+Copyright 2010 Daniel Azuma
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+* Neither the name of the copyright holder, nor the names of any other
+  contributors to this software, may be used to endorse or promote products
+  derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.

@@ -1,0 +1,4 @@
+=== 0.2.0 / 2010-12-06
+
+Initial public alpha release. Spun activerecord-postgis-adapter off from the core rgeo gem.
+For earlier history, see the History file for the rgeo gem.

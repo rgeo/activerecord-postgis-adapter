@@ -1,0 +1,14 @@
+/doc/
+/pkg/
+/tmp/
+.#*
+.DS_Store
+*.dSYM
+*.class
+*.jar
+*.bundle
+*.o
+*.rbc
+Makefile*
+mkmf.log
+test/database.yml
