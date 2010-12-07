@@ -322,7 +322,7 @@ module ActiveRecord
           super(name_, default_, sql_type_, null_)
           @geographic = sql_type_ =~ /^geography/ ? true : false
           if opts_
-            @geometric_type = ::RGeo::ActiveRecord::Common.geometric_type_from_name(opts_[:type])
+            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type])
             @srid = opts_[:srid].to_i
             @has_z = opts_[:has_z]
             @has_m = opts_[:has_m]
@@ -331,7 +331,7 @@ module ActiveRecord
               @has_z = $2.length > 0
               @has_m = $3.length > 0
               @srid = $4.to_i
-              @geometric_type = ::RGeo::ActiveRecord::Common.geometric_type_from_name($1)
+              @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name($1)
             else
               @geometric_type = ::RGeo::Feature::Geometry
               @srid = 4326
