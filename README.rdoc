@@ -1,17 +1,12 @@
 == PostGIS ActiveRecord Adapter
 
-This is an ActiveRecord connection adapter for PostGIS. It is based on
-the stock PostgreSQL adapter, but provides built-in support for the
-spatial extensions provided by PostGIS. It uses the RGeo library to
-represent spatial data in Ruby.
-
-=== Summary
-
 The PostGIS ActiveRecord Adapter is an ActiveRecord connection adapter
 based on the standard postgresql adapter. It extends the stock adapter to
-provide support for the spatial extensions provided by PostGIS, mapping
-the values properly to RGeo spatial objects. Like the standard postgresql
-adapter, this requires the pg gem (version 0.10 or later).
+provide support for the spatial extensions provided by PostGIS, using the
+RGeo library to represent spatial data in Ruby. Like the standard
+postgresql adapter, this adapter requires the pg gem.
+
+=== Usage
 
 To use this adapter, add this gem, "activerecord-postgis-adapter", to
 your Gemfile, and then request the adapter name "postgis" in your
@@ -19,28 +14,95 @@ database connection configuration (which, for a Rails application, is in
 the config/database.yml file). The other database connection configuration
 parameters are the same as for the stock postgresql adapter.
 
+First, this adapter extends the migration syntax to support creating 
+spatial columns and indexes. To create a spatial column, use the
+<tt>:geometry</tt> type, or any of the OGC spatial types such as
+<tt>:point</tt> or <tt>:line_string</tt>. To create a geography column,
+set the <tt>:geographic</tt> option to true when creating the column.
+To create a spatial index, set the <tt>:spatial</tt> option to true when
+creating the index.
+
+Examples:
+
+ create_table :spatial_table do |t|
+   t.column :shape, :geometry  # or t.geometry :shape
+   t.line_string :path
+   t.column :latlon, :point, :geographic => true
+ end
+ change_table :spatial_table do |t|
+   t.index :latlon, :spatial => true
+ end
+
+When this adapter is in use, spatial attributes in your ActiveRecord
+objects will have RGeo geometry values. You can set spatial attributes
+either to RGeo geometry objects, or to strings in WKT (well-known text)
+format, which the adapter will automatically convert to geometry objects.
+
+To specify the RGeo geometry factory, you can either set an explicit
+factory for a column, or provide a factory generator that will yield the
+appropriate factory for the table's spatial columns based on their types.
+For the former, call the set_rgeo_factory_for_column class method on your
+ActiveRecord class. For the latter, set the rgeo_factory_generator class
+attribute. This generator should understand the usual <tt>:srid</tt>,
+<tt>:has_z_coordinate</tt>, and <tt>:has_m_coordinate</tt> options. It
+will also be passed a <tt>:geographic</tt> option indicating whether the
+column is a geography column. The set_rgeo_factory_for_column and 
+rgeo_factory_generator methods are actually implemented and documented in
+the <b>rgeo-activerecord</b> gem.
+
+Examples, given the spatial table defined above:
+
+ class SpatialTable < ActiveRecord::Base
+   
+   # By default, use the GEOS implementation for spatial columns.
+   self.rgeo_factory_generator = RGeo::Geos.method(:factory)
+   
+   # But use a geographic implementation for the :latlon column.
+   set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
+   
+ end
+
+Now you can interact with the data using the RGeo types:
+
+ rec = SpatialTable.new
+ rec.latlon = 'POINT(-122 47)'   # You can set by feature object or WKT.
+ loc = rec.latlon                # Accessing always returns a feature object, in
+                                 # this case, a geographic that understands latitude.
+ loc.latitude                    # => 47
+ rec.shape = loc                 # the factory for the :shape column is GEOS, so the
+                                 # value will be cast from geographic to GEOS.
+ RGeo::Geos.is_geos?(rec.shape)  # => true
+
 === Installation
 
 This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
-* ActiveRecord 3.0.3 or later.
+* PostGIS 1.5 or later.
+* ActiveRecord 3.0.3 or later. Earlier versions will not work.
 * rgeo-activerecord gem 0.2.0 or later.
 * pg gem 0.10 or later.
-* PostGIS 1.5 or later.
 
 Install this adapter as a gem:
 
  gem install activerecord-postgis-adapter
 
-See the README for the required "rgeo" gem for further installation
-information.
+See the README for the "rgeo" gem, a required dependency, for further
+installation information.
+
+=== Known bugs and limitations
+
+A few minor holes still exist in this adapter. Notably, using ActiveRecord
+to list indexes doesn't properly identify GiST (spatial) indexes as such.
+This adapter is also not yet well tested.
 
 === Development and support
 
 Documentation is available at http://virtuoso.rubyforge.org/activerecord-postgis-adapter/README_rdoc.html
 
 Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
+
+Contributions are welcome. Fork the project on Github.
 
 Report bugs on Github issues at http://github.org/dazuma/activerecord-postgis-adapter/issues
 

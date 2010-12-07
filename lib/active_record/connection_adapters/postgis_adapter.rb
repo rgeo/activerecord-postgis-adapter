@@ -38,7 +38,25 @@ require 'rgeo/active_record'
 require 'active_record/connection_adapters/postgresql_adapter'
 
 
+# :stopdoc:
+
+module Arel
+  module Visitors
+    VISITORS['postgis'] = ::Arel::Visitors::PostgreSQL
+  end
+end
+
+# :startdoc:
+
+
+# The activerecord-postgis-adapter gem installs the *postgis*
+# connection adapter into ActiveRecord.
+
 module ActiveRecord
+  
+  
+  # ActiveRecord looks for the postgis_connection factory method in
+  # this class.
   
   class Base
     
@@ -372,12 +390,12 @@ module ActiveRecord
         
         
         def type_cast(value_)
-          type == :geometry ? SpatialColumn.string_to_geometry(value_, @ar_class, @geographic, @srid, @has_z, @has_m) : super
+          type == :geometry ? SpatialColumn.convert_to_geometry(value_, @ar_class, name, @geographic, @srid, @has_z, @has_m) : super
         end
         
         
         def type_cast_code(var_name_)
-          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostGisAdapter::SpatialColumn.string_to_geometry(#{var_name_}, self.class, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
+          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostGisAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
         end
         
         
@@ -389,22 +407,23 @@ module ActiveRecord
         end
         
         
-        def self.string_to_geometry(str_, ar_class_, geographic_, srid_, has_z_, has_m_)
-          case str_
+        def self.convert_to_geometry(input_, ar_class_, column_, geographic_, srid_, has_z_, has_m_)
+          case input_
           when ::RGeo::Feature::Geometry
-            str_
+            factory_ = ar_class_.rgeo_factory_for_column(column_, :srid => srid_, :has_z_coordinate => has_z_, :has_m_coordinate => has_m_, :geographic => geographic_)
+            ::RGeo::Feature.cast(input_, factory_)
           when ::String
-            if str_.length == 0
+            if input_.length == 0
               nil
             else
-              factory_ = ar_class_.rgeo_factory_generator.call(:srid => srid_, :has_z_coordinate => has_z_, :has_m_coordinate => has_m_, :geographic => geographic_)
-              marker_ = str_[0,1]
+              factory_ = ar_class_.rgeo_factory_for_column(column_, :srid => srid_, :has_z_coordinate => has_z_, :has_m_coordinate => has_m_, :geographic => geographic_)
+              marker_ = input_[0,1]
               if marker_ == "\x00" || marker_ == "\x01"
-                ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse(str_) rescue nil
-              elsif str_[0,4] =~ /[0-9a-fA-F]{4}/
-                ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse_hex(str_) rescue nil
+                ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse(input_) rescue nil
+              elsif input_[0,4] =~ /[0-9a-fA-F]{4}/
+                ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse_hex(input_) rescue nil
               else
-                ::RGeo::WKRep::WKTParser.new(factory_, :support_ewkt => true).parse(str_) rescue nil
+                ::RGeo::WKRep::WKTParser.new(factory_, :support_ewkt => true).parse(input_) rescue nil
               end
             end
           else
