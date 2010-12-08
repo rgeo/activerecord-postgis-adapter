@@ -1,10 +1,11 @@
-== PostGIS ActiveRecord Adapter
+== PostGIS \ActiveRecord Adapter
 
-The PostGIS ActiveRecord Adapter is an ActiveRecord connection adapter
-based on the standard postgresql adapter. It extends the stock adapter to
-provide support for the spatial extensions provided by PostGIS, using the
-RGeo library to represent spatial data in Ruby. Like the standard
-postgresql adapter, this adapter requires the pg gem.
+The PostGIS \ActiveRecord Adapter is an \ActiveRecord connection adapter
+based on the standard postgresql adapter. It extends the standard adapter
+to provide support for the spatial extensions provided by PostGIS, using
+the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial
+data in Ruby. Like the standard postgresql adapter, this adapter requires
+the pg gem.
 
 === Usage
 
@@ -33,7 +34,7 @@ Examples:
    t.index :latlon, :spatial => true
  end
 
-When this adapter is in use, spatial attributes in your ActiveRecord
+When this adapter is in use, spatial attributes in your \ActiveRecord
 objects will have RGeo geometry values. You can set spatial attributes
 either to RGeo geometry objects, or to strings in WKT (well-known text)
 format, which the adapter will automatically convert to geometry objects.
@@ -42,13 +43,13 @@ To specify the RGeo geometry factory, you can either set an explicit
 factory for a column, or provide a factory generator that will yield the
 appropriate factory for the table's spatial columns based on their types.
 For the former, call the set_rgeo_factory_for_column class method on your
-ActiveRecord class. For the latter, set the rgeo_factory_generator class
+\ActiveRecord class. For the latter, set the rgeo_factory_generator class
 attribute. This generator should understand the usual <tt>:srid</tt>,
 <tt>:has_z_coordinate</tt>, and <tt>:has_m_coordinate</tt> options. It
 will also be passed a <tt>:geographic</tt> option indicating whether the
 column is a geography column. The set_rgeo_factory_for_column and 
 rgeo_factory_generator methods are actually implemented and documented in
-the <b>rgeo-activerecord</b> gem.
+the "rgeo-activerecord" gem.
 
 Examples, given the spatial table defined above:
 
@@ -79,7 +80,8 @@ This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
 * PostGIS 1.5 or later.
-* ActiveRecord 3.0.3 or later. Earlier versions will not work.
+* \ActiveRecord 3.0.3 or later. Earlier versions will not work.
+* rgeo gem 0.2.0 or later.
 * rgeo-activerecord gem 0.2.0 or later.
 * pg gem 0.10 or later.
 
@@ -92,7 +94,7 @@ installation information.
 
 === Known bugs and limitations
 
-A few minor holes still exist in this adapter. Notably, using ActiveRecord
+A few minor holes still exist in this adapter. Notably, using \ActiveRecord
 to list indexes doesn't properly identify GiST (spatial) indexes as such.
 This adapter is also not yet well tested.
 
@@ -115,7 +117,7 @@ RGeo is written by Daniel Azuma (http://www.daniel-azuma.com).
 Development of RGeo is sponsored by GeoPage, Inc. (http://www.geopage.com).
 
 This adapter implementation owes some debt to the spatial_adapter plugin
-(http://github.com/fragility/spatial_adapter). While we made some
+(http://github.com/fragility/spatial_adapter). Although we made some
 different design decisions for this adapter, studying the spatial_adapter
 source gave us a head start on the implementation.
 
