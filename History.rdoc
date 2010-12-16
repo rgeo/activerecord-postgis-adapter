@@ -1,3 +1,7 @@
+=== 0.2.1 / 2010-12-15
+
+* Provides meta-information to RGeo 0.2.2 or later to support access to PostGIS's spatial reference system table.
+
 === 0.2.0 / 2010-12-07
 
 * Initial public alpha release. Spun activerecord-postgis-adapter off from the core rgeo gem.
