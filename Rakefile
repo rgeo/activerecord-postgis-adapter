@@ -62,7 +62,7 @@ module RAKEFILE
   PRODUCT_SUMMARY = "An ActiveRecord adapter for PostGIS, based on RGeo."
   PRODUCT_DESCRIPTION = "This is an ActiveRecord connection adapter for PostGIS. It is based on the stock PostgreSQL adapter, but provides built-in support for the spatial extensions provided by PostGIS. It uses the RGeo library to represent spatial data in Ruby."
   
-  DEPENDENCIES = [['rgeo-activerecord', '>= 0.2.0'], ['pg', '>= 0.10.0']]
+  DEPENDENCIES = [['rgeo-activerecord', '>= 0.2.1'], ['pg', '>= 0.10.0']]
   DEVELOPMENT_DEPENDENCIES = []
   
 end

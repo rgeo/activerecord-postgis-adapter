@@ -261,6 +261,55 @@ module RGeo
             end
             
             
+            def test_readme_example
+              klass_ = create_ar_class
+              klass_.connection.create_table(:spatial_test) do |t_|
+                t_.column(:latlon, :point)
+                t_.line_string(:path)
+                t_.geometry(:shape)
+              end
+              klass_.connection.change_table(:spatial_test) do |t_|
+                t_.index(:latlon, :spatial => true)
+              end
+              klass_.class_eval do
+                self.rgeo_factory_generator = ::RGeo::Geos.method(:factory)
+                set_rgeo_factory_for_column(:latlon, ::RGeo::Geographic.spherical_factory)
+              end
+              rec_ = klass_.new
+              rec_.latlon = 'POINT(-122 47)'
+              loc_ = rec_.latlon
+              assert_equal(47, loc_.latitude)
+              rec_.shape = loc_
+              assert_equal(true, ::RGeo::Geos.is_geos?(rec_.shape))
+            end
+            
+            
+            def test_query_point
+              klass_ = populate_ar_class(:latlon_point)
+              obj_ = klass_.new
+              obj_.latlon = @factory.point(1, 2)
+              obj_.save!
+              id_ = obj_.id
+              obj2_ = klass_.where(:latlon => @factory.multi_point([@factory.point(1, 2)])).first
+              assert_equal(id_, obj2_.id)
+              obj3_ = klass_.where(:latlon => @factory.point(2, 2)).first
+              assert_nil(obj3_)
+            end
+            
+            
+            def test_query_point_wkt
+              klass_ = populate_ar_class(:latlon_point)
+              obj_ = klass_.new
+              obj_.latlon = @factory.point(1, 2)
+              obj_.save!
+              id_ = obj_.id
+              obj2_ = klass_.where(:latlon => 'SRID=4326;POINT(1 2)').first
+              assert_equal(id_, obj2_.id)
+              obj3_ = klass_.where(:latlon => 'SRID=4326;POINT(2 2)').first
+              assert_nil(obj3_)
+            end
+            
+            
           end
           
         end

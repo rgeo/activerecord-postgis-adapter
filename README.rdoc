@@ -74,6 +74,19 @@ Now you can interact with the data using the RGeo types:
                                  # value will be cast from geographic to GEOS.
  RGeo::Geos.is_geos?(rec.shape)  # => true
 
+You can create simple queries based on spatial equality in the same way
+you would on a scalar column:
+
+ rec = SpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
+
+You can also use WKT:
+
+ rec = SpatialTable.where(:latlon => 'POINT(-122 47)').first
+
+Other types of queries currently must be written in SQL. However, we are
+investigating writing a set of Arel extensions for constructing arbitrary
+spatial queries.
+
 === Installation
 
 This adapter has the following requirements:
@@ -81,8 +94,8 @@ This adapter has the following requirements:
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
 * PostGIS 1.5 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-* rgeo gem 0.2.0 or later.
-* rgeo-activerecord gem 0.2.0 or later.
+* rgeo gem 0.2.3 or later.
+* rgeo-activerecord gem 0.2.1 or later.
 * pg gem 0.10 or later.
 
 Install this adapter as a gem:

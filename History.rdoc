@@ -1,3 +1,10 @@
+=== 0.2.2 / 2010-12-27
+
+* Support for basic spatial equality queries. e.g. constructs such as:
+    MyClass.where(:geom_column => factory.point(1, 2))
+    MyClass.where(:geom_column => 'POINT(1 2)')
+* Fixed an exception when adding spatial columns where the column name is specified as a symbol.
+
 === 0.2.1 / 2010-12-15
 
 * Provides meta-information to RGeo 0.2.2 or later to support access to PostGIS's spatial reference system table.

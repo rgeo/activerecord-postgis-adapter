@@ -42,7 +42,23 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module Arel
   module Visitors
-    VISITORS['postgis'] = ::Arel::Visitors::PostgreSQL
+    
+    class PostGIS < PostgreSQL
+      
+      FUNC_MAP = {
+        'ST_WKTToSQL' => 'GeomFromEWKT',
+      }
+      
+      include ::RGeo::ActiveRecord::SpatialToSql
+      
+      def st_func(standard_name_)
+        FUNC_MAP[standard_name_] || standard_name_
+      end
+      
+    end
+    
+    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
+    
   end
 end
 
@@ -161,7 +177,7 @@ module ActiveRecord
           dimensions_ = 2
           dimensions_ += 1 if has_z_
           dimensions_ += 1 if has_m_
-          execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(col_.name)}', #{col_.srid}, '#{quote_string(type_)}', #{dimensions_})")
+          execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(col_.name.to_s)}', #{col_.srid}, '#{quote_string(type_)}', #{dimensions_})")
         end
       end
       
