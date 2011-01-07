@@ -7,13 +7,7 @@ the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial
 data in Ruby. Like the standard postgresql adapter, this adapter requires
 the pg gem.
 
-=== Usage
-
-To use this adapter, add this gem, "activerecord-postgis-adapter", to
-your Gemfile, and then request the adapter name "postgis" in your
-database connection configuration (which, for a Rails application, is in
-the config/database.yml file). The other database connection configuration
-parameters are the same as for the stock postgresql adapter.
+=== What This Adapter Provides
 
 First, this adapter extends the migration syntax to support creating 
 spatial columns and indexes. To create a spatial column, use the
@@ -83,19 +77,20 @@ You can also use WKT:
 
  rec = SpatialTable.where(:latlon => 'POINT(-122 47)').first
 
-Other types of queries currently must be written in SQL. However, we are
-investigating writing a set of Arel extensions for constructing arbitrary
-spatial queries.
+Other types of queries (e.g. radius searches) currently must be written
+in SQL. We are investigating writing a set of Arel extensions for
+constructing arbitrary spatial queries. However, these extensions will
+probably require Rails 3.1.
 
-=== Installation
+=== Installing The Adapter Gem
 
 This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
 * PostGIS 1.5 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-* rgeo gem 0.2.3 or later.
-* rgeo-activerecord gem 0.2.1 or later.
+* rgeo gem 0.2.4 or later.
+* rgeo-activerecord gem 0.2.2 or later.
 * pg gem 0.10 or later.
 
 Install this adapter as a gem:
@@ -104,6 +99,58 @@ Install this adapter as a gem:
 
 See the README for the "rgeo" gem, a required dependency, for further
 installation information.
+
+=== Setting Up The Adapter
+
+To use this adapter, add this gem, "activerecord-postgis-adapter", to
+your Gemfile, and then request the adapter name "postgis" in your
+database connection configuration (which, for a Rails application, is in
+the config/database.yml file).
+
+Furthermore, the PostGIS adapter includes a special railtie that provides
+support for PostGIS databases in ActiveRecord's rake tasks. This railtie
+is required in order to run, e.g., rake test. To install this railtie,
+you should add this line to your config/application.rb:
+
+ require 'rgeo/active_record/postgis_adapter/railtie'
+
+Note that this railtie must load after the ActiveRecord railtie. That is,
+the above require command should appear after <tt>require 'rails/all'</tt>.
+
+Besides the adapter name "postgis", most of the other database connection
+configuration parameters are the same as for the stock postgresql adapter.
+However, there are a few special parameters you may want to set.
+
+The <i>script_dir</i> parameter provides the path to the directory
+containing the SQL scripts for PostGIS installation. i.e. this could be
+<tt>/usr/local/share/contrib/postgis-1.5</tt>. This directory should
+contain the files <tt>postgis.sql</tt> and <tt>spatial_ref_sys.sql</tt>.
+It is used by the db:create rake task to add the PostGIS types, functions,
+and tables to a newly created database. If you do not provide this
+parameter, you will need to add these objects to the database manually.
+Generally, therefore, this parameter is required at least for the test
+database, which is usually automatically created by the rake tasks.
+
+Because PostGIS adds many objects to the database, you may encounter a few
+issues when running Rails rake tasks that manage databases. Specifically:
+
+* Dumping the structure as sql (rake db:structure:dump) may include all
+  the PostGIS definitions as well, cluttering your SQL dump.
+* Rake tasks that automatically create the test database (e.g. rake test)
+  may emit a number of errors because PostGIS definitions are being added
+  twice to the database: once on creation, and again because they are
+  showing up in the SQL dump that ActiveRecord uses to copy the schema.
+
+Because of these issues, it is recommended that you include the schema
+name "postgis" in the <i>schema_search_path</i> parameter. The PostGIS
+adapter treats this schema name as special, in that:
+
+* The db:create rake task will automatically create the "postgis" schema,
+  and will create all the PostGIS objects in that schema.
+* Dumping the structure as sql will omit objects in the "postgis" schema.
+
+As a result, the PostGIS definitions will no longer appear in the SQL
+dump file, effectively eliminating the above issues.
 
 === Known bugs and limitations
 

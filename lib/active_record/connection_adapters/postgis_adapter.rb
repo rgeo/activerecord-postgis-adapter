@@ -95,7 +95,7 @@ module ActiveRecord
       
       # The postgres drivers don't allow the creation of an unconnected PGconn object,
       # so just pass a nil connection object for the time being.
-      ConnectionAdapters::PostGisAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
+      ConnectionAdapters::PostgisAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
     end
     
     
@@ -105,7 +105,7 @@ module ActiveRecord
   module ConnectionAdapters  # :nodoc:
     
     
-    class PostGisAdapter < PostgreSQLAdapter  # :nodoc:
+    class PostgisAdapter < PostgreSQLAdapter  # :nodoc:
       
       
       ADAPTER_NAME = 'PostGIS'.freeze
@@ -416,7 +416,7 @@ module ActiveRecord
         
         
         def type_cast_code(var_name_)
-          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostGisAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
+          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostgisAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
         end
         
         
@@ -463,3 +463,8 @@ module ActiveRecord
   
   
 end
+
+
+ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
+ignore_tables_ << 'geometry_columns' unless ignore_tables_.include?('geometry_columns')
+ignore_tables_ << 'spatial_ref_sys' unless ignore_tables_.include?('spatial_ref_sys')

@@ -1,3 +1,10 @@
+=== 0.2.3 / 2011-01-06
+
+* Many of ActiveRecord's rake tasks weren't working because they need to know about every adapter explicitly. I hesitate to call this "fixed" since I see it as a problem in ActiveRecord, but we now at least have a workaround so the rake tasks will run properly. (Reported by Tad Thorley.)
+* Dumping schema.rb now omits the PostGIS internal tables.
+* Added a new configuration parameter pointing to the script directory, for rake db:create.
+* If the "postgis" schema is included in the schema search path, it is used as a container for the PostGIS internal definitions when running rake db:create. Furthermore, that schema is omitted when dumping the structure.sql. This should eliminate all the PostGIS internal cruft from SQL structure dumps, and also eliminate the errors that would appear when rebuilding a test database because the PostGIS internals would get applied twice.
+
 === 0.2.2 / 2010-12-27
 
 * Support for basic spatial equality queries. e.g. constructs such as:
