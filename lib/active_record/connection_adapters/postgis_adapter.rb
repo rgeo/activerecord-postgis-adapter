@@ -37,6 +37,11 @@
 require 'rgeo/active_record'
 require 'active_record/connection_adapters/postgresql_adapter'
 
+begin
+  require 'versionomy'
+rescue ::LoadError
+end
+
 
 # :stopdoc:
 
@@ -46,14 +51,16 @@ module Arel
     class PostGIS < PostgreSQL
       
       FUNC_MAP = {
-        'ST_WKTToSQL' => 'GeomFromEWKT',
+        'st_wkttosql' => 'ST_GeomFromEWKT',
       }
       
       include ::RGeo::ActiveRecord::SpatialToSql
       
       def st_func(standard_name_)
-        FUNC_MAP[standard_name_] || standard_name_
+        FUNC_MAP[standard_name_.downcase] || standard_name_
       end
+      
+      alias_method :visit_in_spatial_context, :visit
       
     end
     
@@ -95,7 +102,7 @@ module ActiveRecord
       
       # The postgres drivers don't allow the creation of an unconnected PGconn object,
       # so just pass a nil connection object for the time being.
-      ConnectionAdapters::PostgisAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
+      ConnectionAdapters::PostGISAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
     end
     
     
@@ -105,10 +112,19 @@ module ActiveRecord
   module ConnectionAdapters  # :nodoc:
     
     
-    class PostgisAdapter < PostgreSQLAdapter  # :nodoc:
+    class PostGISAdapter < PostgreSQLAdapter  # :nodoc:
       
       
       ADAPTER_NAME = 'PostGIS'.freeze
+      
+      
+      # Current version of PostGISAdapter as a frozen string
+      VERSION_STRING = ::File.read(::File.dirname(__FILE__)+'/../../../Version').strip.freeze
+      
+      # Current version of PostGISAdapter as a Versionomy object, if the
+      # Versionomy gem is available; otherwise equal to VERSION_STRING.
+      VERSION = defined?(::Versionomy) ? ::Versionomy.parse(VERSION_STRING) : VERSION_STRING
+      
       
       @@native_database_types = nil
       
@@ -416,7 +432,7 @@ module ActiveRecord
         
         
         def type_cast_code(var_name_)
-          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostgisAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
+          type == :geometry ? "::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
         end
         
         
