@@ -3,6 +3,7 @@
 * Reworked type and constraint handling, which should result in a large number of bug fixes, especially related to schema dumps.
 * Experimental support for complex spatial queries. (Requires Arel 2.1, which is expected to be released with Rails 3.1.)
 * The path to the Railtie is now different (see the README), though a compatibility wrapper has been left in the old location.
+* Getting index information from the ActiveRecord class now properly recognizes spatial-ness.
 * Reorganized the code a bit for better clarity.
 
 === 0.2.3 / 2011-01-06

@@ -98,6 +98,7 @@ module RGeo
               klass_.connection.change_table(:spatial_test) do |t_|
                 t_.index([:latlon], :spatial => true)
               end
+              assert(klass_.connection.indexes(:spatial_test).last.spatial)
             end
             
             

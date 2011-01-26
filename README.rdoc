@@ -204,9 +204,13 @@ investigating.
 
 === Known bugs and limitations
 
-A few minor holes still exist in this adapter. Notably, using \ActiveRecord
-to list indexes doesn't properly identify GiST (spatial) indexes as such.
-This adapter is also not yet well tested.
+* Dumping as SQL (i.e. rake db:structure:dump) does not properly emit
+  <tt>AddGeometryColumn</tt> calls, and so does not completely create the
+  spatial schema (e.g. it fails to add the proper row to the
+  <tt>geometry_columns</tt> table.) Because of this, you should not depend
+  on a SQL dump to be an accurate representation of the schema. (That is,
+  you should not set <tt>config.active_record.schema_format</tt> to
+  <tt>:sql</tt>.)
 
 === Development and support
 
