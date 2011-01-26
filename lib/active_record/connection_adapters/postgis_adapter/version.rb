@@ -34,70 +34,29 @@
 ;
 
 
-require 'rgeo/active_record'
-require 'active_record/connection_adapters/postgresql_adapter'
+begin
+  require 'versionomy'
+rescue ::LoadError
+end
 
-
-# The activerecord-postgis-adapter gem installs the *postgis*
-# connection adapter into ActiveRecord.
 
 module ActiveRecord
   
-  
-  # ActiveRecord looks for the postgis_connection factory method in
-  # this class.
-  
-  class Base
-    
-    
-    # Create a postgis connection adapter.
-    
-    def self.postgis_connection(config_)
-      require 'pg'
-      
-      config_ = config_.symbolize_keys
-      host_ = config_[:host]
-      port_ = config_[:port] || 5432
-      username_ = config_[:username].to_s if config_[:username]
-      password_ = config_[:password].to_s if config_[:password]
-      if config_.has_key?(:database)
-        database_ = config_[:database]
-      else
-        raise ::ArgumentError, "No database specified. Missing argument: database."
-      end
-      
-      # The postgres drivers don't allow the creation of an unconnected PGconn object,
-      # so just pass a nil connection object for the time being.
-      ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
-    end
-    
-    
-  end
-  
-  
-  # All ActiveRecord adapters go in this namespace.
-  
   module ConnectionAdapters
     
-    
-    # The PostGIS Adapter
-    
     module PostGISAdapter
+      
+      
+      # Current version of PostGISAdapter as a frozen string
+      VERSION_STRING = ::File.read(::File.dirname(__FILE__)+'/../../../../Version').strip.freeze
+      
+      # Current version of PostGISAdapter as a Versionomy object, if the
+      # Versionomy gem is available; otherwise equal to VERSION_STRING.
+      VERSION = defined?(::Versionomy) ? ::Versionomy.parse(VERSION_STRING) : VERSION_STRING
+      
+      
     end
-    
     
   end
   
 end
-
-
-require 'active_record/connection_adapters/postgis_adapter/version.rb'
-require 'active_record/connection_adapters/postgis_adapter/main_adapter.rb'
-require 'active_record/connection_adapters/postgis_adapter/spatial_table_definition.rb'
-require 'active_record/connection_adapters/postgis_adapter/spatial_column.rb'
-require 'active_record/connection_adapters/postgis_adapter/arel_tosql.rb'
-
-
-ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
-ignore_tables_ << 'geometry_columns' unless ignore_tables_.include?('geometry_columns')
-ignore_tables_ << 'spatial_ref_sys' unless ignore_tables_.include?('spatial_ref_sys')

@@ -64,7 +64,7 @@ def create_database(config_)
       ::ActiveRecord::Base.establish_connection(config_)
     rescue ::Exception => e_
       $stderr.puts(e_, *(e_.backtrace))
-      $stderr.puts("Couldn't create database for #{config.inspect}")
+      $stderr.puts("Couldn't create database for #{config_.inspect}")
     end
   else
     create_database_without_postgis(config_)

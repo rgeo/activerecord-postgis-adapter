@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # 
-# Railtie for PostGIS adapter
+# PostGIS adapter for ActiveRecord
 # 
 # -----------------------------------------------------------------------------
 # Copyright 2010 Daniel Azuma
@@ -34,6 +34,30 @@
 ;
 
 
-puts "WARNING: rgeo/active_record/postgis_adapter/railtie is deprecated. Please use active_record/connection_adapters/postgis_adapter/railtie."
+# :stopdoc:
 
-require 'active_record/connection_adapters/postgis_adapter/railtie'
+module Arel
+  module Visitors
+    
+    class PostGIS < PostgreSQL
+      
+      FUNC_MAP = {
+        'st_wkttosql' => 'ST_GeomFromEWKT',
+      }
+      
+      include ::RGeo::ActiveRecord::SpatialToSql
+      
+      def st_func(standard_name_)
+        FUNC_MAP[standard_name_.downcase] || standard_name_
+      end
+      
+      alias_method :visit_in_spatial_context, :visit
+      
+    end
+    
+    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
+    
+  end
+end
+
+# :startdoc:
