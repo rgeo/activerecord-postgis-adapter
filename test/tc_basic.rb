@@ -139,9 +139,9 @@ module RGeo
             def test_readme_example
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
-                t_.column(:latlon, :point)
-                t_.line_string(:path)
-                t_.geometry(:shape)
+                t_.column(:shape, :geometry)
+                t_.line_string(:path, :srid => 3785)
+                t_.point(:latlon, :geographic => true)
               end
               klass_.connection.change_table(:spatial_test) do |t_|
                 t_.index(:latlon, :spatial => true)

@@ -23,8 +23,8 @@ Examples:
 
  create_table :my_spatial_table do |t|
    t.column :shape, :geometry  # or t.geometry :shape
-   t.line_string :path
-   t.column :latlon, :point, :geographic => true
+   t.line_string :path, :srid => 3785
+   t.point :latlon, :geographic => true
  end
  change_table :my_spatial_table do |t|
    t.index :latlon, :spatial => true
@@ -66,7 +66,7 @@ Examples, given the spatial table defined above:
 
 Now you can interact with the data using the RGeo types:
 
- rec = SpatialTable.new
+ rec = MySpatialTable.new
  rec.latlon = 'POINT(-122 47)'   # You can set by feature object or WKT.
  loc = rec.latlon                # Accessing always returns a feature object, in
                                  # this case, a geographic that understands latitude.
@@ -80,11 +80,11 @@ Now you can interact with the data using the RGeo types:
 You can create simple queries based on spatial equality in the same way
 you would on a scalar column:
 
- rec = SpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
+ rec = MySpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
 
 You can also use WKT:
 
- rec = SpatialTable.where(:latlon => 'POINT(-122 47)').first
+ rec = MySpatialTable.where(:latlon => 'POINT(-122 47)').first
 
 The adapter also provides experimental support for more complex queries
 such as radius searches. However, these extensions require Arel 2.1
