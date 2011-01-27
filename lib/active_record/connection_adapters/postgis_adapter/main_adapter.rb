@@ -34,6 +34,8 @@
 ;
 
 
+# :stopdoc:
+
 module ActiveRecord
     
   module ConnectionAdapters
@@ -44,8 +46,6 @@ module ActiveRecord
       class MainAdapter < PostgreSQLAdapter
         
         
-        ADAPTER_NAME = 'PostGIS'.freeze
-        
         SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
           :geography => {:type => 'geometry', :geographic => true},
         )
@@ -54,7 +54,7 @@ module ActiveRecord
         
         
         def adapter_name
-          ADAPTER_NAME
+          PostGISAdapter::ADAPTER_NAME
         end
         
         
@@ -276,3 +276,5 @@ module ActiveRecord
   end
   
 end
+
+# :startdoc:

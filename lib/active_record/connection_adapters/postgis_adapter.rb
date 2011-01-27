@@ -76,17 +76,18 @@ module ActiveRecord
   
   
   # All ActiveRecord adapters go in this namespace.
-  
   module ConnectionAdapters
     
-    
     # The PostGIS Adapter
-    
     module PostGISAdapter
+      
+      # The name returned by the adapter_name method of this adapter.
+      ADAPTER_NAME = 'PostGIS'.freeze
+      
     end
     
-    
   end
+  
   
 end
 

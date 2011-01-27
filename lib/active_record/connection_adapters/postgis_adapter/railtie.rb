@@ -37,6 +37,8 @@
 require 'rails/railtie'
 
 
+# :stopdoc:
+
 module ActiveRecord
   
   module ConnectionAdapters
@@ -58,3 +60,5 @@ module ActiveRecord
   end
   
 end
+
+# :startdoc:

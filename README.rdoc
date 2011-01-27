@@ -21,14 +21,14 @@ creating the index.
 
 Examples:
 
- create_table :my_spatial_table do |t|
-   t.column :shape, :geometry  # or t.geometry :shape
-   t.line_string :path, :srid => 3785
-   t.point :latlon, :geographic => true
- end
- change_table :my_spatial_table do |t|
-   t.index :latlon, :spatial => true
- end
+  create_table :my_spatial_table do |t|
+    t.column :shape, :geometry  # or t.geometry :shape
+    t.line_string :path, :srid => 3785
+    t.point :latlon, :geographic => true
+  end
+  change_table :my_spatial_table do |t|
+    t.index :latlon, :spatial => true
+  end
 
 === Spatial Attributes
 
@@ -54,37 +54,37 @@ the "rgeo-activerecord" gem.
 
 Examples, given the spatial table defined above:
 
- class MySpatialTable < ActiveRecord::Base
-   
-   # By default, use the GEOS implementation for spatial columns.
-   self.rgeo_factory_generator = RGeo::Geos.factory_generator
-   
-   # But use a geographic implementation for the :latlon column.
-   set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
-   
- end
+  class MySpatialTable < ActiveRecord::Base
+    
+    # By default, use the GEOS implementation for spatial columns.
+    self.rgeo_factory_generator = RGeo::Geos.factory_generator
+    
+    # But use a geographic implementation for the :latlon column.
+    set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
+    
+  end
 
 Now you can interact with the data using the RGeo types:
 
- rec = MySpatialTable.new
- rec.latlon = 'POINT(-122 47)'   # You can set by feature object or WKT.
- loc = rec.latlon                # Accessing always returns a feature object, in
-                                 # this case, a geographic that understands latitude.
- loc.latitude                    # => 47
- rec.shape = loc                 # the factory for the :shape column is GEOS, so the
-                                 # value will be cast from geographic to GEOS.
- RGeo::Geos.is_geos?(rec.shape)  # => true
+  rec = MySpatialTable.new
+  rec.latlon = 'POINT(-122 47)'   # You can set by feature object or WKT.
+  loc = rec.latlon                # Accessing always returns a feature object, in
+                                  # this case, a geographic that understands latitude.
+  loc.latitude                    # => 47
+  rec.shape = loc                 # the factory for the :shape column is GEOS, so the
+                                  # value will be cast from geographic to GEOS.
+  RGeo::Geos.is_geos?(rec.shape)  # => true
 
 === Spatial Queries
 
 You can create simple queries based on spatial equality in the same way
 you would on a scalar column:
 
- rec = MySpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
+  rec = MySpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
 
 You can also use WKT:
 
- rec = MySpatialTable.where(:latlon => 'POINT(-122 47)').first
+  rec = MySpatialTable.where(:latlon => 'POINT(-122 47)').first
 
 The adapter also provides experimental support for more complex queries
 such as radius searches. However, these extensions require Arel 2.1
@@ -107,7 +107,7 @@ This adapter has the following requirements:
 
 Install this adapter as a gem:
 
- gem install activerecord-postgis-adapter
+  gem install activerecord-postgis-adapter
 
 See the README for the "rgeo" gem, a required dependency, for further
 installation information.
@@ -121,7 +121,7 @@ the config/database.yml file). Most of the rest of the configuration
 parameters are identical to those used by the stock "postgresql" adapter,
 so you can create a new Rails application using:
 
- rails new my_app --database=postgresql
+  rails new my_app --database=postgresql
 
 ...and then just change the adapter name to "postgis".
 
@@ -130,7 +130,7 @@ support for PostGIS databases in ActiveRecord's rake tasks. This railtie
 is required in order to run, e.g., rake test. To install this railtie,
 you should add this line to your config/application.rb:
 
- require 'active_record/connection_adapters/postgis_adapter/railtie'
+  require 'active_record/connection_adapters/postgis_adapter/railtie'
 
 Note that this railtie must load after the ActiveRecord railtie. That is,
 the above require command should appear after <tt>require 'rails/all'</tt>.
