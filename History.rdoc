@@ -1,3 +1,7 @@
+=== 0.3.1 / 2011-02-01
+
+* Fixed a syntax error that prevented the adapter from loading on Ruby 1.8. Whoops. (Reported by miguelperez)
+
 === 0.3.0 / 2011-01-26
 
 * Reworked type and constraint handling, which should result in a large number of bug fixes, especially related to schema dumps.

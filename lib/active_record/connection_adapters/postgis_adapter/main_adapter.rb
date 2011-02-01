@@ -47,7 +47,7 @@ module ActiveRecord
         
         
         SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
-          :geography => {:type => 'geometry', :geographic => true},
+          :geography => {:type => 'geometry', :geographic => true}
         )
         
         @@native_database_types = nil
