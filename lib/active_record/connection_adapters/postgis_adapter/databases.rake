@@ -47,20 +47,50 @@ def create_database(config_)
   if config_['adapter'] == 'postgis'
     @encoding = config_['encoding'] || ::ENV['CHARSET'] || 'utf8'
     begin
-      ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public'))
-      ::ActiveRecord::Base.connection.create_database(config_['database'], config_.merge('encoding' => @encoding))
-      ::ActiveRecord::Base.establish_connection(config_.merge('schema_search_path' => 'public'))
+      has_su_ = config_.include?('su_username')            # Is there a distinct superuser?
+      username_ = config_['username']                      # regular user name
+      su_username_ = config_['su_username'] || username_   # superuser name
+      su_password_ = config_['su_password'] || config_['password']  # superuser password
+      
+      # Create the database. Optionally do so as the given superuser.
+      # But make sure the database is owned by the regular user.
+      ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public', 'username' => su_username_, 'password' => su_password_))
+      extra_configs_ = {'encoding' => @encoding}
+      extra_configs_['owner'] = username_ if has_su_
+      ::ActiveRecord::Base.connection.create_database(config_['database'], config_.merge(extra_configs_))
+      
+      # Initial setup of the database: Add schemas from the search path.
+      # If a superuser is given, we log in as the superuser, but we make sure
+      # the schemas are owned by the regular user.
+      ::ActiveRecord::Base.establish_connection(config_.merge('schema_search_path' => 'public', 'username' => su_username_, 'password' => su_password_))
+      conn_ = ::ActiveRecord::Base.connection
+      search_path_ = config_["schema_search_path"].to_s.strip
+      search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
+      auth_ = has_su_ ? " AUTHORIZATION #{username_}" : ''
+      search_path_.each do |schema_|
+        conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless schema_.downcase == 'public'
+      end
+      
+      # Define the postgis stuff, if the script_dir is provided.
+      # Note: a superuser is required to run the postgis definitions.
+      # If a separate superuser is provided, we need to grant privileges on
+      # the postgis definitions over to the regular user afterwards.
+      # The schema for the postgis definitions is chosen as follows:
+      # If "postgis" is present in the search path, use it.
+      # Otherwise, use the last schema in the search path.
+      # If no search path is given, use "public".
       if (script_dir_ = config_['script_dir'])
-        conn_ = ::ActiveRecord::Base.connection
-        search_path_ = config_["schema_search_path"].to_s.strip
-        search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
-        if search_path_.include?('postgis')
-          conn_.execute('CREATE SCHEMA postgis')
-          conn_.execute('SET search_path TO postgis')
-        end
+        postgis_schema_ = search_path_.include?('postgis') ? 'postgis' : (search_path_.last || 'public')
+        conn_.execute("SET search_path TO #{postgis_schema_}")
         conn_.execute(::File.read(::File.expand_path('postgis.sql', script_dir_)))
         conn_.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir_)))
+        if has_su_
+          conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO #{username_}")
+          conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
+        end
       end
+      
+      # Done
       ::ActiveRecord::Base.establish_connection(config_)
     rescue ::Exception => e_
       $stderr.puts(e_, *(e_.backtrace))
@@ -74,7 +104,7 @@ end
 
 def drop_database(config_)
   if config_['adapter'] == 'postgis'
-    ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public'))
+    ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public', 'username' => config_['su_username'] || config_['username'], 'password' => config_['su_password'] || config_['password']))
     ::ActiveRecord::Base.connection.drop_database(config_['database'])
   else
     drop_database_without_postgis(config_)

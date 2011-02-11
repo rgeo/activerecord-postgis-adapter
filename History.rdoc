@@ -1,3 +1,8 @@
+=== 0.3.2 / 2011-02-11
+
+* You can now specify a separate "database creation" superuser so your normal postgres user doesn't need superuser privileges when running database creation tasks.
+* Database creation tasks automatically create all schemas listed in the schema search path.
+
 === 0.3.1 / 2011-02-01
 
 * Fixed a syntax error that prevented the adapter from loading on Ruby 1.8. Whoops. (Reported by miguelperez)

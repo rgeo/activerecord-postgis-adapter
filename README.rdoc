@@ -137,30 +137,38 @@ the above require command should appear after <tt>require 'rails/all'</tt>.
 
 Besides the adapter name "postgis", most of the other database connection
 configuration parameters are the same as for the stock postgresql adapter.
-However, there are a couple minor differences:
+However, there are several important differences:
 
 The <i>script_dir</i> parameter is specific to the PostGIS adapter, and
 provides the path to the directory containing the SQL scripts for PostGIS
 installation. This directory should contain the files <tt>postgis.sql</tt>
 and <tt>spatial_ref_sys.sql</tt>. (A common setting for this directory
-might be <tt>/usr/local/share/contrib/postgis-1.5</tt>.) It is used by the
-db:create rake task to add the PostGIS types, functions, and tables to a
-newly created database. If you do not provide this parameter, you will
+might be <tt>/usr/local/share/contrib/postgis-1.5</tt>.) It is used by
+<tt>rake db:create</tt> to add the PostGIS types, functions, and tables to
+a newly created database. If you do not provide this parameter, you will
 need to add these objects to the database manually.
 Generally, therefore, this parameter is required at least for the test
 database, which is usually automatically created by the rake tasks.
 
+The <i>su_username</i> and <i>su_password</i> parameters are provided as
+optional parameters. If present, they specify an auxiliary Postgres role
+that will be used for two functions:
+
+* Creation of the database. This is so the main database user that you
+  specify doesn't need superuser or createdb privileges.
+* Installation of the PostGIS definitions, if requested by the presence
+  of <i>script_dir</i>. This process normally requires a Postgres role
+  with superuser privileges, so again if you don't want your main database
+  user to have superuser, you can perform this one-time procedure using
+  this alternate user.
+
+Any schemas listed in the <i>schema_search_path</i> parameter are
+automatically created by <tt>rake db:create</tt>. This is arguably what
+the stock PostgreSQL adapter should be doing anyway.
+
 If the schema name "postgis" is included in the <i>schema_search_path</i>
-parameter, the PostGIS adapter treats it as special, in that:
-
-* The db:create rake task will automatically create the "postgis" schema,
-  and, if <i>script_dir</i> is set, it will create all the PostGIS objects
-  within that schema.
-* Dumping the structure as sql will omit objects in the "postgis" schema.
-  This is often useful if you don't want all the PostGIS definitions
-  cluttering up your SQL dump.
-
-This can be useful in managing the PostGIS definitions in your database,
+parameter, the PostGIS adapter omits it from a SQL structure dump. This
+can be useful to prevent PostGIS definitions from appearing in the dump
 as described below.
 
 === Dealing With PostGIS Definitions
@@ -190,6 +198,15 @@ To deal with these issues, we recommend the following technique:
   The PostGIS Adapter responds to this special name by sandboxing the
   PostGIS definitions into it when rake db:create is run, and it omits
   this schema when running SQL structure dumps.
+* Provide a separate <i>su_username</i> and <i>su_password</i> user for
+  your database, and make sure that Postgres user has SUPERUSER
+  privilege. This will cause the PostGIS Adapter to log in as that user
+  when creating the database, since the PostGIS definition installation
+  requires SUPERUSER. Alternately, you can give the normal database user
+  SUPERUSER privilege, which may be okay for a private development
+  database. These are used only by <tt>rake db:create</tt> so you can
+  remove them from your database.yml for your staging or production
+  databases once you've performed the initial creation.
 
 Finally, you generally should _not_ set the \ActiveRecord schema format
 to <tt>:sql</tt>. You should leave it set to <tt>:ruby</tt>. The reason
@@ -200,9 +217,18 @@ other issues. Instead, the schema.rb output by the Ruby schema format
 should properly replicate the schema. This is a known issue that we are
 investigating.
 
+Of course, the above steps are only really necessary if you are using the
+\ActiveRecord rake tasks that create databases, either directly such as
+<tt>rake db:create</tt>, or indirectly such as <tt>rake test</tt>. They
+should not be necessary for running migrations or normal website execution.
+
 == Additional Information
 
 === Known bugs and limitations
+
+The PostGIS Adapter has not yet been tested in a large variety of
+environments, and we are still fixing bugs. Here is a partial list of
+current known issues.
 
 * Dumping as SQL (i.e. rake db:structure:dump) does not properly emit
   <tt>AddGeometryColumn</tt> calls, and so does not completely create the
