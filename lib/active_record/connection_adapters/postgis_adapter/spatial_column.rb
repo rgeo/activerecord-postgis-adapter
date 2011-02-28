@@ -50,11 +50,14 @@ module ActiveRecord
           super(name_, default_, sql_type_, null_)
           @geographic = sql_type_ =~ /geography/i ? true : false
           if opts_
-            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type])
+            # This case comes from an entry in the geometry_columns table
+            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type]) ||
+              ::RGeo::Feature::Geometry
             @srid = opts_[:srid].to_i
-            @has_z = opts_[:has_z]
-            @has_m = opts_[:has_m]
+            @has_z = opts_[:has_z] ? true : false
+            @has_m = opts_[:has_m] ? true : false
           elsif @geographic
+            # Geographic type information is embedded in the SQL type
             @geometric_type = ::RGeo::Feature::Geometry
             @srid = 4326
             @has_z = @has_m = false
@@ -71,15 +74,23 @@ module ActiveRecord
                 end
               end
             end
+          elsif type == :spatial
+            # Just in case there is a geometry column with no geometry_columns entry.
+            @geometric_type = ::RGeo::Feature::Geometry
+            @srid = @has_z = @has_m = nil
           else
-            @geometric_type = @has_z = @has_m = nil
-            @srid = 0
+            # Non-spatial column
+            @geometric_type = @has_z = @has_m = @srid = nil
           end
           if type == :spatial
-            @limit = {:srid => @srid, :type => @geometric_type.type_name.underscore}
-            @limit[:has_z] = true if @has_z
-            @limit[:has_m] = true if @has_m
-            @limit[:geographic] = true if @geographic
+            if @srid
+              @limit = {:srid => @srid, :type => @geometric_type.type_name.underscore}
+              @limit[:has_z] = true if @has_z
+              @limit[:has_m] = true if @has_m
+              @limit[:geographic] = true if @geographic
+            else
+              @limit = {:no_constraints => true}
+            end
           end
           @ar_class = ::ActiveRecord::Base
         end
@@ -106,18 +117,34 @@ module ActiveRecord
         end
         
         
+        def has_spatial_constraints?
+          !@srid.nil?
+        end
+        
+        
         def klass
           type == :spatial ? ::RGeo::Feature::Geometry : super
         end
         
         
         def type_cast(value_)
-          type == :spatial ? SpatialColumn.convert_to_geometry(value_, @ar_class, name, @geographic, @srid, @has_z, @has_m) : super
+          if type == :spatial
+            SpatialColumn.convert_to_geometry(value_, @ar_class, name, @geographic,
+              @srid, @has_z, @has_m)
+          else
+            super
+          end
         end
         
         
         def type_cast_code(var_name_)
-          type == :spatial ? "::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn.convert_to_geometry(#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})" : super
+          if type == :spatial
+            "::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn.convert_to_geometry("+
+              "#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, "+
+              "#{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
+          else
+            super
+          end
         end
         
         
@@ -130,15 +157,21 @@ module ActiveRecord
         
         
         def self.convert_to_geometry(input_, ar_class_, column_, geographic_, srid_, has_z_, has_m_)
+          if srid_
+            constraints_ = {:geographic => geographic_, :has_z_coordinate => has_z_,
+              :has_m_coordinate => has_m_, :srid => srid_}
+          else
+            constraints_ = nil
+          end
           case input_
           when ::RGeo::Feature::Geometry
-            factory_ = ar_class_.rgeo_factory_for_column(column_, :srid => srid_, :has_z_coordinate => has_z_, :has_m_coordinate => has_m_, :geographic => geographic_)
+            factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
             ::RGeo::Feature.cast(input_, factory_)
           when ::String
             if input_.length == 0
               nil
             else
-              factory_ = ar_class_.rgeo_factory_for_column(column_, :srid => srid_, :has_z_coordinate => has_z_, :has_m_coordinate => has_m_, :geographic => geographic_)
+              factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
               marker_ = input_[0,1]
               if marker_ == "\x00" || marker_ == "\x01"
                 ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse(input_) rescue nil

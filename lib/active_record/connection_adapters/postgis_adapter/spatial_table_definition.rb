@@ -47,8 +47,16 @@ module ActiveRecord
         
         def column(name_, type_, options_={})
           if (info_ = @base.spatial_column_constructor(type_.to_sym))
-            options_[:type] ||= info_[:type] || type_
-            type_ = :spatial
+            type_ = options_[:type] || info_[:type] || type_
+            if type_.to_s == 'geometry' &&
+              (options_[:no_constraints] ||
+               options_[:limit].is_a?(::Hash) && options_[:limit][:no_constraints])
+            then
+              options_.delete(:limit)
+            else
+              options_[:type] = type_
+              type_ = :spatial
+            end
           end
           super(name_, type_, options_)
           if type_ == :spatial
@@ -57,7 +65,7 @@ module ActiveRecord
             options_.merge!(col_.limit) if col_.limit.is_a?(::Hash)
             col_.set_spatial_type(options_[:type])
             col_.set_geographic(options_[:geographic])
-            col_.set_srid((options_[:srid] || 4326).to_i)
+            col_.set_srid(options_[:srid])
             col_.set_has_z(options_[:has_z])
             col_.set_has_m(options_[:has_m])
           end
@@ -78,23 +86,23 @@ module ActiveRecord
       module SpatialColumnDefinitionMethods
         
         def spatial_type
-          defined?(@spatial_type) && @spatial_type
+          @spatial_type
         end
         
         def geographic?
-          defined?(@geographic) && @geographic
+          @geographic
         end
         
         def srid
-          defined?(@srid) ? @srid : 4326
+          @srid ? @srid.to_i : (geographic? ? 4326 : -1)
         end
         
         def has_z?
-          defined?(@has_z) && @has_z
+          @has_z
         end
         
         def has_m?
-          defined?(@has_m) && @has_m
+          @has_m
         end
         
         def set_geographic(value_)

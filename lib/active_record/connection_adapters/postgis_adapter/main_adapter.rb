@@ -108,7 +108,7 @@ module ActiveRecord
           
           # Get index type by joining with pg_am.
           result_ = query(<<-SQL, name_)
-            SELECT distinct i.relname, d.indisunique, d.indkey, t.oid, am.amname
+            SELECT DISTINCT i.relname, d.indisunique, d.indkey, t.oid, am.amname
               FROM pg_class t, pg_class i, pg_index d, pg_am am
             WHERE i.relkind = 'i'
               AND d.indexrelid = i.oid
@@ -129,10 +129,10 @@ module ActiveRecord
             
             columns_ = query(<<-SQL, "Columns for index #{row_[0]} on #{table_name_}").inject({}){ |h_, r_| h_[r_[0]] = [r_[1], r_[2]]; h_ }
               SELECT a.attnum, a.attname, t.typname
-              FROM pg_attribute a, pg_type t
+                FROM pg_attribute a, pg_type t
               WHERE a.attrelid = #{oid_}
-              AND a.attnum IN (#{indkey_.join(",")})
-              AND a.atttypid = t.oid
+                AND a.attnum IN (#{indkey_.join(",")})
+                AND a.atttypid = t.oid
             SQL
             
             spatial_ = indtype_ == 'gist' && columns_.size == 1 && (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
@@ -180,23 +180,30 @@ module ActiveRecord
           table_name_ = table_name_.to_s
           if (info_ = spatial_column_constructor(type_.to_sym))
             limit_ = options_[:limit]
-            options_.merge!(limit_) if limit_.is_a?(::Hash)
-            type_ = (options_[:type] || info_[:type] || type_).to_s.gsub('_', '').upcase
-            has_z_ = options_[:has_z]
-            has_m_ = options_[:has_m]
-            srid_ = (options_[:srid] || 4326).to_i
-            if options_[:geographic]
-              type_ << 'Z' if has_z_
-              type_ << 'M' if has_m_
-              execute("ALTER TABLE #{quote_table_name(table_name_)} ADD COLUMN #{quote_column_name(column_name_)} GEOGRAPHY(#{type_},#{srid_})")
-              change_column_default(table_name_, column_name_, options_[:default]) if options_include_default?(options_)
-              change_column_null(table_name_, column_name_, false, options_[:default]) if options_[:null] == false
+            if type_.to_s == 'geometry' &&
+              (options_[:no_constraints] || limit_.is_a?(::Hash) && limit_[:no_constraints])
+            then
+              options_.delete(:limit)
+              super
             else
-              type_ = "#{type_}M" if has_m_ && !has_z_
-              dimensions_ = 2
-              dimensions_ += 1 if has_z_
-              dimensions_ += 1 if has_m_
-              execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(column_name_.to_s)}', #{srid_}, '#{quote_string(type_)}', #{dimensions_})")
+              options_.merge!(limit_) if limit_.is_a?(::Hash)
+              type_ = (options_[:type] || info_[:type] || type_).to_s.gsub('_', '').upcase
+              has_z_ = options_[:has_z]
+              has_m_ = options_[:has_m]
+              srid_ = (options_[:srid] || -1).to_i
+              if options_[:geographic]
+                type_ << 'Z' if has_z_
+                type_ << 'M' if has_m_
+                execute("ALTER TABLE #{quote_table_name(table_name_)} ADD COLUMN #{quote_column_name(column_name_)} GEOGRAPHY(#{type_},#{srid_})")
+                change_column_default(table_name_, column_name_, options_[:default]) if options_include_default?(options_)
+                change_column_null(table_name_, column_name_, false, options_[:default]) if options_[:null] == false
+              else
+                type_ = "#{type_}M" if has_m_ && !has_z_
+                dimensions_ = 2
+                dimensions_ += 1 if has_z_
+                dimensions_ += 1 if has_m_
+                execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(column_name_.to_s)}', #{srid_}, '#{quote_string(type_)}', #{dimensions_})")
+              end
             end
           else
             super

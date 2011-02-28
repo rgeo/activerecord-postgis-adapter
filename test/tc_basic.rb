@@ -61,6 +61,10 @@ module RGeo
                 klass_.connection.create_table(:spatial_test) do |t_|
                   t_.column 'latlon', :point, :srid => 4326, :geographic => true
                 end
+              when :no_constraints
+                klass_.connection.create_table(:spatial_test) do |t_|
+                  t_.column 'geo', :geometry, :no_constraints => true
+                end
               end
               klass_
             end
@@ -156,6 +160,25 @@ module RGeo
               assert_equal(47, loc_.latitude)
               rec_.shape = loc_
               assert_equal(true, ::RGeo::Geos.is_geos?(rec_.shape))
+            end
+            
+            
+            def test_save_and_load_no_constraints
+              klass_ = populate_ar_class(:no_constraints)
+              factory1_ = ::RGeo::Cartesian.preferred_factory(:srid => 3785)
+              factory2_ = ::RGeo::Cartesian.preferred_factory(:srid => 2000)
+              obj_ = klass_.new
+              obj_.geo = factory1_.point(1, 2)
+              obj_.save!
+              id_ = obj_.id
+              obj2_ = klass_.find(id_)
+              assert_equal(factory1_.point(1, 2), obj2_.geo)
+              assert_equal(3785, obj2_.geo.srid)
+              obj2_.geo = factory2_.point(3, 4)
+              obj2_.save!
+              obj3_ = klass_.find(id_)
+              assert_equal(factory2_.point(3,4), obj3_.geo)
+              assert_equal(2000, obj3_.geo.srid)
             end
             
             
