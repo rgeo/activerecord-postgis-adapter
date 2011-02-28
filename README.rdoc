@@ -14,8 +14,20 @@ the pg gem.
 First, this adapter extends the migration syntax to support creating 
 spatial columns and indexes. To create a spatial column, use the
 <tt>:geometry</tt> type, or any of the OGC spatial types such as
-<tt>:point</tt> or <tt>:line_string</tt>. To create a geography column,
-set the <tt>:geographic</tt> option to true when creating the column.
+<tt>:point</tt> or <tt>:line_string</tt> to set a geometry type
+constraint. You may also provide any of the following options:
+
+* <tt>:geographic</tt> -- If set to true, create a PostGIS geography
+  column; otherwise create a geometry column. Default is false.
+* <tt>:srid</tt> -- Set a SRID constraint for the column. Default is 4326
+  for a geography column, or -1 for a geometry column. Note that PostGIS
+  currently (as of version 1.5.2) requires geography columns to have SRID
+  4326, so this constraint is of limited use for geography columns.
+* <tt>:has_z</tt> -- Specify that objects in this column include a Z
+  coordinate. Default is false.
+* <tt>:has_m</tt> -- Specify that objects in this column include an M
+  coordinate. Default is false.
+
 To create a spatial index, set the <tt>:spatial</tt> option to true when
 creating the index.
 
@@ -40,7 +52,7 @@ format, which the adapter will automatically convert to geometry objects.
 Spatial objects in RGeo are tied to a factory that specifies the
 coordinate system as well as other behaviors of the object. You must
 therefore specify a factory for each spatial column (attribute) in your
-ActiveRecord class. You can either set an explicit factory for a specific
+\ActiveRecord class. You can either set an explicit factory for a specific
 column, or provide a factory generator that will yield the appropriate
 factory for the table's spatial columns based on their types. For the
 former, call the <tt>set_rgeo_factory_for_column</tt> class method on your
@@ -100,10 +112,10 @@ This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
 * PostGIS 1.5 or later.
+* pg gem 0.10 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
 * rgeo gem 0.2.4 or later.
-* rgeo-activerecord gem 0.3.0 or later.
-* pg gem 0.10 or later.
+* rgeo-activerecord gem 0.3.1 or later.
 
 Install this adapter as a gem:
 
@@ -151,13 +163,13 @@ Generally, therefore, this parameter is required at least for the test
 database, which is usually automatically created by the rake tasks.
 
 The <i>su_username</i> and <i>su_password</i> parameters are provided as
-optional parameters. If present, they specify an auxiliary Postgres role
-that will be used for two functions:
+optional parameters. If present, they specify an auxiliary PostgreSQL role
+that must have superuser privileges, and will be used for two functions:
 
 * Creation of the database. This is so the main database user that you
   specify doesn't need superuser or createdb privileges.
 * Installation of the PostGIS definitions, if requested by the presence
-  of <i>script_dir</i>. This process normally requires a Postgres role
+  of <i>script_dir</i>. This process normally requires a PostgreSQL role
   with superuser privileges, so again if you don't want your main database
   user to have superuser, you can perform this one-time procedure using
   this alternate user.
@@ -198,11 +210,11 @@ To deal with these issues, we recommend the following technique:
   The PostGIS Adapter responds to this special name by sandboxing the
   PostGIS definitions into it when rake db:create is run, and it omits
   this schema when running SQL structure dumps.
-* Provide a separate <i>su_username</i> and <i>su_password</i> user for
-  your database, and make sure that Postgres user has SUPERUSER
-  privilege. This will cause the PostGIS Adapter to log in as that user
+* Provide a separate <i>su_username</i> and <i>su_password</i> role for
+  your database, and make sure that separate role has the SUPERUSER
+  privilege. This will cause the PostGIS Adapter to log in as that role
   when creating the database, since the PostGIS definition installation
-  requires SUPERUSER. Alternately, you can give the normal database user
+  requires SUPERUSER. Alternately, you can give the normal database role
   SUPERUSER privilege, which may be okay for a private development
   database. These are used only by <tt>rake db:create</tt> so you can
   remove them from your database.yml for your staging or production

@@ -2,10 +2,11 @@
 
 * INCOMPATIBLE CHANGE: the default SRID for non-geography columns is now -1, rather than 4326. (Geography columns still default to 4326.)
 * It is now possible to create a spatial column without a corresponding entry in the geometry_columns table, and the adapter now handles this case properly. (Reported by Pirmin Kalberer)
+* Now requires rgeo-activerecord 0.3.1 (which brings a critical fix involving declaring multiple spatial columns in a migration).
 
 === 0.3.2 / 2011-02-11
 
-* You can now specify a separate "database creation" superuser so your normal postgres user doesn't need superuser privileges when running database creation tasks.
+* You can now specify a separate "database creation" superuser role so your normal PostgreSQL login role doesn't need superuser privileges when running database creation tasks.
 * Database creation tasks automatically create all schemas listed in the schema search path.
 
 === 0.3.1 / 2011-02-01
