@@ -44,7 +44,7 @@ end
 
 
 def create_database(config_)
-  if config_['adapter'] == 'postgis'
+  if config_['adapter'] == 'postgresql'
     @encoding = config_['encoding'] || ::ENV['CHARSET'] || 'utf8'
     begin
       has_su_ = config_.include?('su_username')            # Is there a distinct superuser?
@@ -103,7 +103,7 @@ end
 
 
 def drop_database(config_)
-  if config_['adapter'] == 'postgis'
+  if config_['adapter'] == 'postgresql'
     ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public', 'username' => config_['su_username'] || config_['username'], 'password' => config_['su_password'] || config_['password']))
     ::ActiveRecord::Base.connection.drop_database(config_['database'])
   else
