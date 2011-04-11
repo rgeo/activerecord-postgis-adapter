@@ -114,8 +114,8 @@ This adapter has the following requirements:
 * PostGIS 1.5 or later.
 * pg gem 0.10 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-* rgeo gem 0.2.4 or later.
-* rgeo-activerecord gem 0.3.1 or later.
+* rgeo gem 0.2.8 or later.
+* rgeo-activerecord gem 0.3.3 or later.
 
 Install this adapter as a gem:
 
@@ -276,7 +276,7 @@ source gave us a head start on the implementation.
 
 === License
 
-Copyright 2010 Daniel Azuma
+Copyright 2010-2011 Daniel Azuma
 
 All rights reserved.
 

@@ -1,3 +1,7 @@
+=== 0.3.4 / 2011-04-11
+
+* A .gemspec file is now available for gem building and bundler git integration.
+
 === 0.3.3 / 2011-02-28
 
 * INCOMPATIBLE CHANGE: the default SRID for non-geography columns is now -1, rather than 4326. (Geography columns still default to 4326.)
