@@ -1,3 +1,7 @@
+=== 0.3.5 / 2011-04-12
+
+* The .gemspec was missing the databases.rake file. Fixed.
+
 === 0.3.4 / 2011-04-11
 
 * A .gemspec file is now available for gem building and bundler git integration.

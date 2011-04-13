@@ -8,7 +8,7 @@
   s_.homepage = "http://virtuoso.rubyforge.org/activerecord-postgis-adapter"
   s_.rubyforge_project = 'virtuoso'
   s_.required_ruby_version = '>= 1.8.7'
-  s_.files = ::Dir.glob("lib/**/*.rb") +
+  s_.files = ::Dir.glob("lib/**/*.{rb,rake}") +
     ::Dir.glob("test/**/*.rb") +
     ::Dir.glob("*.rdoc") +
     ['Version']
