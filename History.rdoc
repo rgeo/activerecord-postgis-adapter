@@ -1,3 +1,9 @@
+=== 0.3.6 / 2011-06-21
+
+* Require latest rgeo-activerecord to get some fixes.
+* Note PostgreSQL 9 requirement in the README. (Reported by Samuel Cochran)
+* Now doesn't throw exceptions if an RGeo cast fails when setting an attribute.
+
 === 0.3.5 / 2011-04-12
 
 * The .gemspec was missing the databases.rake file. Fixed.

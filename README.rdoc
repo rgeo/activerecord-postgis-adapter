@@ -111,11 +111,12 @@ write more complex queries in SQL.
 This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
+* PostgreSQL 9.0 or later.
 * PostGIS 1.5 or later.
 * pg gem 0.10 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-* rgeo gem 0.2.8 or later.
-* rgeo-activerecord gem 0.3.3 or later.
+* rgeo gem 0.3.1 or later.
+* rgeo-activerecord gem 0.3.4 or later.
 
 Install this adapter as a gem:
 

@@ -140,6 +140,13 @@ module RGeo
             end
             
             
+            def test_set_point_bad_wkt
+              klass_ = populate_ar_class(:latlon_point)
+              obj_ = klass_.create(:latlon => 'POINT (x)')
+              assert_nil(obj_.latlon)
+            end
+            
+            
             def test_readme_example
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -179,6 +186,15 @@ module RGeo
               obj3_ = klass_.find(id_)
               assert_equal(factory2_.point(3,4), obj3_.geo)
               assert_equal(2000, obj3_.geo.srid)
+            end
+            
+            
+            def test_point_to_json
+              klass_ = populate_ar_class(:latlon_point)
+              obj_ = klass_.new
+              assert_equal('{"klass4":{"latlon":null}}', obj_.to_json)
+              obj_.latlon = @factory.point(1, 2)
+              assert_equal('{"klass4":{"latlon":"POINT (1.0 2.0)"}}', obj_.to_json)
             end
             
             

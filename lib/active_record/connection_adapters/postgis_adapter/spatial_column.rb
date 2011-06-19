@@ -166,17 +166,15 @@ module ActiveRecord
           case input_
           when ::RGeo::Feature::Geometry
             factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
-            ::RGeo::Feature.cast(input_, factory_)
+            ::RGeo::Feature.cast(input_, factory_) rescue nil
           when ::String
             if input_.length == 0
               nil
             else
               factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
               marker_ = input_[0,1]
-              if marker_ == "\x00" || marker_ == "\x01"
+              if marker_ == "\x00" || marker_ == "\x01" || input_[0,4] =~ /[0-9a-fA-F]{4}/
                 ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse(input_) rescue nil
-              elsif input_[0,4] =~ /[0-9a-fA-F]{4}/
-                ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse_hex(input_) rescue nil
               else
                 ::RGeo::WKRep::WKTParser.new(factory_, :support_ewkt => true).parse(input_) rescue nil
               end
