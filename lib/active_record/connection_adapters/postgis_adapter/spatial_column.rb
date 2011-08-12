@@ -46,7 +46,9 @@ module ActiveRecord
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn
         
         
-        def initialize(name_, default_, sql_type_=nil, null_=true, opts_=nil)
+        def initialize(factory_settings_, table_name_, name_, default_, sql_type_=nil, null_=true, opts_=nil)
+          @factory_settings = factory_settings_
+          @table_name = table_name_
           super(name_, default_, sql_type_, null_)
           @geographic = sql_type_ =~ /geography/i ? true : false
           if opts_
@@ -92,12 +94,6 @@ module ActiveRecord
               @limit = {:no_constraints => true}
             end
           end
-          @ar_class = ::ActiveRecord::Base
-        end
-        
-        
-        def set_ar_class(val_)
-          @ar_class = val_
         end
         
         
@@ -129,8 +125,8 @@ module ActiveRecord
         
         def type_cast(value_)
           if type == :spatial
-            SpatialColumn.convert_to_geometry(value_, @ar_class, name, @geographic,
-              @srid, @has_z, @has_m)
+            SpatialColumn.convert_to_geometry(value_, @factory_settings, @table_name, name,
+              @geographic, @srid, @has_z, @has_m)
           else
             super
           end
@@ -140,8 +136,9 @@ module ActiveRecord
         def type_cast_code(var_name_)
           if type == :spatial
             "::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn.convert_to_geometry("+
-              "#{var_name_}, self.class, #{name.inspect}, #{@geographic ? 'true' : 'false'}, "+
-              "#{@srid.inspect}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
+              "#{var_name_}, self.class.rgeo_factory_settings, self.class.table_name, "+
+              "#{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, "+
+              "#{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
           else
             super
           end
@@ -156,7 +153,7 @@ module ActiveRecord
         end
         
         
-        def self.convert_to_geometry(input_, ar_class_, column_, geographic_, srid_, has_z_, has_m_)
+        def self.convert_to_geometry(input_, factory_settings_, table_name_, column_, geographic_, srid_, has_z_, has_m_)
           if srid_
             constraints_ = {:geographic => geographic_, :has_z_coordinate => has_z_,
               :has_m_coordinate => has_m_, :srid => srid_}
@@ -165,13 +162,13 @@ module ActiveRecord
           end
           case input_
           when ::RGeo::Feature::Geometry
-            factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
+            factory_ = factory_settings_.get_column_factory(table_name_, column_, constraints_)
             ::RGeo::Feature.cast(input_, factory_) rescue nil
           when ::String
             if input_.length == 0
               nil
             else
-              factory_ = ar_class_.rgeo_factory_for_column(column_, constraints_)
+              factory_ = factory_settings_.get_column_factory(table_name_, column_, constraints_)
               marker_ = input_[0,1]
               if marker_ == "\x00" || marker_ == "\x01" || input_[0,4] =~ /[0-9a-fA-F]{4}/
                 ::RGeo::WKRep::WKBParser.new(factory_, :support_ewkb => true).parse(input_) rescue nil
@@ -190,9 +187,7 @@ module ActiveRecord
       
     end
     
-    
   end
-  
   
 end
 

@@ -53,6 +53,11 @@ module ActiveRecord
         @@native_database_types = nil
         
         
+        def set_rgeo_factory_settings(factory_settings_)
+          @rgeo_factory_settings = factory_settings_
+        end
+        
+        
         def adapter_name
           PostGISAdapter::ADAPTER_NAME
         end
@@ -90,16 +95,30 @@ module ActiveRecord
         end
         
         
+        def type_cast(value_, column_)
+          if ::RGeo::Feature::Geometry.check_type(value_)
+            ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
+          else
+            super
+          end
+        end
+        
+        
         def columns(table_name_, name_=nil)
+          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
+          # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |name_, type_, default_, notnull_|
-            SpatialColumn.new(name_, default_, type_, notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[name_] : nil)
+            SpatialColumn.new(@rgeo_factory_settings, table_name_.to_s, name_, default_, type_,
+              notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[name_] : nil)
           end
         end
         
         
         def indexes(table_name_, name_=nil)
+          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
+          # We needed to modify the catalog queries to pull the index type info.
           
           # Remove postgis from schemas
           schemas_ = schema_search_path.split(/,/)
@@ -143,6 +162,12 @@ module ActiveRecord
         
         
         def create_table(table_name_, options_={})
+          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
+          # Note: we have to do a full replacement for Rails 3.0 because
+          # there is no way to override the creation of the table
+          # definition object. In Rails 3.1, this has been factored out
+          # into the table_definition method, so we could rewrite this
+          # to call super if we're willing to go 3.1 only.
           table_name_ = table_name_.to_s
           table_definition_ = SpatialTableDefinition.new(self)
           table_definition_.primary_key(options_[:primary_key] || ::ActiveRecord::Base.get_primary_key(table_name_.singularize)) unless options_[:id] == false
@@ -229,6 +254,8 @@ module ActiveRecord
         
         
         def add_index(table_name_, column_name_, options_={})
+          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
+          # We have to fully-replace because of the gist_clause.
           table_name_ = table_name_.to_s
           column_names_ = ::Array.wrap(column_name_)
           index_name_ = index_name(table_name_, :column => column_names_)

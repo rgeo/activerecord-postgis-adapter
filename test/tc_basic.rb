@@ -53,9 +53,9 @@ module RGeo
             def populate_ar_class(content_)
               klass_ = create_ar_class
               case content_
-              when :latlon_point
+              when :mercator_point
                 klass_.connection.create_table(:spatial_test) do |t_|
-                  t_.column 'latlon', :point, :srid => 4326
+                  t_.column 'latlon', :point, :srid => 3785
                 end
               when :latlon_point_geographic
                 klass_.connection.create_table(:spatial_test) do |t_|
@@ -83,34 +83,34 @@ module RGeo
             
             
             def test_set_and_get_point
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               assert_nil(obj_.latlon)
               obj_.latlon = @factory.point(1, 2)
               assert_equal(@factory.point(1, 2), obj_.latlon)
-              assert_equal(4326, obj_.latlon.srid)
+              assert_equal(3785, obj_.latlon.srid)
             end
             
             
             def test_set_and_get_point_from_wkt
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               assert_nil(obj_.latlon)
               obj_.latlon = 'POINT(1 2)'
               assert_equal(@factory.point(1, 2), obj_.latlon)
-              assert_equal(4326, obj_.latlon.srid)
+              assert_equal(3785, obj_.latlon.srid)
             end
             
             
             def test_save_and_load_point
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               obj_.latlon = @factory.point(1, 2)
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
               assert_equal(@factory.point(1, 2), obj2_.latlon)
-              assert_equal(4326, obj2_.latlon.srid)
+              assert_equal(3785, obj2_.latlon.srid)
               assert_equal(true, ::RGeo::Geos.is_geos?(obj2_.latlon))
             end
             
@@ -129,19 +129,19 @@ module RGeo
             
             
             def test_save_and_load_point_from_wkt
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               obj_.latlon = 'POINT(1 2)'
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
               assert_equal(@factory.point(1, 2), obj2_.latlon)
-              assert_equal(4326, obj2_.latlon.srid)
+              assert_equal(3785, obj2_.latlon.srid)
             end
             
             
             def test_set_point_bad_wkt
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.create(:latlon => 'POINT (x)')
               assert_nil(obj_.latlon)
             end
@@ -190,11 +190,11 @@ module RGeo
             
             
             def test_point_to_json
-              klass_ = populate_ar_class(:latlon_point)
+              klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
-              assert_equal('{"klass4":{"latlon":null}}', obj_.to_json)
+              assert_match(/"latlon":null/, obj_.to_json)
               obj_.latlon = @factory.point(1, 2)
-              assert_equal('{"klass4":{"latlon":"POINT (1.0 2.0)"}}', obj_.to_json)
+              assert_match(/"latlon":"POINT\s\(1\.0\s2\.0\)"/, obj_.to_json)
             end
             
             
