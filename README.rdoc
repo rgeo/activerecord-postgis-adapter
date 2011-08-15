@@ -262,6 +262,8 @@ Contributions are welcome. Fork the project on Github.
 
 Report bugs on Github issues at http://github.org/dazuma/activerecord-postgis-adapter/issues
 
+Support available on the rgeo-users google group at http://groups.google.com/group/rgeo-users
+
 Contact the author at dazuma at gmail dot com.
 
 === Acknowledgments
