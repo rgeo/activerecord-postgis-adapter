@@ -45,6 +45,9 @@ module ActiveRecord
       
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn
         
+
+        FACTORY_SETTINGS_CACHE = {}
+
         
         def initialize(factory_settings_, table_name_, name_, default_, sql_type_=nil, null_=true, opts_=nil)
           @factory_settings = factory_settings_
@@ -94,6 +97,7 @@ module ActiveRecord
               @limit = {:no_constraints => true}
             end
           end
+          FACTORY_SETTINGS_CACHE[factory_settings_.object_id] = factory_settings_
         end
         
         
@@ -136,7 +140,8 @@ module ActiveRecord
         def type_cast_code(var_name_)
           if type == :spatial
             "::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn.convert_to_geometry("+
-              "#{var_name_}, self.class.rgeo_factory_settings, self.class.table_name, "+
+              "#{var_name_}, ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn::"+
+              "FACTORY_SETTINGS_CACHE[#{@factory_settings.object_id}], #{@table_name.inspect}, "+
               "#{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, "+
               "#{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
           else

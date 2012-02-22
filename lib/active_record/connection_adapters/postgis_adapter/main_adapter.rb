@@ -195,7 +195,7 @@ module ActiveRecord
         end
         
         
-        def drop_table(table_name_, options_={})
+        def drop_table(table_name_, *options_)
           execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
           super
         end
