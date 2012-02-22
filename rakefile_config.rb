@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# RGeo Rakefile configuration
+# PostGIS Adapter Rakefile configuration
 #
 # -----------------------------------------------------------------------------
 # Copyright 2012 Daniel Azuma

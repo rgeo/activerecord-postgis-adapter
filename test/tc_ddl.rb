@@ -1,15 +1,15 @@
 # -----------------------------------------------------------------------------
-# 
+#
 # Tests for the PostGIS ActiveRecord adapter
-# 
+#
 # -----------------------------------------------------------------------------
-# Copyright 2010 Daniel Azuma
-# 
+# Copyright 2010-2012 Daniel Azuma
+#
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # * Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
 # * Redistributions in binary form must reproduce the above copyright notice,
@@ -18,7 +18,7 @@
 # * Neither the name of the copyright holder, nor the names of any other
 #   contributors to this software, may be used to endorse or promote products
 #   derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,15 +41,15 @@ module RGeo
   module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
-        
+
         class TestDDL < ::Test::Unit::TestCase  # :nodoc:
-          
+
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           include AdapterTestHelper
-          
+
           define_test_methods do
-            
-            
+
+
             def test_create_simple_geometry
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -65,8 +65,8 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_no_constraints_geometry
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -82,8 +82,8 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_simple_geography
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -97,8 +97,8 @@ module RGeo
               assert(klass_.cached_attributes.include?('latlon'))
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_point_geometry
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -107,8 +107,8 @@ module RGeo
               assert_equal(::RGeo::Feature::Point, klass_.columns.last.geometric_type)
               assert(klass_.cached_attributes.include?('latlon'))
             end
-            
-            
+
+
             def test_create_geometry_with_index
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -119,8 +119,8 @@ module RGeo
               end
               assert(klass_.connection.indexes(:spatial_test).last.spatial)
             end
-            
-            
+
+
             def test_add_geometry_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -142,8 +142,8 @@ module RGeo
               assert_nil(cols_[-1].geometric_type)
               assert_equal(false, cols_[-1].has_spatial_constraints?)
             end
-            
-            
+
+
             def test_add_no_constraints_geometry_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -165,8 +165,8 @@ module RGeo
               assert_nil(cols_[-1].geometric_type)
               assert_equal(false, cols_[-1].has_spatial_constraints?)
             end
-            
-            
+
+
             def test_add_geography_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -188,8 +188,8 @@ module RGeo
               assert_nil(cols_[-1].geometric_type)
               assert_equal(false, cols_[-1].has_spatial_constraints?)
             end
-            
-            
+
+
             def test_drop_geometry_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -206,8 +206,8 @@ module RGeo
               assert_equal(-1, cols_[-1].srid)
               assert_equal(false, cols_[-1].geographic?)
             end
-            
-            
+
+
             def test_drop_geography_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -227,8 +227,8 @@ module RGeo
               assert_equal('latlon', cols_[-2].name)
               assert_equal(false, cols_[-2].geographic?)
             end
-            
-            
+
+
             def test_create_simple_geometry_using_shortcut
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -243,8 +243,8 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_no_constraints_geometry_using_shortcut
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -259,8 +259,8 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_simple_geography_using_shortcut
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -274,8 +274,8 @@ module RGeo
               assert(klass_.cached_attributes.include?('latlon'))
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_point_geometry_using_shortcut
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -284,8 +284,8 @@ module RGeo
               assert_equal(::RGeo::Feature::Point, klass_.columns.last.geometric_type)
               assert(klass_.cached_attributes.include?('latlon'))
             end
-            
-            
+
+
             def test_create_geometry_with_options
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -303,8 +303,8 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
             def test_create_geometry_using_limit
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -322,12 +322,12 @@ module RGeo
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-            
-            
+
+
           end
-          
+
         end
-        
+
       end
     end
   end

@@ -1,15 +1,15 @@
 # -----------------------------------------------------------------------------
-# 
+#
 # PostGIS adapter for ActiveRecord
-# 
+#
 # -----------------------------------------------------------------------------
-# Copyright 2010 Daniel Azuma
-# 
+# Copyright 2010-2012 Daniel Azuma
+#
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # * Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
 # * Redistributions in binary form must reproduce the above copyright notice,
@@ -18,7 +18,7 @@
 # * Neither the name of the copyright holder, nor the names of any other
 #   contributors to this software, may be used to endorse or promote products
 #   derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,55 +37,64 @@
 # :stopdoc:
 
 module ActiveRecord
-    
+
   module ConnectionAdapters
-    
+
     module PostGISAdapter
-      
-      
+
+
       class MainAdapter < PostgreSQLAdapter
-        
-        
+
+
         SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
           :geography => {:type => 'geometry', :geographic => true}
         )
-        
+
         @@native_database_types = nil
-        
-        
+
+
+        def initialize(*args_)
+          super
+          # Rails 3.2 way of defining the visitor: do so in the constructor
+          if defined?(@visitor) && @visitor
+            @visitor = ::Arel::Visitors::PostGIS.new(self)
+          end
+        end
+
+
         def set_rgeo_factory_settings(factory_settings_)
           @rgeo_factory_settings = factory_settings_
         end
-        
-        
+
+
         def adapter_name
           PostGISAdapter::ADAPTER_NAME
         end
-        
-        
+
+
         def spatial_column_constructor(name_)
           SPATIAL_COLUMN_CONSTRUCTORS[name_]
         end
-        
-        
+
+
         def native_database_types
           @@native_database_types ||= super.merge(:spatial => {:name => 'geometry'})
         end
-        
-        
+
+
         def postgis_lib_version
           unless defined?(@postgis_lib_version)
             @postgis_lib_version = select_value("SELECT PostGIS_Lib_Version()") rescue nil
           end
           @postgis_lib_version
         end
-        
-        
+
+
         def srs_database_columns
           {:srtext_column => 'srtext', :proj4text_column => 'proj4text', :auth_name_column => 'auth_name', :auth_srid_column => 'auth_srid'}
         end
-        
-        
+
+
         def quote(value_, column_=nil)
           if ::RGeo::Feature::Geometry.check_type(value_)
             "'#{::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)}'"
@@ -93,8 +102,8 @@ module ActiveRecord
             super
           end
         end
-        
-        
+
+
         def type_cast(value_, column_)
           if ::RGeo::Feature::Geometry.check_type(value_)
             ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
@@ -102,29 +111,29 @@ module ActiveRecord
             super
           end
         end
-        
-        
+
+
         def columns(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |name_, type_, default_, notnull_|
-            SpatialColumn.new(@rgeo_factory_settings, table_name_.to_s, name_, default_, type_,
+            SpatialColumn.new(@rgeo_factory_settings, table_name_, name_, default_, type_,
               notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[name_] : nil)
           end
         end
-        
-        
+
+
         def indexes(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We needed to modify the catalog queries to pull the index type info.
-          
+
           # Remove postgis from schemas
           schemas_ = schema_search_path.split(/,/)
           schemas_.delete('postgis')
           schemas_ = schemas_.map{ |p_| quote(p_) }.join(',')
-          
+
           # Get index type by joining with pg_am.
           result_ = query(<<-SQL, name_)
             SELECT DISTINCT i.relname, d.indisunique, d.indkey, t.oid, am.amname
@@ -138,14 +147,14 @@ module ActiveRecord
               AND i.relam = am.oid
             ORDER BY i.relname
           SQL
-          
+
           result_.map do |row_|
             index_name_ = row_[0]
             unique_ = row_[1] == 't'
             indkey_ = row_[2].split(" ")
             oid_ = row_[3]
             indtype_ = row_[4]
-            
+
             columns_ = query(<<-SQL, "Columns for index #{row_[0]} on #{table_name_}").inject({}){ |h_, r_| h_[r_[0]] = [r_[1], r_[2]]; h_ }
               SELECT a.attnum, a.attname, t.typname
                 FROM pg_attribute a, pg_type t
@@ -153,14 +162,14 @@ module ActiveRecord
                 AND a.attnum IN (#{indkey_.join(",")})
                 AND a.atttypid = t.oid
             SQL
-            
+
             spatial_ = indtype_ == 'gist' && columns_.size == 1 && (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
             column_names_ = columns_.values_at(*indkey_).compact.map{ |a_| a_[0] }
             column_names_.empty? ? nil : ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, spatial_)
           end.compact
         end
-        
-        
+
+
         def create_table(table_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # Note: we have to do a full replacement for Rails 3.0 because
@@ -175,13 +184,13 @@ module ActiveRecord
           if options_[:force] && table_exists?(table_name_)
             drop_table(table_name_, options_)
           end
-          
+
           create_sql_ = "CREATE#{' TEMPORARY' if options_[:temporary]} TABLE "
           create_sql_ << "#{quote_table_name(table_name_)} ("
           create_sql_ << table_definition_.to_sql
           create_sql_ << ") #{options_[:options]}"
           execute create_sql_
-          
+
           table_definition_.non_geographic_spatial_columns.each do |col_|
             type_ = col_.spatial_type.gsub('_', '').upcase
             has_z_ = col_.has_z?
@@ -193,14 +202,14 @@ module ActiveRecord
             execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(col_.name.to_s)}', #{col_.srid}, '#{quote_string(type_)}', #{dimensions_})")
           end
         end
-        
-        
+
+
         def drop_table(table_name_, *options_)
           execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
           super
         end
-        
-        
+
+
         def add_column(table_name_, column_name_, type_, options_={})
           table_name_ = table_name_.to_s
           if (info_ = spatial_column_constructor(type_.to_sym))
@@ -234,8 +243,8 @@ module ActiveRecord
             super
           end
         end
-        
-        
+
+
         def remove_column(table_name_, *column_names_)
           column_names_ = column_names_.flatten.map{ |n_| n_.to_s }
           spatial_info_ = spatial_column_info(table_name_)
@@ -251,8 +260,8 @@ module ActiveRecord
             super(table_name_, *remaining_column_names_)
           end
         end
-        
-        
+
+
         def add_index(table_name_, column_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
@@ -277,8 +286,8 @@ module ActiveRecord
           quoted_column_names_ = quoted_columns_for_index(column_names_, options_).join(", ")
           execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)} #{gist_clause_} (#{quoted_column_names_})"
         end
-        
-        
+
+
         def spatial_column_info(table_name_)
           info_ = query("SELECT * FROM geometry_columns WHERE f_table_name='#{quote_string(table_name_.to_s)}'")
           result_ = {}
@@ -300,15 +309,15 @@ module ActiveRecord
           end
           result_
         end
-        
-        
+
+
       end
-      
-      
+
+
     end
-    
+
   end
-  
+
 end
 
 # :startdoc:

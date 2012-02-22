@@ -115,9 +115,9 @@ This adapter has the following requirements:
 * PostGIS 1.5 or later.
 * pg gem 0.11 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-  Appears to be compatible with Rails 3.1rc5.
-* rgeo gem 0.3.2 or later.
-* rgeo-activerecord gem 0.4.0 or later.
+  Should be compatible with Rails versions through 3.2.x.
+* rgeo gem 0.3.4 or later.
+* rgeo-activerecord gem 0.4.3 or later.
 
 Install this adapter as a gem:
 

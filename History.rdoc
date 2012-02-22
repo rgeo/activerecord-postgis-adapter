@@ -1,3 +1,8 @@
+=== 0.4.1 / 2012-02-22
+
+* Some compatibility fixes for Rails 3.2.
+* Now requires rgeo-activerecord 0.4.3.
+
 === 0.4.0 / 2011-08-15
 
 * Various fixes for Rails 3.1 compatibility.

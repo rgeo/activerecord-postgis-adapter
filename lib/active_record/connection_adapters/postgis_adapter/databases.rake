@@ -1,15 +1,15 @@
 # -----------------------------------------------------------------------------
-# 
+#
 # Rakefile changes for PostGIS adapter
-# 
+#
 # -----------------------------------------------------------------------------
-# Copyright 2010 Daniel Azuma
-# 
+# Copyright 2010-2012 Daniel Azuma
+#
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 # * Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
 # * Redistributions in binary form must reproduce the above copyright notice,
@@ -18,7 +18,7 @@
 # * Neither the name of the copyright holder, nor the names of any other
 #   contributors to this software, may be used to endorse or promote products
 #   derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -51,14 +51,14 @@ def create_database(config_)
       username_ = config_['username']                      # regular user name
       su_username_ = config_['su_username'] || username_   # superuser name
       su_password_ = config_['su_password'] || config_['password']  # superuser password
-      
+
       # Create the database. Optionally do so as the given superuser.
       # But make sure the database is owned by the regular user.
       ::ActiveRecord::Base.establish_connection(config_.merge('database' => 'postgres', 'schema_search_path' => 'public', 'username' => su_username_, 'password' => su_password_))
       extra_configs_ = {'encoding' => @encoding}
       extra_configs_['owner'] = username_ if has_su_
       ::ActiveRecord::Base.connection.create_database(config_['database'], config_.merge(extra_configs_))
-      
+
       # Initial setup of the database: Add schemas from the search path.
       # If a superuser is given, we log in as the superuser, but we make sure
       # the schemas are owned by the regular user.
@@ -70,7 +70,7 @@ def create_database(config_)
       search_path_.each do |schema_|
         conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless schema_.downcase == 'public'
       end
-      
+
       # Define the postgis stuff, if the script_dir is provided.
       # Note: a superuser is required to run the postgis definitions.
       # If a separate superuser is provided, we need to grant privileges on
@@ -89,7 +89,7 @@ def create_database(config_)
           conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
         end
       end
-      
+
       # Done
       ::ActiveRecord::Base.establish_connection(config_)
     rescue ::Exception => e_
