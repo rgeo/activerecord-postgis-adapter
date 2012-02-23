@@ -271,7 +271,7 @@ Contact the author at dazuma at gmail dot com.
 The PostGIS Adapter and its supporting libraries (including RGeo) are
 written by Daniel Azuma (http://www.daniel-azuma.com).
 
-Development of RGeo is sponsored by GeoPage, Inc. (http://www.geopage.com).
+Development is supported by Pirq. (http://www.pirq.com).
 
 This adapter implementation owes some debt to the spatial_adapter plugin
 (http://github.com/fragility/spatial_adapter). Although we made some
