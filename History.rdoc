@@ -1,3 +1,10 @@
+=== 0.4.2 / 2012-04-12
+
+* Support the db:structure:load rake task in recent versions of Rails.
+* Support installing PostGIS via the PostgreSQL extension mechanism (requires at least PostGIS 2.0 and PostgreSQL 9.1).
+* Support bounding boxes in queries (useful for "window" queries such as finding objects to display in a map region).
+* Fix some issues determine the correct default value for spatial columns.
+
 === 0.4.1 / 2012-02-22
 
 * Some compatibility fixes for Rails 3.2. (Reported by Ryan Williams with implementation help from Radek Paviensky.)

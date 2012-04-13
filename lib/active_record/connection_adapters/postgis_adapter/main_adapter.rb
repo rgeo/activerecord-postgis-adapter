@@ -98,6 +98,8 @@ module ActiveRecord
         def quote(value_, column_=nil)
           if ::RGeo::Feature::Geometry.check_type(value_)
             "'#{::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)}'"
+          elsif value_.is_a?(::RGeo::Cartesian::BoundingBox)
+            "'#{value_.min_x},#{value_.min_y},#{value_.max_x},#{value_.max_y}'::box"
           else
             super
           end
@@ -118,9 +120,9 @@ module ActiveRecord
           # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
-          column_definitions(table_name_).collect do |name_, type_, default_, notnull_|
-            SpatialColumn.new(@rgeo_factory_settings, table_name_, name_, default_, type_,
-              notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[name_] : nil)
+          column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_|
+            SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, type_,
+              notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
           end
         end
 

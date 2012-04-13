@@ -71,7 +71,7 @@ def create_database(config_)
         conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless schema_.downcase == 'public'
       end
 
-      # Define the postgis stuff, if the script_dir is provided.
+      # Install postgis definitions into the database.
       # Note: a superuser is required to run the postgis definitions.
       # If a separate superuser is provided, we need to grant privileges on
       # the postgis definitions over to the regular user afterwards.
@@ -79,11 +79,23 @@ def create_database(config_)
       # If "postgis" is present in the search path, use it.
       # Otherwise, use the last schema in the search path.
       # If no search path is given, use "public".
-      if (script_dir_ = config_['script_dir'])
+      script_dir_ = config_['script_dir']
+      postgis_extension_ = config_['postgis_extension']
+      if script_dir_ || postgis_extension_
         postgis_schema_ = search_path_.include?('postgis') ? 'postgis' : (search_path_.last || 'public')
-        conn_.execute("SET search_path TO #{postgis_schema_}")
-        conn_.execute(::File.read(::File.expand_path('postgis.sql', script_dir_)))
-        conn_.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir_)))
+        if script_dir_
+          # Use script_dir (for postgresql < 9.1 or postgis < 2.0)
+          conn_.execute("SET search_path TO #{postgis_schema_}")
+          conn_.execute(::File.read(::File.expand_path('postgis.sql', script_dir_)))
+          conn_.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir_)))
+        elsif postgis_extension_
+          # Use postgis_extension (for postgresql >= 9.1 and postgis >= 2.0)
+          postgis_extension_ = 'postgis' if postgis_extension_ == true
+          postgis_extension_ = postgis_extension_.to_s.split(',') unless postgis_extension_.is_a?(::Array)
+          postgis_extension_.each do |extname_|
+            conn_.execute("CREATE EXTENSION #{extname_} SCHEMA #{postgis_schema_}")
+          end
+        end
         if has_su_
           conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO #{username_}")
           conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
@@ -122,13 +134,23 @@ end
   ::ENV['PGHOST'] = config_["host"] if config_["host"]
   ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
   ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  filename_ = ::File.join(::Rails.root, "db/#{::Rails.env}_structure.sql")
   search_path_ = config_["schema_search_path"].to_s.strip
   search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
   search_path_.delete('postgis')
   search_path_ = ['public'] if search_path_.length == 0
   search_path_ = search_path_.map{ |sp_| "--schema=#{sp_}" }.join(" ")
-  `pg_dump -i -U "#{config_["username"]}" -s -x -O -f db/#{::Rails.env}_structure.sql #{search_path_} #{config_["database"]}`
+  `pg_dump -i -U "#{config_["username"]}" -s -x -O -f #{filename_} #{search_path_} #{config_["database"]}`
   raise "Error dumping database" if $?.exitstatus == 1
+end
+
+
+::RGeo::ActiveRecord::TaskHacker.modify('db:structure:load', nil, 'postgis') do |config_|
+  ::ENV['PGHOST'] = config_["host"] if config_["host"]
+  ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
+  ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  filename_ = ::File.join(::Rails.root, "db/#{::Rails.env}_structure.sql")
+  `psql -f #{filename_} #{config_["database"]}`
 end
 
 

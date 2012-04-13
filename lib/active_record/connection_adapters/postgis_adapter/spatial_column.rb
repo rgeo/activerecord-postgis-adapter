@@ -52,7 +52,6 @@ module ActiveRecord
         def initialize(factory_settings_, table_name_, name_, default_, sql_type_=nil, null_=true, opts_=nil)
           @factory_settings = factory_settings_
           @table_name = table_name_
-          super(name_, default_, sql_type_, null_)
           @geographic = sql_type_ =~ /geography/i ? true : false
           if opts_
             # This case comes from an entry in the geometry_columns table
@@ -79,7 +78,7 @@ module ActiveRecord
                 end
               end
             end
-          elsif type == :spatial
+          elsif sql_type_ =~ /geography|geometry|point|linestring|polygon/i
             # Just in case there is a geometry column with no geometry_columns entry.
             @geometric_type = ::RGeo::Feature::Geometry
             @srid = @has_z = @has_m = nil
@@ -87,6 +86,7 @@ module ActiveRecord
             # Non-spatial column
             @geometric_type = @has_z = @has_m = @srid = nil
           end
+          super(name_, default_, sql_type_, null_)
           if type == :spatial
             if @srid
               @limit = {:srid => @srid, :type => @geometric_type.type_name.underscore}

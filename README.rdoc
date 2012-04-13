@@ -98,11 +98,23 @@ You can also use WKT:
 
   rec = MySpatialTable.where(:latlon => 'POINT(-122 47)').first
 
-The adapter also provides experimental support for more complex queries
-such as radius searches. However, these extensions require Arel 2.1
-(which is scheduled for release with Rails 3.1). We do not have these
-documented yet, and the syntax is subject to change. For now, you should
-write more complex queries in SQL.
+Most more complex spatial queries require the use of SQL functions. You
+can write such queries in raw SQL, but you may find the "squeel" gem
+very helpful in this regard. Using squeel, you can write queries like
+the following:
+
+  my_polygon = get_my_polygon()
+  MySpatialTable.where{st_intersects(latlon, my_polygon)}.first
+
+One common query is to find all objects displaying in a window. This can
+be done using the overlap (&&) operator with a bounding box, as follows:
+
+  sw = get_sw_corner()
+  ne = get_ne_corner()
+  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
+  MySpatialTable.where{latlon.op('&&', window)}.all
+
+Note that using squeel to create SQL functions requires Rails 3.1 or later.
 
 == Installation And Configuration
 
@@ -116,8 +128,8 @@ This adapter has the following requirements:
 * pg gem 0.11 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
   Should be compatible with Rails versions through 3.2.x.
-* rgeo gem 0.3.4 or later.
-* rgeo-activerecord gem 0.4.3 or later.
+* rgeo gem 0.3.10 or later.
+* rgeo-activerecord gem 0.4.4 or later.
 
 Install this adapter as a gem:
 
@@ -153,15 +165,27 @@ Besides the adapter name "postgis", most of the other database connection
 configuration parameters are the same as for the stock postgresql adapter.
 However, there are several important differences:
 
+The <i>postgis_extension</i> parameter is specific to the PostGIS adapter,
+and directs the adapter to use PostgreSQL's CREATE EXTENSION mechanism to
+install the PostGIS types, functions, and tables to a newly created
+database. Generally, the value should be set to true, although you can
+also set it to a comma-delimited list of extension names (which should
+include the base "postgis" extension) if you want to customize which
+extensions are installed. This is the easiest and cleanest way to create
+a PostGIS-enabled database, but it requires PostgreSQL 9.1 or later and
+PostGIS 2.0 or later.
+
 The <i>script_dir</i> parameter is specific to the PostGIS adapter, and
-provides the path to the directory containing the SQL scripts for PostGIS
-installation. This directory should contain the files <tt>postgis.sql</tt>
-and <tt>spatial_ref_sys.sql</tt>. (A common setting for this directory
-might be <tt>/usr/local/share/contrib/postgis-1.5</tt>.) It is used by
-<tt>rake db:create</tt> to add the PostGIS types, functions, and tables to
-a newly created database. If you do not provide this parameter, you will
-need to add these objects to the database manually.
-Generally, therefore, this parameter is required at least for the test
+provides an alternative mechanism for installing the PostGIS definitions
+into a new database if either PostgreSQL 9.1 or PostGIS 2.0 is not
+available. Its value should be set to the path to the directory containing
+the SQL scripts for PostGIS installation. This is the directory containing
+the files <tt>postgis.sql</tt> and <tt>spatial_ref_sys.sql</tt>. (A common
+setting might be <tt>/usr/local/share/contrib/postgis-1.5</tt>.)
+
+If you do not provide <i>postgis_extension</i> or <i>script_dir</i>, you
+will need to add the PostGIS definitions to the database manually.
+Generally, therefore, one of them is required at least for the test
 database, which is usually automatically created by the rake tasks.
 
 The <i>su_username</i> and <i>su_password</i> parameters are provided as
@@ -200,10 +224,10 @@ are managing a database using Rails and \ActiveRecord. For example:
 
 To deal with these issues, we recommend the following technique:
 
-* Set <i>script_dir</i> in both your development and test database
-  configurations. This will cause the PostGIS Adapter to automatically
-  add the PostGIS definitions and spatial references to your databases
-  when rake db:create is run.
+* Set either <i>postgis_extension</i> or <i>script_dir</i> in both your
+  development and test database configurations. This will cause the
+  PostGIS Adapter to automatically add the PostGIS definitions and
+  spatial references to your databases when rake db:create is run.
 * Include "postgis" in your <i>schema_search_path</i> for both your
   development and test databases. It is recommended that you include it
   as the <i>last</i> element, so that your application's tables don't get
@@ -226,7 +250,7 @@ Finally, you generally should _not_ set the \ActiveRecord schema format
 to <tt>:sql</tt>. You should leave it set to <tt>:ruby</tt>. The reason
 is that SQL structure dumps do not currently properly emit the correct
 <tt>AddGeometryColumn</tt> calls to create geometry columns. As a result,
-the <tt>geometry_columns</tt> table will not be properly populated, among
+the <tt>geometry_columns</tt> table will not be populated properly, among
 other issues. Instead, the schema.rb output by the Ruby schema format
 should properly replicate the schema. This is a known issue that we are
 investigating.
@@ -251,6 +275,9 @@ current known issues.
   on a SQL dump to be an accurate representation of the schema. (That is,
   you should not set <tt>config.active_record.schema_format</tt> to
   <tt>:sql</tt>.)
+* Other rake tasks may not be supported. Unfortunately, Rails makes it
+  difficult for custom \ActiveRecord adapters to support the standard
+  rake tasks.
 
 === Development and support
 
@@ -280,7 +307,7 @@ source gave us a head start on the implementation.
 
 === License
 
-Copyright 2010-2011 Daniel Azuma
+Copyright 2010-2012 Daniel Azuma
 
 All rights reserved.
 
