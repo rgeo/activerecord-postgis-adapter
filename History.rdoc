@@ -1,3 +1,7 @@
+=== 0.4.3 / 2012-04-13
+
+* Rake tasks failed on Rails 3.0.x because of an issue with rgeo-activerecord pre-0.4.5. Now we require the fixed version.
+
 === 0.4.2 / 2012-04-12
 
 * Support the db:structure:load rake task in recent versions of Rails.
