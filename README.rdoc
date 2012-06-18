@@ -281,7 +281,7 @@ current known issues.
 
 === Development and support
 
-Documentation is available at http://virtuoso.rubyforge.org/activerecord-postgis-adapter/README_rdoc.html
+Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
 
 Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
 
