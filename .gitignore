@@ -11,4 +11,4 @@
 *.rbc
 Makefile*
 mkmf.log
-test/database.yml
+/test/database.yml
