@@ -72,7 +72,7 @@ Examples, given the spatial table defined above:
     self.rgeo_factory_generator = RGeo::Geos.factory_generator
     
     # But use a geographic implementation for the :latlon column.
-    set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
+    set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory(:srid => 4326))
     
   end
 
