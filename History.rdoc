@@ -1,3 +1,7 @@
+=== 0.4.4 / 2012-??-??
+
+* The gemspec no longer includes the timestamp in the version, so that bundler can pull from github. (Reported by corneverbruggen)
+
 === 0.4.3 / 2012-04-13
 
 * Rake tasks failed on Rails 3.0.x because of an issue with rgeo-activerecord pre-0.4.5. Now we require the fixed version.

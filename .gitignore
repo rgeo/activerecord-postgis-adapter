@@ -1,6 +1,7 @@
 /doc/
 /pkg/
 /tmp/
+.rbx
 .#*
 .DS_Store
 *.dSYM
