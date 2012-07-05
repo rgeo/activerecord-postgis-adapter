@@ -75,6 +75,10 @@ def create_database(config_)
       # Note: a superuser is required to run the postgis definitions.
       # If a separate superuser is provided, we need to grant privileges on
       # the postgis definitions over to the regular user afterwards.
+      # We also need to set the ownership of the postgis tables (spatial_ref_sys
+      # and geometry_columns) to the regular user. This is required to e.g.
+      # be able to disable referential integrity on the database when using
+      # a database cleaner truncation strategy during testing.
       # The schema for the postgis definitions is chosen as follows:
       # If "postgis" is present in the search path, use it.
       # Otherwise, use the last schema in the search path.
@@ -99,6 +103,8 @@ def create_database(config_)
         if has_su_
           conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO #{username_}")
           conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
+          conn_.execute("ALTER TABLE geometry_columns OWNER TO #{username_}") 
+          conn_.execute("ALTER TABLE spatial_ref_sys OWNER TO #{username_}")
         end
       end
 
