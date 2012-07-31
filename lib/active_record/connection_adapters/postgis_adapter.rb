@@ -102,3 +102,5 @@ require 'active_record/connection_adapters/postgis_adapter/arel_tosql.rb'
 ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
 ignore_tables_ << 'geometry_columns' unless ignore_tables_.include?('geometry_columns')
 ignore_tables_ << 'spatial_ref_sys' unless ignore_tables_.include?('spatial_ref_sys')
+ignore_tables_ << 'layer' unless ignore_tables_.include?('layer')
+ignore_tables_ << 'topology' unless ignore_tables_.include?('topology')
