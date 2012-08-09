@@ -165,11 +165,11 @@ module ActiveRecord
           else
             constraints_ = nil
           end
-          case input_
-          when ::RGeo::Feature::Geometry
+          if ::RGeo::Feature::Geometry === input_
             factory_ = factory_settings_.get_column_factory(table_name_, column_, constraints_)
             ::RGeo::Feature.cast(input_, factory_) rescue nil
-          when ::String
+          elsif input_.respond_to?(:to_str)
+            input_ = input_.to_str
             if input_.length == 0
               nil
             else
