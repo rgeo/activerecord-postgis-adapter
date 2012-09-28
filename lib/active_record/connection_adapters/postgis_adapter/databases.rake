@@ -68,7 +68,8 @@ def create_database(config_)
       search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
       auth_ = has_su_ ? " AUTHORIZATION #{username_}" : ''
       search_path_.each do |schema_|
-        conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless schema_.downcase == 'public'
+        exists = schema_.downcase == 'public' || conn_.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
+        conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless exists
       end
 
       # Install postgis definitions into the database.
