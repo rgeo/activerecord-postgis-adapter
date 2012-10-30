@@ -111,7 +111,7 @@ be done using the overlap (&&) operator with a bounding box, as follows:
 
   sw = get_sw_corner()
   ne = get_ne_corner()
-  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
+  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne).to_geometry
   MySpatialTable.where{latlon.op('&&', window)}.all
 
 Note that using squeel to create SQL functions requires Rails 3.1 or later.
