@@ -60,14 +60,15 @@ module RGeo
               assert_equal(::RGeo::Feature::Geometry, col_.geometric_type)
               assert_equal(true, col_.has_spatial_constraints?)
               assert_equal(false, col_.geographic?)
-              assert_equal(-1, col_.srid)
+              assert_equal(0, col_.srid)
               assert(klass_.cached_attributes.include?('latlon'))
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
 
 
-            def test_create_no_constraints_geometry
+            # no_constraints no longer supported in PostGIS 2.0
+            def _test_create_no_constraints_geometry
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
                 t_.column 'geom', :geometry, :limit => {:no_constraints => true}
@@ -133,7 +134,7 @@ module RGeo
               assert_equal(2, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(-1, cols_[-3].srid)
+              assert_equal(0, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
               assert_equal(4326, cols_[-2].srid)
@@ -144,7 +145,8 @@ module RGeo
             end
 
 
-            def test_add_no_constraints_geometry_column
+            # no_constraints no longer supported in PostGIS 2.0
+            def _test_add_no_constraints_geometry_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
                 t_.column('latlon', :geometry)
@@ -156,7 +158,7 @@ module RGeo
               assert_equal(1, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(-1, cols_[-3].srid)
+              assert_equal(0, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Geometry, cols_[-2].geometric_type)
               assert_nil(cols_[-2].srid)
@@ -179,7 +181,7 @@ module RGeo
               assert_equal(1, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(-1, cols_[-3].srid)
+              assert_equal(0, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
               assert_equal(4326, cols_[-2].srid)
@@ -203,7 +205,7 @@ module RGeo
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-1].geometric_type)
               assert_equal('latlon', cols_[-1].name)
-              assert_equal(-1, cols_[-1].srid)
+              assert_equal(0, cols_[-1].srid)
               assert_equal(false, cols_[-1].geographic?)
             end
 
@@ -238,14 +240,15 @@ module RGeo
               col_ = klass_.columns.last
               assert_equal(::RGeo::Feature::Geometry, col_.geometric_type)
               assert_equal(false, col_.geographic?)
-              assert_equal(-1, col_.srid)
+              assert_equal(0, col_.srid)
               assert(klass_.cached_attributes.include?('latlon'))
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
 
 
-            def test_create_no_constraints_geometry_using_shortcut
+            # no_constraints no longer supported in PostGIS 2.0
+            def _test_create_no_constraints_geometry_using_shortcut
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
                 t_.spatial 'geom', :no_constraints => true

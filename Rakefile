@@ -219,4 +219,4 @@ end
 
 # Default task
 
-task :default => [:clean, :build_rdoc, :build_gem, :test]
+task :default => [:clean, :test]

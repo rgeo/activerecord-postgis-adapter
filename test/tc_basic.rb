@@ -170,7 +170,8 @@ module RGeo
             end
 
 
-            def test_save_and_load_no_constraints
+            # no_constraints no longer supported in PostGIS 2.0
+            def _test_save_and_load_no_constraints
               klass_ = populate_ar_class(:no_constraints)
               factory1_ = ::RGeo::Cartesian.preferred_factory(:srid => 3785)
               factory2_ = ::RGeo::Cartesian.preferred_factory(:srid => 2000)
@@ -195,6 +196,15 @@ module RGeo
               assert_match(/"latlon":null/, obj_.to_json)
               obj_.latlon = @factory.point(1, 2)
               assert_match(/"latlon":"POINT\s\(1\.0\s2\.0\)"/, obj_.to_json)
+            end
+
+
+            def test_custom_column
+              klass_ = populate_ar_class(:mercator_point)
+              rec_ = klass_.new
+              rec_.latlon = 'POINT(0 0)'
+              rec_.save
+              assert_not_nil(klass_.select("CURRENT_TIMESTAMP as ts").first.ts)
             end
 
 
