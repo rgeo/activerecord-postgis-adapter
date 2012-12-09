@@ -40,3 +40,4 @@ gemspec
 
 gem 'pg', '>= 0.13.2', :platform => :ruby
 gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
+gem 'ffi-geos', :platform => :jruby

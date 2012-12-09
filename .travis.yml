@@ -1,16 +1,14 @@
 language: ruby
 rvm:
   - 1.9.3
-#  - 1.8.7
-#  - jruby-18mode
-#  - jruby-19mode
-#  - rbx-18mode
-#  - rbx-19mode
-#  - ruby-head
-#  - jruby-head
+  - 1.8.7
+  - jruby-18mode
+  - jruby-19mode
+  - rbx-18mode
+  - rbx-19mode
 gemfile:
-#  - gemfiles/activerecord_3.0.gemfile
-#  - gemfiles/activerecord_3.1.gemfile
+  - gemfiles/activerecord_3.0.gemfile
+  - gemfiles/activerecord_3.1.gemfile
   - gemfiles/activerecord_3.2.gemfile
 before_install:
   - echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
