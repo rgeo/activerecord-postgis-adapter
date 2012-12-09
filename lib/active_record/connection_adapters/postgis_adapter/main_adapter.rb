@@ -121,6 +121,15 @@ module ActiveRecord
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_|
+            # JDBC support: JDBC adapter returns a hash for column definitions,
+            # instead of an array of values.
+            if(col_name_.kind_of?(Hash))
+              notnull_ = col_name_["column_not_null"]
+              default_ = col_name_["column_default"]
+              type_ = col_name_["column_type"]
+              col_name_ = col_name_["column_name"]
+            end
+
             SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, type_,
               notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
           end
@@ -157,7 +166,7 @@ module ActiveRecord
             oid_ = row_[3]
             indtype_ = row_[4]
 
-            columns_ = query(<<-SQL, "Columns for index #{row_[0]} on #{table_name_}").inject({}){ |h_, r_| h_[r_[0]] = [r_[1], r_[2]]; h_ }
+            columns_ = query(<<-SQL, "Columns for index #{row_[0]} on #{table_name_}").inject({}){ |h_, r_| h_[r_[0].to_s] = [r_[1], r_[2]]; h_ }
               SELECT a.attnum, a.attname, t.typname
                 FROM pg_attribute a, pg_type t
               WHERE a.attrelid = #{oid_}
