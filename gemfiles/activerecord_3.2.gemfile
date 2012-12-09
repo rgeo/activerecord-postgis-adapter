@@ -4,6 +4,7 @@ source "http://rubygems.org"
 
 gem "pg", ">= 0.13.2", :platform=>:ruby
 gem "activerecord-jdbcpostgresql-adapter", :platform=>:jruby
+gem "ffi-geos", :platform=>:jruby
 gem "rails", "~> 3.2.7"
 gem "activerecord-postgis-adapter", :path=>"../"
 
