@@ -31,6 +31,19 @@ class ::ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
       @schema_search_path ||= exec_query('SHOW search_path', 'SCHEMA')[0]['search_path']
     end
   end
+
+  # For ActiveRecord 3.1 compatibility: Add the "postgis" adapter to the
+  # matcher of jdbc-like adapters.
+  def self.visitor_for(pool)
+    config = pool.spec.config
+    adapter = config[:adapter]
+    adapter_spec = config[:adapter_spec] || self
+    if adapter =~ /^(jdbc|jndi|postgis)$/
+      adapter_spec.arel2_visitors(config).values.first.new(pool)
+    else
+      adapter_spec.arel2_visitors(config)[adapter].new(pool)
+    end
+  end
 end
 
 class ::ActiveRecord::Base
