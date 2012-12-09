@@ -98,7 +98,12 @@ def create_database(config_)
           postgis_extension_ = 'postgis' if postgis_extension_ == true
           postgis_extension_ = postgis_extension_.to_s.split(',') unless postgis_extension_.is_a?(::Array)
           postgis_extension_.each do |extname_|
-            conn_.execute("CREATE EXTENSION #{extname_} SCHEMA #{postgis_schema_}")
+            if extname_ == 'postgis_topology'
+              raise ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path_.include?('topology')
+              conn_.execute("CREATE EXTENSION #{extname_} SCHEMA topology")
+            else
+              conn_.execute("CREATE EXTENSION #{extname_} SCHEMA #{postgis_schema_}")
+            end
           end
         end
         if has_su_
