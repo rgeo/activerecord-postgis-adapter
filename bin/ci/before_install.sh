@@ -1,5 +1,5 @@
 if [[ "$POSTGIS" == "2.0" ]]; then
-  sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+  echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
 fi
 
 sudo apt-get update
