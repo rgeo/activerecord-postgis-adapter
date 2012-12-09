@@ -15,7 +15,7 @@ gemfile:
 before_install:
   - echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
   - sudo apt-get update
-  - sudo apt-get install -qq libgeos-dev libproj-dev postgis
+  - sudo apt-get install -qq libgeos-dev libgeos++-dev libproj-dev postgis
 before_script:
   - psql -c 'CREATE DATABASE postgis_adapter_test;' -U postgres
   - psql -d postgis_adapter_test -c "CREATE EXTENSION postgis;" -U postgres
