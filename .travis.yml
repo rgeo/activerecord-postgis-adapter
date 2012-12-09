@@ -9,7 +9,7 @@ rvm:
   - ruby-head
   - jruby-head
 before_install:
-  - sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+  - echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
   - sudo apt-get install -qq postgis
 before_script:
   - psql -c 'CREATE DATABASE postgis_adapter_test;' -U postgres
