@@ -33,6 +33,10 @@
 # -----------------------------------------------------------------------------
 ;
 
+require "rubygems"
+require "bundler/setup"
+require "appraisal"
+
 
 # Load config if present
 

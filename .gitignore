@@ -13,3 +13,4 @@
 Makefile*
 mkmf.log
 /Gemfile.lock
+/gemfiles/*.gemfile.lock

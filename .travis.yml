@@ -8,6 +8,10 @@ rvm:
   - rbx-19mode
   - ruby-head
   - jruby-head
+gemfile:
+  - gemfiles/activerecord_3.0.gemfile
+  - gemfiles/activerecord_3.1.gemfile
+  - gemfiles/activerecord_3.2.gemfile
 before_install:
   - echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
   - sudo apt-get update
