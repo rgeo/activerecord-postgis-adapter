@@ -123,13 +123,15 @@ Note that using squeel to create SQL functions requires Rails 3.1 or later.
 This adapter has the following requirements:
 
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
+* Experimental support for JRuby and the JDBC Postgres adapter. This setup was contributed, but I can't "officially" support it yet because I don't have a good way to test it myself.
 * PostgreSQL 9.0 or later.
 * PostGIS 1.5 or later.
-* pg gem 0.11 or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
   Should be compatible with Rails versions through 3.2.x.
-* rgeo gem 0.3.10 or later.
-* rgeo-activerecord gem 0.4.4 or later.
+* rgeo gem 0.3.20 or later.
+* rgeo-activerecord gem 0.4.5 or later.
+
+Please note that this version of the adapter is targeted towards Rails 3.x only. The upcoming version 0.5 will target Rails 4.0.
 
 Install this adapter as a gem:
 
