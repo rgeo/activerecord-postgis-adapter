@@ -6,15 +6,13 @@ rvm:
   - jruby-19mode
   - rbx-18mode
   - rbx-19mode
+env:
+  - POSTGIS=1.5
+  - POSTGIS=2.0
 gemfile:
   - gemfiles/activerecord_3.0.gemfile
   - gemfiles/activerecord_3.1.gemfile
   - gemfiles/activerecord_3.2.gemfile
-before_install:
-  - echo "yes" | sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
-  - sudo apt-get update
-  - sudo apt-get install -qq libgeos-dev libgeos++-dev libproj-dev postgis
-before_script:
-  - psql -c 'CREATE DATABASE postgis_adapter_test;' -U postgres
-  - psql -d postgis_adapter_test -c "CREATE EXTENSION postgis;" -U postgres
+before_install: ./bin/ci/before_install.sh
+before_script: ./bin/ci/before_script.sh
 script: bundle exec rake test
