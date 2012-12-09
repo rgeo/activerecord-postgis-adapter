@@ -35,45 +35,18 @@
 
 
 require 'rgeo/active_record'
-require 'active_record/connection_adapters/postgresql_adapter'
+
+if(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby')
+  require 'active_record/connection_adapters/postgis_adapter/jdbc_connection'
+else
+  require 'active_record/connection_adapters/postgis_adapter/pg_connection'
+end
 
 
 # The activerecord-postgis-adapter gem installs the *postgis*
 # connection adapter into ActiveRecord.
 
 module ActiveRecord
-
-
-  # ActiveRecord looks for the postgis_connection factory method in
-  # this class.
-
-  class Base
-
-
-    # Create a postgis connection adapter.
-
-    def self.postgis_connection(config_)
-      require 'pg'
-
-      config_ = config_.symbolize_keys
-      host_ = config_[:host]
-      port_ = config_[:port] || 5432
-      username_ = config_[:username].to_s if config_[:username]
-      password_ = config_[:password].to_s if config_[:password]
-      if config_.has_key?(:database)
-        database_ = config_[:database]
-      else
-        raise ::ArgumentError, "No database specified. Missing argument: database."
-      end
-
-      # The postgres drivers don't allow the creation of an unconnected PGconn object,
-      # so just pass a nil connection object for the time being.
-      ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
-    end
-
-
-  end
-
 
   # All ActiveRecord adapters go in this namespace.
   module ConnectionAdapters
