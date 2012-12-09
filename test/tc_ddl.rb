@@ -60,7 +60,7 @@ module RGeo
               assert_equal(::RGeo::Feature::Geometry, col_.geometric_type)
               assert_equal(true, col_.has_spatial_constraints?)
               assert_equal(false, col_.geographic?)
-              assert_equal(0, col_.srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, col_.srid)
               assert(klass_.cached_attributes.include?('latlon'))
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
@@ -134,7 +134,7 @@ module RGeo
               assert_equal(2, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(0, cols_[-3].srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
               assert_equal(4326, cols_[-2].srid)
@@ -158,7 +158,7 @@ module RGeo
               assert_equal(1, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(0, cols_[-3].srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Geometry, cols_[-2].geometric_type)
               assert_nil(cols_[-2].srid)
@@ -181,7 +181,7 @@ module RGeo
               assert_equal(1, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(0, cols_[-3].srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, cols_[-3].srid)
               assert_equal(true, cols_[-3].has_spatial_constraints?)
               assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
               assert_equal(4326, cols_[-2].srid)
@@ -205,7 +205,7 @@ module RGeo
               cols_ = klass_.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-1].geometric_type)
               assert_equal('latlon', cols_[-1].name)
-              assert_equal(0, cols_[-1].srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, cols_[-1].srid)
               assert_equal(false, cols_[-1].geographic?)
             end
 
@@ -240,7 +240,7 @@ module RGeo
               col_ = klass_.columns.last
               assert_equal(::RGeo::Feature::Geometry, col_.geometric_type)
               assert_equal(false, col_.geographic?)
-              assert_equal(0, col_.srid)
+              assert_equal(if(klass_.connection.postgis_lib_version >= "2") then 0 else -1 end, col_.srid)
               assert(klass_.cached_attributes.include?('latlon'))
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
