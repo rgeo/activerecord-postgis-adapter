@@ -36,10 +36,10 @@ Examples:
   create_table :my_spatial_table do |t|
     t.column :shape, :geometry  # or t.geometry :shape
     t.line_string :path, :srid => 3785
-    t.point :latlon, :geographic => true
+    t.point :lonlat, :geographic => true
   end
   change_table :my_spatial_table do |t|
-    t.index :latlon, :spatial => true
+    t.index :lonlat, :spatial => true
   end
 
 === Spatial Attributes
@@ -71,16 +71,16 @@ Examples, given the spatial table defined above:
     # By default, use the GEOS implementation for spatial columns.
     self.rgeo_factory_generator = RGeo::Geos.factory_generator
     
-    # But use a geographic implementation for the :latlon column.
-    set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory(:srid => 4326))
+    # But use a geographic implementation for the :lonlat column.
+    set_rgeo_factory_for_column(:lonlat, RGeo::Geographic.spherical_factory(:srid => 4326))
     
   end
 
 Now you can interact with the data using the RGeo types:
 
   rec = MySpatialTable.new
-  rec.latlon = 'POINT(-122 47)'   # You can set by feature object or WKT.
-  loc = rec.latlon                # Accessing always returns a feature object, in
+  rec.lonlat = 'POINT(-122 47)'   # You can set by feature object or WKT.
+  loc = rec.lonlat                # Accessing always returns a feature object, in
                                   # this case, a geographic that understands latitude.
   loc.latitude                    # => 47
   rec.shape = loc                 # the factory for the :shape column is GEOS, so the
@@ -92,11 +92,11 @@ Now you can interact with the data using the RGeo types:
 You can create simple queries based on objective equality in the same way
 you would on a scalar column:
 
-  rec = MySpatialTable.where(:latlon => RGeo::Geos.factory.point(-122, 47)).first
+  rec = MySpatialTable.where(:lonlat => RGeo::Geos.factory.point(-122, 47)).first
 
 You can also use WKT:
 
-  rec = MySpatialTable.where(:latlon => 'POINT(-122 47)').first
+  rec = MySpatialTable.where(:lonlat => 'POINT(-122 47)').first
 
 Most more complex spatial queries require the use of SQL functions. You
 can write such queries in raw SQL, but you may find the "squeel" gem
@@ -104,17 +104,23 @@ very helpful in this regard. Using squeel, you can write queries like
 the following:
 
   my_polygon = get_my_polygon()
-  MySpatialTable.where{st_intersects(latlon, my_polygon)}.first
-
-One common query is to find all objects displaying in a window. This can
-be done using the overlap (&&) operator with a bounding box, as follows:
-
-  sw = get_sw_corner()
-  ne = get_ne_corner()
-  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-  MySpatialTable.where{latlon.op('&&', window)}.all
+  MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first
 
 Note that using squeel to create SQL functions requires Rails 3.1 or later.
+
+One common query is to find all objects displaying in a window. This can
+be done using the overlap (&&) operator with a bounding box. Here's an
+example that finds linestrings in the "path" column that intersect a
+bounding box:
+
+  sw = get_sw_corner_in_projected_coordinates()
+  ne = get_ne_corner_in_projected_coordinates()
+  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
+  MySpatialTable.where{path.op('&&', window)}.all
+
+Note that bounding box queries make sense only in a projected coordinate
+system; you shouldn't try to run such a query against a lat/long
+(geographic) column.
 
 == Installation And Configuration
 
@@ -125,11 +131,11 @@ This adapter has the following requirements:
 * Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.
 * Experimental support for JRuby and the JDBC Postgres adapter. This setup was contributed, but I can't "officially" support it yet because I don't have a good way to test it myself.
 * PostgreSQL 9.0 or later.
-* PostGIS 1.5 or later.
+* PostGIS 1.5, PostGIS 2.0, or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
   Should be compatible with Rails versions through 3.2.x.
 * rgeo gem 0.3.20 or later.
-* rgeo-activerecord gem 0.4.5 or later.
+* rgeo-activerecord gem 0.4.6 or later.
 
 Please note that this version of the adapter is targeted towards Rails 3.x only. The upcoming version 0.5 will target Rails 4.0.
 
@@ -174,7 +180,7 @@ database. Generally, the value should be set to true, although you can
 also set it to a comma-delimited list of extension names (which should
 include the base "postgis" extension) if you want to customize which
 extensions are installed. This is the easiest and cleanest way to create
-a PostGIS-enabled database, but it requires PostgreSQL 9.1 or later and
+a PostGIS-enabled database, but it requires PostgreSQL 9.1 or later AND
 PostGIS 2.0 or later.
 
 The <i>script_dir</i> parameter is specific to the PostGIS adapter, and
@@ -280,6 +286,10 @@ current known issues.
 * Other rake tasks may not be supported. Unfortunately, Rails makes it
   difficult for custom \ActiveRecord adapters to support the standard
   rake tasks.
+* Rails 4 is not yet supported. The good news is that the base PostgreSQL
+  adapter has been refactored in Rails 4 to make it easier to extend, so
+  once we get it ported to Rails 4, activerecord-postgis-adapter should
+  be cleaner and more stable.
 
 === Development and support
 
@@ -300,7 +310,7 @@ Contact the author at dazuma at gmail dot com.
 The PostGIS Adapter and its supporting libraries (including RGeo) are
 written by Daniel Azuma (http://www.daniel-azuma.com).
 
-Development is supported by Pirq. (http://www.pirq.com).
+Development is supported by Pirq. (http://pirq.com).
 
 This adapter implementation owes some debt to the spatial_adapter plugin
 (http://github.com/fragility/spatial_adapter). Although we made some

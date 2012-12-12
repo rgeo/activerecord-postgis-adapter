@@ -14,3 +14,4 @@ Makefile*
 mkmf.log
 /Gemfile.lock
 /gemfiles/*.gemfile.lock
+/test/database_local.yml

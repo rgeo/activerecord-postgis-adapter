@@ -123,7 +123,7 @@ module ActiveRecord
           column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_|
             # JDBC support: JDBC adapter returns a hash for column definitions,
             # instead of an array of values.
-            if(col_name_.kind_of?(Hash))
+            if col_name_.kind_of?(::Hash)
               notnull_ = col_name_["column_not_null"]
               default_ = col_name_["column_default"]
               type_ = col_name_["column_type"]

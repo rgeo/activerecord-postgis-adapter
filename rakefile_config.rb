@@ -33,6 +33,10 @@
 # -----------------------------------------------------------------------------
 ;
 
+require "rubygems"
+require "bundler/setup"
+require "appraisal"
+
 RAKEFILE_CONFIG = {
   :product_visible_name => 'PostGIS ActiveRecord Adapter',
 }
