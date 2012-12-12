@@ -1,6 +1,6 @@
-=== 0.4.4 / 2012-12-11
+=== 0.5.0 / 2012-12-12
 
-Thanks to the many who have submitted pull requests. A bunch of them are in this release. Particular thanks to Nick Muerdter, who succeeded in porting the adapter to work with the JDBC Postgres adapter in JRuby, and also got Travis up and running for the project.
+Thanks to the many who have submitted pull requests. A bunch of them are in this release. Special thanks to Nick Muerdter, who succeeded in porting the adapter to work with the JDBC Postgres adapter in JRuby, and also got Travis up and running for the project.
 
 * Add JRuby compatibility with the activerecord-jdbcpostgresql-adapter gem. (Pull request by Nick Muerdter)
 * Allow WKT to be to be specified as a string-like object rather than having to be a String. (Pull request by Bryan Larsen)
@@ -12,6 +12,7 @@ Thanks to the many who have submitted pull requests. A bunch of them are in this
 * Update tests for PostGIS 2.0 compatibility.
 * Travis-CI integration. (Pull request by Nick Muerdter)
 * Add a missing srid in the Readme. (Pull request by gouthamvel)
+* Readme clarifies that BoundingBox objects can be used in a query only for projected coordinate systems. (Reported by Tee Parham)
 * Update URLs to point to new website.
 
 === 0.4.3 / 2012-04-13
