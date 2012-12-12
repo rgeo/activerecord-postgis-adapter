@@ -33,16 +33,11 @@
 # -----------------------------------------------------------------------------
 ;
 
-
 source "http://rubygems.org"
 
-gem('rgeo-activerecord', '~> 0.4.5')
-gem('pg', '>= 0.13.2')
-#gem('activerecord', '~> 3.0.16')
-#gem('activerecord', '~> 3.1.7')
-gem('activerecord', '~> 3.2.7')
+# Specify your gem's dependencies in activerecord-postgis-adapter.gemspec
+gemspec
 
-group(:test) do
-  gem('rake', '>= 0.9.2')
-  gem('rdoc', '>= 3.12')
-end
+gem 'pg', '>= 0.13.2', :platform => :ruby
+gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
+gem 'ffi-geos', :platform => :jruby

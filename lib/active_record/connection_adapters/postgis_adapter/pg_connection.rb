@@ -1,4 +1,5 @@
 require 'active_record/connection_adapters/postgresql_adapter'
+require 'pg'
 
 class ::ActiveRecord::Base
   # ActiveRecord looks for the postgis_connection factory method in
