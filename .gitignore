@@ -11,4 +11,5 @@
 *.rbc
 Makefile*
 mkmf.log
-/test/database.yml
+/Gemfile.lock
+/test/database_local.yml

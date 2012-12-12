@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>PostGIS ActiveRecord Adapter 0.4.3 Documentation</title>
+<title>PostGIS ActiveRecord Adapter 0.5.0 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -63,6 +63,8 @@
   
     <li><a href="./ActiveRecord/Base.html">ActiveRecord::Base</a>
   
+    <li><a href="./ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
+  
   </ul>
 </nav>
 
@@ -113,10 +115,10 @@ when creating the index.</p>
 <pre class="ruby"><span class="ruby-identifier">create_table</span> :<span class="ruby-identifier">my_spatial_table</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
   <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> :<span class="ruby-identifier">shape</span>, :<span class="ruby-identifier">geometry</span>  <span class="ruby-comment"># or t.geometry :shape</span>
   <span class="ruby-identifier">t</span>.<span class="ruby-identifier">line_string</span> :<span class="ruby-identifier">path</span>, :<span class="ruby-identifier">srid</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">3785</span>
-  <span class="ruby-identifier">t</span>.<span class="ruby-identifier">point</span> :<span class="ruby-identifier">latlon</span>, :<span class="ruby-identifier">geographic</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">t</span>.<span class="ruby-identifier">point</span> :<span class="ruby-identifier">lonlat</span>, :<span class="ruby-identifier">geographic</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>
 <span class="ruby-keyword">end</span>
 <span class="ruby-identifier">change_table</span> :<span class="ruby-identifier">my_spatial_table</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
-  <span class="ruby-identifier">t</span>.<span class="ruby-identifier">index</span> :<span class="ruby-identifier">latlon</span>, :<span class="ruby-identifier">spatial</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">t</span>.<span class="ruby-identifier">index</span> :<span class="ruby-identifier">lonlat</span>, :<span class="ruby-identifier">spatial</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">true</span>
 <span class="ruby-keyword">end</span>
 </pre>
 
@@ -149,8 +151,8 @@ the “rgeo-activerecord” gem.</p>
   <span class="ruby-comment"># By default, use the GEOS implementation for spatial columns.</span>
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">rgeo_factory_generator</span> = <span class="ruby-constant">RGeo</span><span class="ruby-operator">::</span><span class="ruby-constant">Geos</span>.<span class="ruby-identifier">factory_generator</span>
 
-  <span class="ruby-comment"># But use a geographic implementation for the :latlon column.</span>
-  <span class="ruby-identifier">set_rgeo_factory_for_column</span>(:<span class="ruby-identifier">latlon</span>, <span class="ruby-constant">RGeo</span><span class="ruby-operator">::</span><span class="ruby-constant">Geographic</span>.<span class="ruby-identifier">spherical_factory</span>(:<span class="ruby-identifier">srid</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">4326</span>))
+  <span class="ruby-comment"># But use a geographic implementation for the :lonlat column.</span>
+  <span class="ruby-identifier">set_rgeo_factory_for_column</span>(:<span class="ruby-identifier">lonlat</span>, <span class="ruby-constant">RGeo</span><span class="ruby-operator">::</span><span class="ruby-constant">Geographic</span>.<span class="ruby-identifier">spherical_factory</span>(:<span class="ruby-identifier">srid</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">4326</span>))
 
 <span class="ruby-keyword">end</span>
 </pre>
@@ -158,8 +160,8 @@ the “rgeo-activerecord” gem.</p>
 <p>Now you can interact with the data using the RGeo types:</p>
 
 <pre class="ruby"><span class="ruby-identifier">rec</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">new</span>
-<span class="ruby-identifier">rec</span>.<span class="ruby-identifier">latlon</span> = <span class="ruby-string">'POINT(-122 47)'</span>   <span class="ruby-comment"># You can set by feature object or WKT.</span>
-<span class="ruby-identifier">loc</span> = <span class="ruby-identifier">rec</span>.<span class="ruby-identifier">latlon</span>                <span class="ruby-comment"># Accessing always returns a feature object, in</span>
+<span class="ruby-identifier">rec</span>.<span class="ruby-identifier">lonlat</span> = <span class="ruby-string">'POINT(-122 47)'</span>   <span class="ruby-comment"># You can set by feature object or WKT.</span>
+<span class="ruby-identifier">loc</span> = <span class="ruby-identifier">rec</span>.<span class="ruby-identifier">lonlat</span>                <span class="ruby-comment"># Accessing always returns a feature object, in</span>
                                 <span class="ruby-comment"># this case, a geographic that understands latitude.</span>
 <span class="ruby-identifier">loc</span>.<span class="ruby-identifier">latitude</span>                    <span class="ruby-comment"># =&gt; 47</span>
 <span class="ruby-identifier">rec</span>.<span class="ruby-identifier">shape</span> = <span class="ruby-identifier">loc</span>                 <span class="ruby-comment"># the factory for the :shape column is GEOS, so the</span>
@@ -172,12 +174,12 @@ the “rgeo-activerecord” gem.</p>
 <p>You can create simple queries based on objective equality in the same way
 you would on a scalar column:</p>
 
-<pre class="ruby"><span class="ruby-identifier">rec</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">latlon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">RGeo</span><span class="ruby-operator">::</span><span class="ruby-constant">Geos</span>.<span class="ruby-identifier">factory</span>.<span class="ruby-identifier">point</span>(<span class="ruby-value">-122</span>, <span class="ruby-value">47</span>)).<span class="ruby-identifier">first</span>
+<pre class="ruby"><span class="ruby-identifier">rec</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">lonlat</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">RGeo</span><span class="ruby-operator">::</span><span class="ruby-constant">Geos</span>.<span class="ruby-identifier">factory</span>.<span class="ruby-identifier">point</span>(<span class="ruby-value">-122</span>, <span class="ruby-value">47</span>)).<span class="ruby-identifier">first</span>
 </pre>
 
 <p>You can also use WKT:</p>
 
-<pre class="ruby"><span class="ruby-identifier">rec</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">latlon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'POINT(-122 47)'</span>).<span class="ruby-identifier">first</span>
+<pre class="ruby"><span class="ruby-identifier">rec</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">lonlat</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'POINT(-122 47)'</span>).<span class="ruby-identifier">first</span>
 </pre>
 
 <p>Most more complex spatial queries require the use of SQL functions. You can
@@ -186,18 +188,23 @@ helpful in this regard. Using squeel, you can write queries like the
 following:</p>
 
 <pre>my_polygon = get_my_polygon()
-MySpatialTable.where{st_intersects(latlon, my_polygon)}.first</pre>
-
-<p>One common query is to find all objects displaying in a window. This can be
-done using the overlap (&amp;&amp;) operator with a bounding box, as
-follows:</p>
-
-<pre>sw = get_sw_corner()
-ne = get_ne_corner()
-window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-MySpatialTable.where{latlon.op('&amp;&amp;', window)}.all</pre>
+MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first</pre>
 
 <p>Note that using squeel to create SQL functions requires Rails 3.1 or later.</p>
+
+<p>One common query is to find all objects displaying in a window. This can be
+done using the overlap (&amp;&amp;) operator with a bounding box. Here’s an
+example that finds linestrings in the “path” column that intersect a
+bounding box:</p>
+
+<pre>sw = get_sw_corner_in_projected_coordinates()
+ne = get_ne_corner_in_projected_coordinates()
+window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
+MySpatialTable.where{path.op('&amp;&amp;', window)}.all</pre>
+
+<p>Note that bounding box queries make sense only in a projected coordinate
+system; you shouldn’t try to run such a query against a lat/long
+(geographic) column.</p>
 
 <h2 id="label-Installation+And+Configuration">Installation And Configuration</h2>
 
@@ -205,21 +212,23 @@ MySpatialTable.where{latlon.op('&amp;&amp;', window)}.all</pre>
 
 <p>This adapter has the following requirements:</p>
 <ul><li>
-<p>Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred.</p>
+<p>Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or later
+also supported.</p>
 </li><li>
 <p>PostgreSQL 9.0 or later.</p>
 </li><li>
-<p>PostGIS 1.5 or later.</p>
-</li><li>
-<p>pg gem 0.11 or later.</p>
+<p>PostGIS 1.5, PostGIS 2.0, or later.</p>
 </li><li>
 <p>ActiveRecord 3.0.3 or later. Earlier versions will not work. Should be
 compatible with Rails versions through 3.2.x.</p>
 </li><li>
-<p>rgeo gem 0.3.10 or later.</p>
+<p>rgeo gem 0.3.20 or later.</p>
 </li><li>
-<p>rgeo-activerecord gem 0.4.4 or later.</p>
+<p>rgeo-activerecord gem 0.4.6 or later.</p>
 </li></ul>
+
+<p>Please note that this version of the adapter is targeted towards Rails 3.x
+only. The upcoming version 0.6 will target Rails 4.0.</p>
 
 <p>Install this adapter as a gem:</p>
 
@@ -264,7 +273,7 @@ created database. Generally, the value should be set to true, although you
 can also set it to a comma-delimited list of extension names (which should
 include the base “postgis” extension) if you want to customize which
 extensions are installed. This is the easiest and cleanest way to create a
-PostGIS-enabled database, but it requires PostgreSQL 9.1 or later and
+PostGIS-enabled database, but it requires PostgreSQL 9.1 or later AND
 PostGIS 2.0 or later.</p>
 
 <p>The <em>script_dir</em> parameter is specific to the PostGIS adapter, and
@@ -382,6 +391,11 @@ is, you should not set <code>config.active_record.schema_format</code> to
 <p>Other rake tasks may not be supported. Unfortunately, Rails makes it
 difficult for custom ActiveRecord adapters to support the standard rake
 tasks.</p>
+</li><li>
+<p>Rails 4 is not yet supported. The good news is that the base PostgreSQL
+adapter has been refactored in Rails 4 to make it easier to extend, so once
+we get it ported to Rails 4, activerecord-postgis-adapter should be cleaner
+and more stable.</p>
 </li></ul>
 
 <h3 id="label-Development+and+support">Development and support</h3>
@@ -408,8 +422,7 @@ href="http://groups.google.com/group/rgeo-users">groups.google.com/group/rgeo-us
 written by Daniel Azuma (<a
 href="http://www.daniel-azuma.com">www.daniel-azuma.com</a>).</p>
 
-<p>Development is supported by Pirq. (<a
-href="http://www.pirq.com">www.pirq.com</a>).</p>
+<p>Development is supported by Pirq. (<a href="http://pirq.com">pirq.com</a>).</p>
 
 <p>This adapter implementation owes some debt to the spatial_adapter plugin
 (<a

@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>class ActiveRecord::Base - PostGIS ActiveRecord Adapter 0.4.3 Documentation</title>
+<title>class ActiveRecord::Base - PostGIS ActiveRecord Adapter 0.5.0 Documentation</title>
 
 <link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
 
@@ -47,7 +47,8 @@
     <nav id="file-list-section" class="section">
   <h3 class="section-header">Defined In</h3>
   <ul>
-    <li>lib/active_record/connection_adapters/postgis_adapter.rb
+    <li>lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb
+    <li>lib/active_record/connection_adapters/postgis_adapter/pg_connection.rb
   </ul>
 </nav>
 
@@ -97,6 +98,8 @@
   
     <li><a href="../ActiveRecord/Base.html">ActiveRecord::Base</a>
   
+    <li><a href="../ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
+  
   </ul>
 </nav>
 
@@ -108,10 +111,6 @@
 
   <div id="description" class="description">
     
-<p>ActiveRecord looks for the <a
-href="Base.html#method-c-postgis_connection">::postgis_connection</a>
-factory method in this class.</p>
-
   </div><!-- description -->
 
   
@@ -136,36 +135,36 @@ factory method in this class.</p>
         
         <div class="method-heading">
           <span class="method-name">postgis_connection</span><span
-            class="method-args">(config_)</span>
+            class="method-args">(config)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
         
 
         <div class="method-description">
           
-          <p>Create a postgis connection adapter.</p>
+          <p>ActiveRecord looks for the <a
+href="Base.html#method-c-postgis_connection">::postgis_connection</a>
+factory method in this class.</p>
+
+<p>Based on the default `postgresql_connection` definition from
+activerecord-jdbc-adapter’s: lib/arjdbc/postgresql/connection_methods.rb</p>
           
 
           
           <div class="method-source-code" id="postgis_connection-source">
-            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter.rb, line 55</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">postgis_connection</span>(<span class="ruby-identifier">config_</span>)
-  <span class="ruby-identifier">require</span> <span class="ruby-string">'pg'</span>
-
-  <span class="ruby-identifier">config_</span> = <span class="ruby-identifier">config_</span>.<span class="ruby-identifier">symbolize_keys</span>
-  <span class="ruby-identifier">host_</span> = <span class="ruby-identifier">config_</span>[<span class="ruby-value">:host</span>]
-  <span class="ruby-identifier">port_</span> = <span class="ruby-identifier">config_</span>[<span class="ruby-value">:port</span>] <span class="ruby-operator">||</span> <span class="ruby-value">5432</span>
-  <span class="ruby-identifier">username_</span> = <span class="ruby-identifier">config_</span>[<span class="ruby-value">:username</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">config_</span>[<span class="ruby-value">:username</span>]
-  <span class="ruby-identifier">password_</span> = <span class="ruby-identifier">config_</span>[<span class="ruby-value">:password</span>].<span class="ruby-identifier">to_s</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">config_</span>[<span class="ruby-value">:password</span>]
-  <span class="ruby-keyword">if</span> <span class="ruby-identifier">config_</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value">:database</span>)
-    <span class="ruby-identifier">database_</span> = <span class="ruby-identifier">config_</span>[<span class="ruby-value">:database</span>]
-  <span class="ruby-keyword">else</span>
-    <span class="ruby-identifier">raise</span> <span class="ruby-operator">::</span><span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;No database specified. Missing argument: database.&quot;</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-comment"># The postgres drivers don't allow the creation of an unconnected PGconn object,</span>
-  <span class="ruby-comment"># so just pass a nil connection object for the time being.</span>
-  <span class="ruby-operator">::</span><span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">ConnectionAdapters</span><span class="ruby-operator">::</span><span class="ruby-constant">PostGISAdapter</span><span class="ruby-operator">::</span><span class="ruby-constant">MainAdapter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">nil</span>, <span class="ruby-identifier">logger</span>, [<span class="ruby-identifier">host_</span>, <span class="ruby-identifier">port_</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">database_</span>, <span class="ruby-identifier">username_</span>, <span class="ruby-identifier">password_</span>], <span class="ruby-identifier">config_</span>)
+            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb, line 56</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">postgis_connection</span>(<span class="ruby-identifier">config</span>)
+  <span class="ruby-identifier">require</span> <span class="ruby-string">&quot;arjdbc/postgresql&quot;</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:host</span>] <span class="ruby-operator">||=</span> <span class="ruby-string">&quot;localhost&quot;</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:port</span>] <span class="ruby-operator">||=</span> <span class="ruby-value">5432</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:url</span>] <span class="ruby-operator">||=</span> <span class="ruby-node">&quot;jdbc:postgresql://#{config[:host]}:#{config[:port]}/#{config[:database]}&quot;</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:url</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:pg_params</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:pg_params</span>]
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:driver</span>] <span class="ruby-operator">||=</span> <span class="ruby-string">&quot;org.postgresql.Driver&quot;</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:adapter_class</span>] = <span class="ruby-operator">::</span><span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">ConnectionAdapters</span><span class="ruby-operator">::</span><span class="ruby-constant">PostGISAdapter</span><span class="ruby-operator">::</span><span class="ruby-constant">MainAdapter</span>
+  <span class="ruby-identifier">config</span>[<span class="ruby-value">:adapter_spec</span>] = <span class="ruby-operator">::</span><span class="ruby-constant">ArJdbc</span><span class="ruby-operator">::</span><span class="ruby-constant">PostgreSQL</span>
+  <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">jdbc_connection</span>(<span class="ruby-identifier">config</span>)
+  <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">execute</span>(<span class="ruby-node">&quot;SET SEARCH_PATH TO #{config[:schema_search_path]}&quot;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">config</span>[<span class="ruby-value">:schema_search_path</span>]
+  <span class="ruby-identifier">conn</span>
 <span class="ruby-keyword">end</span></pre>
           </div><!-- postgis_connection-source -->
           

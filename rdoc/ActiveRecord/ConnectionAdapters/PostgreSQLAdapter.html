@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter - PostGIS ActiveRecord Adapter 0.5.0 Documentation</title>
+
+<link type="text/css" media="screen" href="../../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../../index.html">Home</a>
+    <a href="../../table_of_contents.html#classes">Classes</a>
+    <a href="../../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Object
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-visitor_for">::visitor_for</a>
+    
+    <li><a href="#method-i-query">#query</a>
+    
+    <li><a href="#method-i-schema_search_path">#schema_search_path</a>
+    
+    <li><a href="#method-i-schema_search_path-3D">#schema_search_path=</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="../../History_rdoc.html">History</a>
+  
+    <li class="file"><a href="../../README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../../ActiveRecord/Base.html">ActiveRecord::Base</a>
+  
+    <li><a href="../../ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</h1>
+
+  <div id="description" class="description">
+    
+<p>Extend JDBC’s <a href="PostgreSQLAdapter.html">PostgreSQLAdapter</a>
+implementation for compatibility with ActiveRecord’s default <a
+href="PostgreSQLAdapter.html">PostgreSQLAdapter</a>.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-visitor_for" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">visitor_for</span><span
+            class="method-args">(pool)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>For ActiveRecord 3.1 compatibility: Add the “postgis” adapter to the
+matcher of jdbc-like adapters.</p>
+          
+
+          
+          <div class="method-source-code" id="visitor_for-source">
+            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb, line 37</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">visitor_for</span>(<span class="ruby-identifier">pool</span>)
+  <span class="ruby-identifier">config</span> = <span class="ruby-identifier">pool</span>.<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">config</span>
+  <span class="ruby-identifier">adapter</span> = <span class="ruby-identifier">config</span>[<span class="ruby-value">:adapter</span>]
+  <span class="ruby-identifier">adapter_spec</span> = <span class="ruby-identifier">config</span>[<span class="ruby-value">:adapter_spec</span>] <span class="ruby-operator">||</span> <span class="ruby-keyword">self</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">adapter</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">%r^(jdbc|jndi|postgis)$/</span>
+    <span class="ruby-identifier">adapter_spec</span>.<span class="ruby-identifier">arel2_visitors</span>(<span class="ruby-identifier">config</span>).<span class="ruby-identifier">values</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pool</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">adapter_spec</span>.<span class="ruby-identifier">arel2_visitors</span>(<span class="ruby-identifier">config</span>)[<span class="ruby-identifier">adapter</span>].<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pool</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- visitor_for-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- visitor_for-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-query" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">query</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Add `query` method for compatibility</p>
+          
+
+          
+          <div class="method-source-code" id="query-source">
+            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb, line 7</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">query</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">select_rows</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- query-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- query-method -->
+
+    
+      <div id="method-i-schema_search_path" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">schema_search_path</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the active schema search path.</p>
+          
+
+          
+          <div class="method-source-code" id="schema_search_path-source">
+            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb, line 30</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">schema_search_path</span>
+  <span class="ruby-ivar">@schema_search_path</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">exec_query</span>(<span class="ruby-string">'SHOW search_path'</span>, <span class="ruby-string">'SCHEMA'</span>)[<span class="ruby-value">0</span>][<span class="ruby-string">'search_path'</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- schema_search_path-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- schema_search_path-method -->
+
+    
+      <div id="method-i-schema_search_path-3D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">schema_search_path=</span><span
+            class="method-args">(schema_csv)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="schema_search_path-3D-source">
+            <pre><span class="ruby-comment"># File lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb, line 16</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">schema_search_path=</span>(<span class="ruby-identifier">schema_csv</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">schema_csv</span>
+    <span class="ruby-identifier">execute</span> <span class="ruby-node">&quot;SET search_path TO #{schema_csv}&quot;</span>
+    <span class="ruby-ivar">@schema_search_path</span> = <span class="ruby-identifier">schema_csv</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- schema_search_path-3D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- schema_search_path-3D-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
