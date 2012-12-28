@@ -109,8 +109,14 @@ def create_database(config_)
         if has_su_
           conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO #{username_}")
           conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
-          conn_.execute("ALTER TABLE geometry_columns OWNER TO #{username_}")
-          conn_.execute("ALTER TABLE spatial_ref_sys OWNER TO #{username_}")
+
+          postgis_version = conn_.execute( "SELECT #{postgis_schema_}.postgis_version();" ).first[ 'postgis_version' ]
+          if postgis_version =~ /^2/
+            conn_.execute("ALTER VIEW #{postgis_schema_}.geometry_columns OWNER TO #{username_}")
+          else
+            conn_.execute("ALTER TABLE #{postgis_schema_}.geometry_columns OWNER TO #{username_}")
+          end
+          conn_.execute("ALTER TABLE #{postgis_schema_}.spatial_ref_sys OWNER TO #{username_}")
         end
       end
 
