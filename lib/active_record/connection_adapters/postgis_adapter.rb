@@ -35,6 +35,7 @@
 
 
 require 'rgeo/active_record'
+require 'active_record/connection_adapters/postgresql_adapter'
 
 if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'
   require 'active_record/connection_adapters/postgis_adapter/jdbc_connection'

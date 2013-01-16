@@ -1,4 +1,3 @@
-require 'active_record/connection_adapters/postgresql_adapter'
 require 'pg'
 
 class ::ActiveRecord::Base
