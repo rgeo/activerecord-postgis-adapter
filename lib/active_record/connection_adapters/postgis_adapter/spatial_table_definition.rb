@@ -42,8 +42,13 @@ module ActiveRecord
 
     module PostGISAdapter
 
+      TableDefinitionSuperclass = if defined?(ConnectionAdapters::PostgreSQLAdapter::TableDefinition)
+        ConnectionAdapters::PostgreSQLAdapter::TableDefinition
+      else
+        ConnectionAdapters::TableDefinition
+      end
 
-      class SpatialTableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition
+      class SpatialTableDefinition < TableDefinitionSuperclass
 
         def column(name_, type_, options_={})
           if (info_ = @base.spatial_column_constructor(type_.to_sym))
