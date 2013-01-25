@@ -66,7 +66,7 @@ def create_database(config_)
       conn_ = ::ActiveRecord::Base.connection
       search_path_ = config_["schema_search_path"].to_s.strip
       search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
-      auth_ = has_su_ ? " AUTHORIZATION #{username_}" : ''
+      auth_ = has_su_ ? " AUTHORIZATION \"#{username_}\"" : ''
       search_path_.each do |schema_|
         exists = schema_.downcase == 'public' || conn_.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
         conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless exists
@@ -107,16 +107,16 @@ def create_database(config_)
           end
         end
         if has_su_
-          conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO #{username_}")
-          conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO #{username_}")
+          conn_.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema_} TO \"#{username_}\"")
+          conn_.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema_} TO \"#{username_}\"")
 
           postgis_version = conn_.execute( "SELECT #{postgis_schema_}.postgis_version();" ).first[ 'postgis_version' ]
           if postgis_version =~ /^2/
-            conn_.execute("ALTER VIEW #{postgis_schema_}.geometry_columns OWNER TO #{username_}")
+            conn_.execute("ALTER VIEW #{postgis_schema_}.geometry_columns OWNER TO \"#{username_}\"")
           else
-            conn_.execute("ALTER TABLE #{postgis_schema_}.geometry_columns OWNER TO #{username_}")
+            conn_.execute("ALTER TABLE #{postgis_schema_}.geometry_columns OWNER TO \"#{username_}\"")
           end
-          conn_.execute("ALTER TABLE #{postgis_schema_}.spatial_ref_sys OWNER TO #{username_}")
+          conn_.execute("ALTER TABLE #{postgis_schema_}.spatial_ref_sys OWNER TO \"#{username_}\"")
         end
       end
 
