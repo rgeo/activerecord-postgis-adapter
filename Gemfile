@@ -38,6 +38,9 @@ source "http://rubygems.org"
 # Specify your gem's dependencies in activerecord-postgis-adapter.gemspec
 gemspec
 
-gem 'pg', '>= 0.13.2', :platform => :ruby
+gem 'pg', '>= 0.14.1', :platform => :ruby
 gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
 gem 'ffi-geos', :platform => :jruby
+
+#gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => '3-2-stable'
+gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => 'master'

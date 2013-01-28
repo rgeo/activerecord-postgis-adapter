@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# PostGIS adapter for ActiveRecord
+# Railtie for PostGIS adapter
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,39 +34,28 @@
 ;
 
 
-# The activerecord-postgis-adapter gem installs the *postgis*
-# connection adapter into ActiveRecord.
+# :stopdoc:
 
 module ActiveRecord
 
-  # All ActiveRecord adapters go in this namespace.
   module ConnectionAdapters
 
-    # The PostGIS Adapter
     module PostGISAdapter
 
-      # The name returned by the adapter_name method of this adapter.
-      ADAPTER_NAME = 'PostGIS'.freeze
+
+      class Railtie < ::Rails::Railtie
+
+        rake_tasks do
+          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
+        end
+
+      end
+
 
     end
 
   end
 
-
 end
 
-
-require 'active_record/connection_adapters/postgis_adapter/version.rb'
-
-require 'active_record'
-require 'rgeo/active_record'
-
-
-case ::ActiveRecord::VERSION::MAJOR
-when 3
-  require 'active_record/connection_adapters/postgis_adapter/rails3'
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/rails4'
-else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
-end
+# :startdoc:

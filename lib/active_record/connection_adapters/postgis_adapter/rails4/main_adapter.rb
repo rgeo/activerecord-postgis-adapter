@@ -53,12 +53,11 @@ module ActiveRecord
         @@native_database_types = nil
 
 
+        # Overridden to change the visitor
+
         def initialize(*args_)
           super
-          # Rails 3.2 way of defining the visitor: do so in the constructor
-          if defined?(@visitor) && @visitor
-            @visitor = ::Arel::Visitors::PostGIS.new(self)
-          end
+          @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
 
 
@@ -76,6 +75,8 @@ module ActiveRecord
           SPATIAL_COLUMN_CONSTRUCTORS[name_]
         end
 
+
+        # Overridden to add the :spatial type
 
         def native_database_types
           @@native_database_types ||= super.merge(:spatial => {:name => 'geometry'})
@@ -96,6 +97,7 @@ module ActiveRecord
 
 
         def quote(value_, column_=nil)
+          # Overridden to recognize geometry types
           if ::RGeo::Feature::Geometry.check_type(value_)
             "'#{::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)}'"
           elsif value_.is_a?(::RGeo::Cartesian::BoundingBox)
@@ -106,7 +108,8 @@ module ActiveRecord
         end
 
 
-        def type_cast(value_, column_)
+        def type_cast(value_, column_, array_member_=false)
+          # Overridden to recognize geometry types
           if ::RGeo::Feature::Geometry.check_type(value_)
             ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
           else
@@ -120,7 +123,7 @@ module ActiveRecord
           # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
-          column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_|
+          column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_, oid_, fmod_|
             # JDBC support: JDBC adapter returns a hash for column definitions,
             # instead of an array of values.
             if col_name_.kind_of?(::Hash)
@@ -128,9 +131,12 @@ module ActiveRecord
               default_ = col_name_["column_default"]
               type_ = col_name_["column_type"]
               col_name_ = col_name_["column_name"]
+              # TODO: get oid and fmod from jdbc
             end
-
-            SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, type_,
+            oid_ = OID::TYPE_MAP.fetch(oid_.to_i, fmod_.to_i) {
+              OID::Identity.new
+            }
+            SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, oid_, type_,
               notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
           end
         end
@@ -138,24 +144,15 @@ module ActiveRecord
 
         def indexes(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
-          # We needed to modify the catalog queries to pull the index type info.
-
-          # Remove postgis from schemas
-          schemas_ = schema_search_path.split(/,/)
-          schemas_.delete('postgis')
-          schemas_ = schemas_.map{ |p_| quote(p_) }.join(',')
-
-          # Get index type by joining with pg_am.
-          result_ = query(<<-SQL, name_)
-            SELECT DISTINCT i.relname, d.indisunique, d.indkey, t.oid, am.amname
-              FROM pg_class t, pg_class i, pg_index d, pg_am am
+          result_ = query(<<-SQL, 'SCHEMA')
+            SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
+            FROM pg_class t
+            INNER JOIN pg_index d ON t.oid = d.indrelid
+            INNER JOIN pg_class i ON d.indexrelid = i.oid
             WHERE i.relkind = 'i'
-              AND d.indexrelid = i.oid
               AND d.indisprimary = 'f'
-              AND t.oid = d.indrelid
               AND t.relname = '#{table_name_}'
-              AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname IN (#{schemas_}) )
-              AND i.relam = am.oid
+              AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = ANY (current_schemas(false)) )
             ORDER BY i.relname
           SQL
 
@@ -163,45 +160,46 @@ module ActiveRecord
             index_name_ = row_[0]
             unique_ = row_[1] == 't'
             indkey_ = row_[2].split(" ")
-            oid_ = row_[3]
-            indtype_ = row_[4]
+            inddef_ = row_[3]
+            oid_ = row_[4]
 
-            columns_ = query(<<-SQL, "Columns for index #{row_[0]} on #{table_name_}").inject({}){ |h_, r_| h_[r_[0].to_s] = [r_[1], r_[2]]; h_ }
+            columns_ = query(<<-SQL, "SCHEMA")
               SELECT a.attnum, a.attname, t.typname
                 FROM pg_attribute a, pg_type t
               WHERE a.attrelid = #{oid_}
                 AND a.attnum IN (#{indkey_.join(",")})
                 AND a.atttypid = t.oid
             SQL
-
-            spatial_ = indtype_ == 'gist' && columns_.size == 1 && (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
+            columns_ = columns_.inject({}){ |h_, r_| h_[r_[0].to_s] = [r_[1], r_[2]]; h_ }
             column_names_ = columns_.values_at(*indkey_).compact.map{ |a_| a_[0] }
-            column_names_.empty? ? nil : ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, spatial_)
+
+            # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
+            desc_order_columns_ = inddef_.scan(/(\w+) DESC/).flatten
+            orders_ = desc_order_columns_.any? ? Hash[desc_order_columns_.map {|order_column_| [order_column_, :desc]}] : {}
+            where_ = inddef_.scan(/WHERE (.+)$/).flatten[0]
+            spatial_ = inddef_ =~ /using\s+gist/i && columns_.size == 1 &&
+              (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
+
+            column_names_.empty? ? nil : ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_,
+              [], orders_, where_, spatial_ ? true : false)
           end.compact
         end
 
 
-        def create_table(table_name_, options_={})
-          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
-          # Note: we have to do a full replacement for Rails 3.0 because
-          # there is no way to override the creation of the table
-          # definition object. In Rails 3.1, this has been factored out
-          # into the table_definition method, so we could rewrite this
-          # to call super if we're willing to go 3.1 only.
+        def table_definition
+          # Override to create a spatial table definition
+          SpatialTableDefinition.new(self)
+        end
+
+
+        def create_table(table_name_, options_={}, &block_)
           table_name_ = table_name_.to_s
-          table_definition_ = SpatialTableDefinition.new(self)
-          table_definition_.primary_key(options_[:primary_key] || ::ActiveRecord::Base.get_primary_key(table_name_.singularize)) unless options_[:id] == false
-          yield table_definition_ if block_given?
-          if options_[:force] && table_exists?(table_name_)
-            drop_table(table_name_, options_)
+          # Call super and snag the table definition
+          table_definition_ = nil
+          super(table_name_, options_) do |td_|
+            block_.call(td_) if block_
+            table_definition_ = td_
           end
-
-          create_sql_ = "CREATE#{' TEMPORARY' if options_[:temporary]} TABLE "
-          create_sql_ << "#{quote_table_name(table_name_)} ("
-          create_sql_ << table_definition_.to_sql
-          create_sql_ << ") #{options_[:options]}"
-          execute create_sql_
-
           table_definition_.non_geographic_spatial_columns.each do |col_|
             type_ = col_.spatial_type.gsub('_', '').upcase
             has_z_ = col_.has_z?
@@ -223,6 +221,7 @@ module ActiveRecord
 
         def add_column(table_name_, column_name_, type_, options_={})
           table_name_ = table_name_.to_s
+          column_name_ = column_name_.to_s
           if (info_ = spatial_column_constructor(type_.to_sym))
             limit_ = options_[:limit]
             if type_.to_s == 'geometry' &&
@@ -247,7 +246,7 @@ module ActiveRecord
                 dimensions_ = 2
                 dimensions_ += 1 if has_z_
                 dimensions_ += 1 if has_m_
-                execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(column_name_.to_s)}', #{srid_}, '#{quote_string(type_)}', #{dimensions_})")
+                execute("SELECT AddGeometryColumn('#{quote_string(table_name_)}', '#{quote_string(column_name_)}', #{srid_}, '#{quote_string(type_)}', #{dimensions_})")
               end
             end
           else
@@ -256,19 +255,14 @@ module ActiveRecord
         end
 
 
-        def remove_column(table_name_, *column_names_)
-          column_names_ = column_names_.flatten.map{ |n_| n_.to_s }
+        def remove_column(table_name_, column_name_, type_=nil, options_={})
+          table_name_ = table_name_.to_s
+          column_name_ = column_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
-          remaining_column_names_ = []
-          column_names_.each do |name_|
-            if spatial_info_.include?(name_)
-              execute("SELECT DropGeometryColumn('#{quote_string(table_name_.to_s)}','#{quote_string(name_)}')")
-            else
-              remaining_column_names_ << name_.to_sym
-            end
-          end
-          if remaining_column_names_.size > 0
-            super(table_name_, *remaining_column_names_)
+          if spatial_info_.include?(column_name_)
+            execute("SELECT DropGeometryColumn('#{quote_string(table_name_)}','#{quote_string(column_name_)}')")
+          else
+            super
           end
         end
 
@@ -276,36 +270,19 @@ module ActiveRecord
         def add_index(table_name_, column_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
-          table_name_ = table_name_.to_s
-          column_names_ = ::Array.wrap(column_name_)
-          index_name_ = index_name(table_name_, :column => column_names_)
-          gist_clause_ = ''
-          index_type_ = ''
-          if ::Hash === options_  # legacy support, since this param was a string
-            index_type_ = 'UNIQUE' if options_[:unique]
-            index_name_ = options_[:name].to_s if options_.key?(:name)
-            gist_clause_ = 'USING GIST' if options_[:spatial]
-          else
-            index_type_ = options_
-          end
-          if index_name_.length > index_name_length
-            raise ::ArgumentError, "Index name '#{index_name_}' on table '#{table_name_}' is too long; the limit is #{index_name_length} characters"
-          end
-          if index_name_exists?(table_name_, index_name_, false)
-            raise ::ArgumentError, "Index name '#{index_name_}' on table '#{table_name_}' already exists"
-          end
-          quoted_column_names_ = quoted_columns_for_index(column_names_, options_).join(", ")
-          execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)} #{gist_clause_} (#{quoted_column_names_})"
+          gist_clause_ = options_.delete(:spatial) ? ' USING GIST' : ''
+          index_name_, index_type_, index_columns_, index_options_ = add_index_options(table_name_, column_name_, options_)
+          execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)}#{gist_clause_} (#{index_columns_})#{index_options_}"
         end
 
 
         def spatial_column_info(table_name_)
-          info_ = query("SELECT * FROM geometry_columns WHERE f_table_name='#{quote_string(table_name_.to_s)}'")
+          info_ = query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{quote_string(table_name_.to_s)}'")
           result_ = {}
           info_.each do |row_|
-            name_ = row_[3]
-            type_ = row_[6]
-            dimension_ = row_[4].to_i
+            name_ = row_[0]
+            type_ = row_[3]
+            dimension_ = row_[1].to_i
             has_m_ = type_ =~ /m$/i ? true : false
             type_.sub!(/m$/, '')
             has_z_ = dimension_ > 3 || dimension_ == 3 && !has_m_
@@ -313,7 +290,7 @@ module ActiveRecord
               :name => name_,
               :type => type_,
               :dimension => dimension_,
-              :srid => row_[5].to_i,
+              :srid => row_[2].to_i,
               :has_z => has_z_,
               :has_m => has_m_,
             }

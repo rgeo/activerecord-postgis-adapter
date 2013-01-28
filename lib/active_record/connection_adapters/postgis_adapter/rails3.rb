@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# PostGIS adapter for ActiveRecord
+# PostGIS adapter for Rails 3.x
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,39 +34,29 @@
 ;
 
 
-# The activerecord-postgis-adapter gem installs the *postgis*
-# connection adapter into ActiveRecord.
-
-module ActiveRecord
-
-  # All ActiveRecord adapters go in this namespace.
-  module ConnectionAdapters
-
-    # The PostGIS Adapter
-    module PostGISAdapter
-
-      # The name returned by the adapter_name method of this adapter.
-      ADAPTER_NAME = 'PostGIS'.freeze
-
-    end
-
-  end
+require 'active_record/connection_adapters/postgresql_adapter'
 
 
-end
+require 'active_record/connection_adapters/postgis_adapter/rails3/main_adapter.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_table_definition.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_column.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails3/arel_tosql.rb'
 
 
-require 'active_record/connection_adapters/postgis_adapter/version.rb'
-
-require 'active_record'
-require 'rgeo/active_record'
-
-
-case ::ActiveRecord::VERSION::MAJOR
-when 3
-  require 'active_record/connection_adapters/postgis_adapter/rails3'
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/rails4'
+if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'
+  require 'active_record/connection_adapters/postgis_adapter/rails3/jdbc_connection'
 else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
+  require 'active_record/connection_adapters/postgis_adapter/rails3/pg_connection'
 end
+
+
+if defined?(::Rails::Railtie)
+  require 'active_record/connection_adapters/postgis_adapter/rails3/railtie.rb'
+end
+
+
+ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
+ignore_tables_ << 'geometry_columns' unless ignore_tables_.include?('geometry_columns')
+ignore_tables_ << 'spatial_ref_sys' unless ignore_tables_.include?('spatial_ref_sys')
+ignore_tables_ << 'layer' unless ignore_tables_.include?('layer')
+ignore_tables_ << 'topology' unless ignore_tables_.include?('topology')

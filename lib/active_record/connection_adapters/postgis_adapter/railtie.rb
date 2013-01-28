@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Railtie for PostGIS adapter
+# PostGIS adapter for Rails 3.x
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -35,30 +35,4 @@
 
 
 require 'rails/railtie'
-
-
-# :stopdoc:
-
-module ActiveRecord
-
-  module ConnectionAdapters
-
-    module PostGISAdapter
-
-
-      class Railtie < ::Rails::Railtie
-
-        rake_tasks do
-          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
-        end
-
-      end
-
-
-    end
-
-  end
-
-end
-
-# :startdoc:
+require 'active_record/connection_adapters/postgis_adapter'

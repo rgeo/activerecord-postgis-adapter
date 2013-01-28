@@ -34,39 +34,30 @@
 ;
 
 
-# The activerecord-postgis-adapter gem installs the *postgis*
-# connection adapter into ActiveRecord.
+# :stopdoc:
 
-module ActiveRecord
+module Arel
+  module Visitors
 
-  # All ActiveRecord adapters go in this namespace.
-  module ConnectionAdapters
+    class PostGIS < PostgreSQL
 
-    # The PostGIS Adapter
-    module PostGISAdapter
+      FUNC_MAP = {
+        'st_wkttosql' => 'ST_GeomFromEWKT',
+      }
 
-      # The name returned by the adapter_name method of this adapter.
-      ADAPTER_NAME = 'PostGIS'.freeze
+      include ::RGeo::ActiveRecord::SpatialToSql
+
+      def st_func(standard_name_)
+        FUNC_MAP[standard_name_.downcase] || standard_name_
+      end
+
+      alias_method :visit_in_spatial_context, :visit
 
     end
 
+    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
+
   end
-
-
 end
 
-
-require 'active_record/connection_adapters/postgis_adapter/version.rb'
-
-require 'active_record'
-require 'rgeo/active_record'
-
-
-case ::ActiveRecord::VERSION::MAJOR
-when 3
-  require 'active_record/connection_adapters/postgis_adapter/rails3'
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/rails4'
-else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
-end
+# :startdoc:

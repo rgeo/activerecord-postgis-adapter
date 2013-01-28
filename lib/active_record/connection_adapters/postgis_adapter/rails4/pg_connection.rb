@@ -34,39 +34,39 @@
 ;
 
 
-# The activerecord-postgis-adapter gem installs the *postgis*
-# connection adapter into ActiveRecord.
+require 'pg'
 
 module ActiveRecord
 
-  # All ActiveRecord adapters go in this namespace.
-  module ConnectionAdapters
+  module ConnectionHandling
 
-    # The PostGIS Adapter
-    module PostGISAdapter
 
-      # The name returned by the adapter_name method of this adapter.
-      ADAPTER_NAME = 'PostGIS'.freeze
+    # ActiveRecord looks for the postgis_connection factory method in
+    # this class.
+    #
+    # Based on the default `postgresql_connection` definition from
+    # activerecord's:
+    # lib/active_record/connection_adapters/postgresql_adapter.rb
 
+    def postgis_connection(config_)
+      # FULL REPLACEMENT because we need to create a different class.
+      conn_params_ = config_.symbolize_keys
+
+      conn_params_.delete_if { |_, v_| v_.nil? }
+
+      # Map ActiveRecords param names to PGs.
+      conn_params_[:user] = conn_params_.delete(:username) if conn_params_[:username]
+      conn_params_[:dbname] = conn_params_.delete(:database) if conn_params_[:database]
+
+      # Forward only valid config params to PGconn.connect.
+      conn_params_.keep_if { |k_, _| VALID_CONN_PARAMS.include?(k_) }
+
+      # The postgres drivers don't allow the creation of an unconnected PGconn object,
+      # so just pass a nil connection object for the time being.
+      ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, conn_params_, config_)
     end
+
 
   end
 
-
-end
-
-
-require 'active_record/connection_adapters/postgis_adapter/version.rb'
-
-require 'active_record'
-require 'rgeo/active_record'
-
-
-case ::ActiveRecord::VERSION::MAJOR
-when 3
-  require 'active_record/connection_adapters/postgis_adapter/rails3'
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/rails4'
-else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
 end
