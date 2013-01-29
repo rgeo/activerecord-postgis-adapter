@@ -43,7 +43,7 @@ module ActiveRecord
     module PostGISAdapter
 
 
-      class SpatialTableDefinition < ConnectionAdapters::TableDefinition
+      class SpatialTableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition
 
         def column(name_, type_, options_={})
           if (info_ = @base.spatial_column_constructor(type_.to_sym))
