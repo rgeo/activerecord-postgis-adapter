@@ -84,6 +84,7 @@ def setup_gis(config_)
   # Initial setup of the database: Add schemas from the search path.
   # If a superuser is given, we log in as the superuser, but we make sure
   # the schemas are owned by the regular user.
+  username_, su_username_, su_password_ = get_su_auth(config_)
   ::ActiveRecord::Base.establish_connection(config_.merge('schema_search_path' => 'public', 'username' => su_username_, 'password' => su_password_))
   conn_ = ::ActiveRecord::Base.connection
   search_path_ = get_search_path(config_)
