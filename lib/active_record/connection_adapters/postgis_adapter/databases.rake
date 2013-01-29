@@ -58,8 +58,9 @@ def get_su_auth(config_)
   username_ = config_['username']
   su_username_ = config_['su_username'] || username_
   su_password_ = config_['su_password'] || config_['password']
+  has_su_ = config_.include?('su_username')
 
-  [ username_, su_username_, su_password_ ]
+  [username_, su_username_, su_password_, has_su_]
 end
 
 
@@ -84,7 +85,7 @@ def setup_gis(config_)
   # Initial setup of the database: Add schemas from the search path.
   # If a superuser is given, we log in as the superuser, but we make sure
   # the schemas are owned by the regular user.
-  username_, su_username_, su_password_ = get_su_auth(config_)
+  username_, su_username_, su_password_, has_su_ = get_su_auth(config_)
   ::ActiveRecord::Base.establish_connection(config_.merge('schema_search_path' => 'public', 'username' => su_username_, 'password' => su_password_))
   conn_ = ::ActiveRecord::Base.connection
   search_path_ = get_search_path(config_)
@@ -93,7 +94,6 @@ def setup_gis(config_)
     exists = schema_.downcase == 'public' || conn_.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
     conn_.execute("CREATE SCHEMA #{schema_}#{auth_}") unless exists
   end
-
 
   script_dir_ = config_['script_dir']
   postgis_extension_ = config_['postgis_extension']
@@ -137,8 +137,7 @@ def create_database(config_)
   if config_['adapter'] == 'postgis'
     @encoding = config_['encoding'] || ::ENV['CHARSET'] || 'utf8'
     begin
-      has_su_ = config_.include?('su_username')            # Is there a distinct superuser?
-      username_, su_username_, su_password_ = get_su_auth(config_)
+      username_, su_username_, su_password_, has_su_ = get_su_auth(config_)
 
       # Create the database. Optionally do so as the given superuser.
       # But make sure the database is owned by the regular user.
@@ -148,7 +147,6 @@ def create_database(config_)
       ::ActiveRecord::Base.connection.create_database(config_['database'], config_.merge(extra_configs_))
 
       setup_gis(config_)
-
 
       # Done
       ::ActiveRecord::Base.establish_connection(config_)
