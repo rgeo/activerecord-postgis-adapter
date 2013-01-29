@@ -80,7 +80,7 @@ end
 # If "postgis" is present in the search path, use it.
 # Otherwise, use the last schema in the search path.
 # If no search path is given, use "public".
-def setup_gis_(config_)
+def setup_gis(config_)
   # Initial setup of the database: Add schemas from the search path.
   # If a superuser is given, we log in as the superuser, but we make sure
   # the schemas are owned by the regular user.
