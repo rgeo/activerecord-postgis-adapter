@@ -130,8 +130,11 @@ module ActiveRecord
               col_name_ = col_name_["column_name"]
             end
 
-            SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, type_,
-              notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
+            SpatialColumn.new(col_name_, default_, type_, notnull_ == 'f',
+              ((type_ =~ /geometry/i ? spatial_info_[col_name_] : nil) || {}).merge({
+                  :table_name => table_name_,
+                  :factory_settings => @rgeo_factory_settings
+                }))
           end
         end
 

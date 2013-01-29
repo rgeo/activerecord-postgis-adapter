@@ -49,11 +49,11 @@ module ActiveRecord
         FACTORY_SETTINGS_CACHE = {}
 
 
-        def initialize(factory_settings_, table_name_, name_, default_, sql_type_=nil, null_=true, opts_=nil)
-          @factory_settings = factory_settings_
-          @table_name = table_name_
+        def initialize(name_, default_, sql_type_=nil, null_=true, opts_={})
+          @factory_settings = opts_.delete(:factory_settings)
+          @table_name = opts_.delete(:table_name)
           @geographic = sql_type_ =~ /geography/i ? true : false
-          if opts_
+          if opts_.length > 0
             # This case comes from an entry in the geometry_columns table
             @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type]) ||
               ::RGeo::Feature::Geometry
@@ -97,7 +97,7 @@ module ActiveRecord
               @limit = {:no_constraints => true}
             end
           end
-          FACTORY_SETTINGS_CACHE[factory_settings_.object_id] = factory_settings_
+          FACTORY_SETTINGS_CACHE[@factory_settings.object_id] = @factory_settings
         end
 
 
