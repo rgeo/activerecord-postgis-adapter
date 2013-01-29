@@ -148,6 +148,25 @@ module RGeo
             end
 
 
+            def test_custom_factory
+              klass_ = create_ar_class
+              klass_.connection.create_table(:spatial_test) do |t_|
+                t_.point(:latlon, :srid => 4326)
+              end
+              factory_ = ::RGeo::Geographic.simple_mercator_factory
+              klass_.class_eval do
+                set_rgeo_factory_for_column(:latlon, factory_)
+              end
+              rec_ = klass_.new
+              rec_.latlon = 'POINT(-122 47)'
+              assert_equal(factory_, rec_.latlon.factory)
+              rec_.save!
+              assert_equal(factory_, rec_.latlon.factory)
+              rec2_ = klass_.find(rec_.id)
+              assert_equal(factory_, rec2_.latlon.factory)
+            end
+
+
             def test_readme_example
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
