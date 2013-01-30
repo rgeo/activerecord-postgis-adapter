@@ -180,8 +180,13 @@ module ActiveRecord
             spatial_ = inddef_ =~ /using\s+gist/i && columns_.size == 1 &&
               (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
 
-            column_names_.empty? ? nil : ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_,
-              [], orders_, where_, spatial_ ? true : false)
+            if column_names_.empty?
+              nil
+            else
+              idefn_ = ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, [], orders_, where_)
+              idefn_.spatial = spatial_ ? true : false
+              idefn_
+            end
           end.compact
         end
 

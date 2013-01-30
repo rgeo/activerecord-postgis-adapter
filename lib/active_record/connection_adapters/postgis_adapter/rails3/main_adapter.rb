@@ -179,7 +179,13 @@ module ActiveRecord
 
             spatial_ = indtype_ == 'gist' && columns_.size == 1 && (columns_.values.first[1] == 'geometry' || columns_.values.first[1] == 'geography')
             column_names_ = columns_.values_at(*indkey_).compact.map{ |a_| a_[0] }
-            column_names_.empty? ? nil : ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, nil, nil, spatial_)
+            if column_names_.empty?
+              nil
+            else
+              idefn_ = ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, nil, nil)
+              idefn_.spatial = spatial_ ? true : false
+              idefn_
+            end
           end.compact
         end
 
