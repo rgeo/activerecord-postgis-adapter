@@ -1,3 +1,11 @@
+=== 0.5.1 / 2013-01-30
+
+* Database creation properly treats geometry_columns as a view when setting owner. (Pull request by hendrikstier)
+* Provide rake db:gis:setup task. (Pull request by Cody Russell)
+* Modifications for compatibility with postgres_ext. (Pull request by legendetm)
+* SpatialTableDefinition properly subclasses the Postgres-specific table definition class, if available. (Pull request by Joe Noon)
+* Database creation script no longer fails if the username includes weird characters. (Contributed by Toms Mikoss)
+
 === 0.5.0 / 2012-12-12
 
 Thanks to the many who have submitted pull requests. A bunch of them are in this release. Special thanks to Nick Muerdter, who succeeded in porting the adapter to work with the JDBC Postgres adapter in JRuby, and also got Travis up and running for the project.
