@@ -113,6 +113,10 @@ module ActiveRecord
           @username ||= configuration['username']
         end
 
+        def quoted_username
+          @quoted_username ||= ::PGconn.quote_ident(username)
+        end
+
         def password
           @password ||= configuration['password']
         end
@@ -159,7 +163,7 @@ module ActiveRecord
 
 
         def setup_gis_schemas
-          auth_ = has_su? ? " AUTHORIZATION #{username}" : ''
+          auth_ = has_su? ? " AUTHORIZATION #{quoted_username}" : ''
           search_path.each do |schema_|
             if schema_.downcase != 'public' && !connection.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
               connection.execute("CREATE SCHEMA #{schema_}#{auth_}")
@@ -188,15 +192,15 @@ module ActiveRecord
 
 
         def setup_gis_grant_privileges
-          connection.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema} TO #{username}")
-          connection.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema} TO #{username}")
+          connection.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema} TO #{quoted_username}")
+          connection.execute("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA #{postgis_schema} TO #{quoted_username}")
           postgis_version_ = connection.execute( "SELECT #{postgis_schema}.postgis_version();" ).first['postgis_version']
           if postgis_version_ =~ /^2/
-            connection.execute("ALTER VIEW #{postgis_schema}.geometry_columns OWNER TO #{username}")
+            connection.execute("ALTER VIEW #{postgis_schema}.geometry_columns OWNER TO #{quoted_username}")
           else
-            connection.execute("ALTER TABLE #{postgis_schema}.geometry_columns OWNER TO #{username}")
+            connection.execute("ALTER TABLE #{postgis_schema}.geometry_columns OWNER TO #{quoted_username}")
           end
-          connection.execute("ALTER TABLE #{postgis_schema}.spatial_ref_sys OWNER TO #{username}")
+          connection.execute("ALTER TABLE #{postgis_schema}.spatial_ref_sys OWNER TO #{quoted_username}")
         end
 
 
