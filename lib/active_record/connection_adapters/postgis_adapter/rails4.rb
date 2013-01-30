@@ -41,6 +41,7 @@ require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.r
 require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
 require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
 require 'active_record/connection_adapters/postgis_adapter/rails4/arel_tosql.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails4/postgis_database_tasks.rb'
 
 
 if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'

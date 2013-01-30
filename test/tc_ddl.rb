@@ -50,7 +50,7 @@ module RGeo
 
           define_test_methods do
 
-if false
+
             def test_create_simple_geometry
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -109,7 +109,7 @@ if false
               assert_equal(::RGeo::Feature::Point, klass_.columns.last.geometric_type)
               assert(klass_.cached_attributes.include?('latlon'))
             end
-end
+
 
             def test_create_geometry_with_index
               klass_ = create_ar_class
@@ -122,7 +122,7 @@ end
               assert(klass_.connection.indexes(:spatial_test).last.spatial)
             end
 
-if false
+
             def test_add_geometry_column
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
@@ -326,7 +326,7 @@ if false
               klass_.connection.drop_table(:spatial_test)
               assert_equal(0, klass_.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
-end
+
 
           end
 
