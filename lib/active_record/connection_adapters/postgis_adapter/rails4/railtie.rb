@@ -44,11 +44,6 @@ module ActiveRecord
 
 
       class Railtie < ::Rails::Railtie
-
-        rake_tasks do
-          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
-        end
-
       end
 
 
