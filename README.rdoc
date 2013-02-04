@@ -128,7 +128,8 @@ system; you shouldn't try to run such a query against a lat/long
 
 This adapter has the following requirements:
 
-* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or later also supported.
+* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or
+  later also supported.
 * PostgreSQL 9.0 or later.
 * PostGIS 1.5, PostGIS 2.0, or later.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work.
@@ -136,7 +137,8 @@ This adapter has the following requirements:
 * rgeo gem 0.3.20 or later.
 * rgeo-activerecord gem 0.4.6 or later.
 
-Please note that this version of the adapter is targeted towards Rails 3.x only. The upcoming version 0.6 will target Rails 4.0.
+Please note that this version of the adapter is targeted towards Rails
+3.x only. The upcoming version 0.6 will target Rails 4.0.
 
 Install this adapter as a gem:
 
