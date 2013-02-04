@@ -1,4 +1,4 @@
-=== 0.5.1 / 2013-01-30
+=== 0.5.1 / 2013-02-04
 
 * Database creation properly treats geometry_columns as a view when setting owner. (Pull request by hendrikstier)
 * Provide rake db:gis:setup task. (Pull request by Cody Russell)
