@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Railtie for PostGIS adapter
+# Rakefile changes for PostGIS adapter
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,28 +34,13 @@
 ;
 
 
-# :stopdoc:
-
-module ActiveRecord
-
-  module ConnectionAdapters
-
-    module PostGISAdapter
-
-
-      class Railtie < ::Rails::Railtie
-
-        rake_tasks do
-          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
-        end
-
+namespace :db do
+  namespace :gis do
+    desc "Setup PostGIS data in the database"
+    task :setup => [:load_config, :rails_env] do
+      configs_for_environment.each do |config_|
+        ::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks.new(config_).setup_gis
       end
-
-
     end
-
   end
-
 end
-
-# :startdoc:
