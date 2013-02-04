@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>History - PostGIS ActiveRecord Adapter 0.5.0 Documentation</title>
+<title>History - PostGIS ActiveRecord Adapter 0.5.1 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -73,6 +73,25 @@
 
 <div id="documentation" class="description">
   
+<h3 id="label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04</h3>
+<ul><li>
+<p>Database creation properly treats geometry_columns as a view when setting
+owner. (Pull request by hendrikstier)</p>
+</li><li>
+<p>Provide rake db:gis:setup task. (Pull request by Cody Russell)</p>
+</li><li>
+<p>Modifications for compatibility with postgres_ext. (Pull request by
+legendetm)</p>
+</li><li>
+<p>SpatialTableDefinition properly subclasses the Postgres-specific table
+definition class, if available. (Pull request by Joe Noon)</p>
+</li><li>
+<p>Database creation script no longer fails if the username includes weird
+characters. (Contributed by Toms Mikoss)</p>
+</li><li>
+<p>Updates for compatibility with jdbc-postgres 9.2.1002.1</p>
+</li></ul>
+
 <h3 id="label-0.5.0+%2F+2012-12-12">0.5.0 / 2012-12-12</h3>
 
 <p>Thanks to the many who have submitted pull requests. A bunch of them are in

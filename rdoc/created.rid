@@ -1,13 +1,13 @@
-Wed, 12 Dec 2012 11:01:54 -0800
-lib/active_record/connection_adapters/postgis_adapter/arel_tosql.rb	Mon, 18 Jun 2012 11:39:49 -0700
-lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb	Tue, 11 Dec 2012 19:34:32 -0800
-lib/active_record/connection_adapters/postgis_adapter/main_adapter.rb	Tue, 11 Dec 2012 21:16:56 -0800
-lib/active_record/connection_adapters/postgis_adapter/pg_connection.rb	Tue, 11 Dec 2012 21:21:42 -0800
-lib/active_record/connection_adapters/postgis_adapter/railtie.rb	Mon, 18 Jun 2012 11:39:49 -0700
-lib/active_record/connection_adapters/postgis_adapter/spatial_column.rb	Mon, 05 Nov 2012 13:24:25 -0800
-lib/active_record/connection_adapters/postgis_adapter/spatial_table_definition.rb	Sat, 03 Nov 2012 14:06:16 -0700
-lib/active_record/connection_adapters/postgis_adapter/version.rb	Mon, 18 Jun 2012 11:39:49 -0700
-lib/active_record/connection_adapters/postgis_adapter.rb	Tue, 11 Dec 2012 21:21:58 -0800
-lib/rgeo/active_record/postgis_adapter/railtie.rb	Mon, 18 Jun 2012 11:39:49 -0700
-History.rdoc	Wed, 12 Dec 2012 10:02:32 -0800
-README.rdoc	Wed, 12 Dec 2012 10:05:06 -0800
+Mon, 04 Feb 2013 14:10:15 -0800
+lib/active_record/connection_adapters/postgis_adapter/arel_tosql.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/jdbc_connection.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/main_adapter.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/pg_connection.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/railtie.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/spatial_column.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/spatial_table_definition.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/active_record/connection_adapters/postgis_adapter/version.rb	Wed, 12 Dec 2012 11:04:17 -0800
+lib/active_record/connection_adapters/postgis_adapter.rb	Mon, 04 Feb 2013 13:32:32 -0800
+lib/rgeo/active_record/postgis_adapter/railtie.rb	Wed, 12 Dec 2012 11:04:17 -0800
+History.rdoc	Mon, 04 Feb 2013 13:27:19 -0800
+README.rdoc	Mon, 04 Feb 2013 13:27:19 -0800
