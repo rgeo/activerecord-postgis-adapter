@@ -182,9 +182,7 @@ module ActiveRecord
             if column_names_.empty?
               nil
             else
-              idefn_ = ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, nil, nil)
-              idefn_.spatial = spatial_ ? true : false
-              idefn_
+              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name_, index_name_, unique_, column_names_, nil, nil, nil, spatial_ ? true : false)
             end
           end.compact
         end
