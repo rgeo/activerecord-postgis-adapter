@@ -33,7 +33,7 @@
 # -----------------------------------------------------------------------------
 ;
 
-require 'test/unit'
+require 'minitest/unit'
 require 'rgeo/active_record/adapter_test_helper'
 
 
