@@ -42,7 +42,7 @@ module RGeo
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
 
-        class TestBasic < ::Test::Unit::TestCase  # :nodoc:
+        class TestBasic < ::MiniTest::Unit::TestCase  # :nodoc:
 
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
@@ -72,14 +72,14 @@ module RGeo
 
 
             def test_version
-              assert_not_nil(::ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION)
+              refute_nil(::ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION)
             end
 
 
             def test_postgis_available
               connection_ = create_ar_class.connection
               assert_equal('PostGIS', connection_.adapter_name)
-              assert_not_nil(connection_.postgis_lib_version)
+              refute_nil(connection_.postgis_lib_version)
             end
 
 
@@ -224,7 +224,7 @@ module RGeo
               rec_ = klass_.new
               rec_.latlon = 'POINT(0 0)'
               rec_.save
-              assert_not_nil(klass_.select("CURRENT_TIMESTAMP as ts").first.ts)
+              refute_nil(klass_.select("CURRENT_TIMESTAMP as ts").first.ts)
             end
 
 

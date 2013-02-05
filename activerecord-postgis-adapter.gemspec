@@ -53,5 +53,6 @@
   s_.add_dependency('rgeo-activerecord', '~> 0.5.0.beta2')
 
   s_.add_development_dependency('rake')
+  s_.add_development_dependency('minitest')
   s_.add_development_dependency('rdoc')
 end

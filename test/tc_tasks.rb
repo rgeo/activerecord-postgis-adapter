@@ -42,7 +42,7 @@ module RGeo
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
 
-        class TestTasks < ::Test::Unit::TestCase  # :nodoc:
+        class TestTasks < ::MiniTest::Unit::TestCase  # :nodoc:
 
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
@@ -65,39 +65,40 @@ module RGeo
           end
 
 
-          if defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
-
-            define_test_methods do
+          define_test_methods do
 
 
-              def test_create_database_from_extension_in_postgis_schema
-                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-                ::ActiveRecord::Base.connection.select_values("SELECT * from postgis.spatial_ref_sys")
+            def test_create_database_from_extension_in_postgis_schema
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
               end
-
-
-              def test_create_database_from_extension_in_public_schema
-                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config)
-                ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
-              end
-
-
-              def test_schema_dump
-                filename_ = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
-                ::FileUtils.rm_f(filename_)
-                ::FileUtils.mkdir_p(::File.dirname(filename_))
-                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-                ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
-                sql_ = ::File.read(filename_)
-                assert(sql_ !~ /CREATE/)
-              end
-
-
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              ::ActiveRecord::Base.connection.select_values("SELECT * from postgis.spatial_ref_sys")
             end
 
-          else
 
-            puts "Skipping test tasks: Rails version < 4"
+            def test_create_database_from_extension_in_public_schema
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config)
+              ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
+            end
+
+
+            def test_schema_dump
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              filename_ = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
+              ::FileUtils.rm_f(filename_)
+              ::FileUtils.mkdir_p(::File.dirname(filename_))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
+              sql_ = ::File.read(filename_)
+              assert(sql_ !~ /CREATE/)
+            end
+
 
           end
 
