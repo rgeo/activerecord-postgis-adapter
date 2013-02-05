@@ -65,31 +65,39 @@ module RGeo
           end
 
 
-          define_test_methods do
+          if defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+
+            define_test_methods do
 
 
-            def test_create_database_from_extension_in_postgis_schema
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              ::ActiveRecord::Base.connection.select_values("SELECT * from postgis.spatial_ref_sys")
+              def test_create_database_from_extension_in_postgis_schema
+                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+                ::ActiveRecord::Base.connection.select_values("SELECT * from postgis.spatial_ref_sys")
+              end
+
+
+              def test_create_database_from_extension_in_public_schema
+                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config)
+                ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
+              end
+
+
+              def test_schema_dump
+                filename_ = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
+                ::FileUtils.rm_f(filename_)
+                ::FileUtils.mkdir_p(::File.dirname(filename_))
+                ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+                ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
+                sql_ = ::File.read(filename_)
+                assert(sql_ !~ /CREATE/)
+              end
+
+
             end
 
+          else
 
-            def test_create_database_from_extension_in_public_schema
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config)
-              ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
-            end
-
-
-            def test_schema_dump
-              filename_ = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename_)
-              ::FileUtils.mkdir_p(::File.dirname(filename_))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
-              sql_ = ::File.read(filename_)
-              assert(sql_ !~ /CREATE/)
-            end
-
+            puts "Skipping test tasks: Rails version < 4"
 
           end
 

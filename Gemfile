@@ -43,4 +43,4 @@ gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
 gem 'ffi-geos', :platform => :jruby
 
 #gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => '3-2-stable'
-gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => 'master'
+#gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => 'master'

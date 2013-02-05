@@ -12,9 +12,23 @@ env:
   - POSTGIS=1.5
   - POSTGIS=2.0
 gemfile:
-  - gemfiles/activerecord_3.0.gemfile
-  - gemfiles/activerecord_3.1.gemfile
-  - gemfiles/activerecord_3.2.gemfile
-before_install: ./bin/ci/before_install.sh
-before_script: ./bin/ci/before_script.sh
+  - travis/ar30.gemfile
+  - travis/ar31.gemfile
+  - travis/ar32.gemfile
+matrix:
+  include:
+    - rvm: 1.9.3
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=1.5
+    - rvm: 1.9.3
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=2.0
+    - rvm: jruby-19mode
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=1.5
+    - rvm: jruby-19mode
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=2.0
+before_install: ./travis/before_install.sh
+before_script: ./travis/before_script.sh
 script: bundle exec rake test

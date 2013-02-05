@@ -1,3 +1,7 @@
+=== 0.6.0 / 2013-02-??
+
+* Support for Rails 4
+
 === 0.5.1 / 2013-02-04
 
 * Database creation properly treats geometry_columns as a view when setting owner. (Pull request by hendrikstier)
