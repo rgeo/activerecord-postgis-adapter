@@ -165,25 +165,13 @@ module ActiveRecord
 
         def ensure_installation_configs
           if !configuration['script_dir'] && !configuration['postgis_extension']
-            establish_master_connection
-            postgres_version_ = connection.select_value('SELECT VERSION()').to_s
-            if postgres_version_ =~ /(\d+)\.(\d+)(\.\d+)?/
-              postgres_version_major_ = $1.to_i
-              postgres_version_minor_ = $2.to_i
-            else
-              postgres_version_major_ = postgres_version_minor_ = 0
-            end
-            postgis_version_ = connection.select_value('SELECT POSTGIS_VERSION()').to_s
-            if postgis_version_ =~ /(\d+)\.(\d+)(\.\d+)?/
-              postgis_version_major_ = $1.to_i
-            else
-              postgis_version_major_ = 0
-            end
-            if postgis_version_major_ >= 2 && (postgres_version_major_ > 9 || postgres_version_major_ == 9 && postgres_version_minor_ >= 2)
+            share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
+            script_dir_ = ::File.expand_path('contrib/postgis-1.5', share_dir_)
+            control_file_ = ::File.expand_path('extension/postgis.control', share_dir_)
+            if ::File.readable?(control_file_)
               configuration['postgis_extension'] = 'postgis'
-            else
-              sharedir_ = `pg_config --sharedir`.strip rescue '/usr/share'
-              configuration['script_dir'] = ::File.expand_path('contrib/postgis-1.5', sharedir_)
+            elsif ::File.directory?(script_dir_)
+              configuration['script_dir'] = script_dir_
             end
           end
         end

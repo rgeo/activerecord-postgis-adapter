@@ -1,6 +1,7 @@
 === 0.6.0 / 2013-02-??
 
-* Support for Rails 4
+* Preliminary support for Rails 4
+* If neither script_dir nor postgis_extension is given in config, the adapter tries to guess a default based on what is installed.
 
 === 0.5.1 / 2013-02-04
 
