@@ -23,12 +23,13 @@ matrix:
     - rvm: 1.9.3
       gemfile: travis/ar40.gemfile
       env: POSTGIS=2.0
-    - rvm: jruby-19mode
-      gemfile: travis/ar40.gemfile
-      env: POSTGIS=1.5
-    - rvm: jruby-19mode
-      gemfile: travis/ar40.gemfile
-      env: POSTGIS=2.0
+# jdbc adapters don't seem to work with Rails 4 yet, as of 2013-02-05
+#    - rvm: jruby-19mode
+#      gemfile: travis/ar40.gemfile
+#      env: POSTGIS=1.5
+#    - rvm: jruby-19mode
+#      gemfile: travis/ar40.gemfile
+#      env: POSTGIS=2.0
 before_install: ./travis/before_install.sh
 before_script: ./travis/before_script.sh
 script: bundle exec rake test
