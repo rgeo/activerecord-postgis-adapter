@@ -163,12 +163,14 @@ module ActiveRecord
 
 
         def setup_gis_schemas
+          establish_connection(configuration.merge('schema_search_path' => 'public'))
           auth_ = has_su? ? " AUTHORIZATION #{quoted_username}" : ''
           search_path.each do |schema_|
             if schema_.downcase != 'public' && !connection.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
               connection.execute("CREATE SCHEMA #{schema_}#{auth_}")
             end
           end
+          establish_connection(configuration)
         end
 
 
