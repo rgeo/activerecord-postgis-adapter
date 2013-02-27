@@ -2,3 +2,4 @@ adapter: postgis
 host: 127.0.0.1
 database: postgis_adapter_test
 username: postgres
+setup: default

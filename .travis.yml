@@ -3,6 +3,7 @@ rvm:
   - 1.8.7
 #  - 1.9.2
   - 1.9.3
+  - 2.0.0
 #  - ruby-head
   - jruby-18mode
   - jruby-19mode
@@ -21,6 +22,12 @@ matrix:
       gemfile: travis/ar40.gemfile
       env: POSTGIS=1.5
     - rvm: 1.9.3
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=2.0
+    - rvm: 2.0.0
+      gemfile: travis/ar40.gemfile
+      env: POSTGIS=1.5
+    - rvm: 2.0.0
       gemfile: travis/ar40.gemfile
       env: POSTGIS=2.0
 # jdbc adapters don't seem to work with Rails 4 yet, as of 2013-02-05

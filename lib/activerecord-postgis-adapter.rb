@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 #
-# Gemfile used for CI testing.
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
-# Copyright 2012 Daniel Azuma
+# Copyright 2010-2012 Daniel Azuma
 #
 # All rights reserved.
 #
@@ -33,15 +33,5 @@
 # -----------------------------------------------------------------------------
 ;
 
-source "http://rubygems.org"
 
-# Specify your gem's dependencies in activerecord-postgis-adapter.gemspec
-gemspec
-
-gem 'pg', '>= 0.14.1', :platform => :ruby
-gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
-gem 'ffi-geos', :platform => :jruby
-
-#gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => 'master'
-#gem 'activerecord', '~> 3.2.11'
-gem 'activerecord', '~> 4.0.0.beta1'
+require 'active_record/connection_adapters/postgis_adapter.rb'

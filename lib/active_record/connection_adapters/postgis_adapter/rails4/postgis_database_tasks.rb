@@ -164,7 +164,7 @@ module ActiveRecord
 
 
         def ensure_installation_configs
-          if !configuration['script_dir'] && !configuration['postgis_extension']
+          if configuration['setup'] == 'default' && !configuration['script_dir'] && !configuration['postgis_extension']
             share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
             script_dir_ = ::File.expand_path('contrib/postgis-1.5', share_dir_)
             control_file_ = ::File.expand_path('extension/postgis.control', share_dir_)

@@ -1,7 +1,8 @@
-=== 0.6.0 / 2013-02-??
+=== 0.6.0.beta1 / 2013-02-27
 
-* Preliminary support for Rails 4
+* Preliminary support for Rails 4, following the beta release.
 * If neither script_dir nor postgis_extension is given in config, the adapter tries to guess a default based on what is installed.
+* We may actually have some useful documentation now.
 
 === 0.5.1 / 2013-02-04
 

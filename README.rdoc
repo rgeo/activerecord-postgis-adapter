@@ -1,298 +1,50 @@
 == PostGIS \ActiveRecord Adapter
 
-The PostGIS \ActiveRecord Adapter is an \ActiveRecord connection adapter
-based on the standard postgresql adapter. It extends the standard adapter
-to provide support for the spatial extensions provided by PostGIS, using
-the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial
-data in Ruby. Like the standard postgresql adapter, this adapter requires
-the pg gem.
+The activerecord-postgis-adapter is a plugin that provides access to features of the PostGIS geospatial database from \ActiveRecord. Technically, it extends the standard postgresql adapter to provide support for the spatial data types and features added by the PostGIS extension. It uses the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial data in Ruby.
 
-== What This Adapter Provides
+== About the PostGIS Adapter
 
-=== Spatial Migrations
+This is a brief summary covering how to use activerecord-postgis-adapter. For full documentation, see Documentation.rdoc.
 
-First, this adapter extends the migration syntax to support creating 
-spatial columns and indexes. To create a spatial column, use the
-<tt>:geometry</tt> type, or any of the OGC spatial types such as
-<tt>:point</tt> or <tt>:line_string</tt> to set a geometry type
-constraint. You may also provide any of the following options:
+=== Features
 
-* <tt>:geographic</tt> -- If set to true, create a PostGIS geography
-  column; otherwise create a geometry column. Default is false.
-* <tt>:srid</tt> -- Set a SRID constraint for the column. Default is 4326
-  for a geography column, or -1 for a geometry column. Note that PostGIS
-  currently (as of version 1.5.2) requires geography columns to have SRID
-  4326, so this constraint is of limited use for geography columns.
-* <tt>:has_z</tt> -- Specify that objects in this column include a Z
-  coordinate. Default is false.
-* <tt>:has_m</tt> -- Specify that objects in this column include an M
-  coordinate. Default is false.
+The adapter provides three basic capabilities.
 
-To create a spatial index, set the <tt>:spatial</tt> option to true when
-creating the index.
+First, it provides *spatial migrations*. It extends the \ActiveRecord migration syntax to support creating spatially-typed columns and spatial indexes. You can control the various PostGIS-provided attributes such as srid, dimension, and geographic vs geometric math.
 
-Examples:
+Second, it recognizes spatial types and casts them properly to RGeo geometry objects. The adapter can configure these objects automatically based on the srid and dimension in the database table, or you can tell it to convert the data to a different form. You can also set attribute data using WKT format.
 
-  create_table :my_spatial_table do |t|
-    t.column :shape, :geometry  # or t.geometry :shape
-    t.line_string :path, :srid => 3785
-    t.point :lonlat, :geographic => true
-  end
-  change_table :my_spatial_table do |t|
-    t.index :lonlat, :spatial => true
-  end
+Third, it lets you include simple spatial data in queries. WKT format data and RGeo objects can be embedded in where clauses. If you include the Squeel gem, the adapter also supports advanced queries utilizing the standard SQL spatial function set.
 
-=== Spatial Attributes
+=== Requirements
 
-When this adapter is in use, spatial attributes in your \ActiveRecord
-objects will have RGeo geometry values. You can set spatial attributes
-either to RGeo geometry objects, or to strings in WKT (well-known text)
-format, which the adapter will automatically convert to geometry objects.
+The adapter has the following requirements.
 
-Spatial objects in RGeo are tied to a factory that specifies the
-coordinate system as well as other behaviors of the object. You must
-therefore specify a factory for each spatial column (attribute) in your
-\ActiveRecord class. You can either set an explicit factory for a specific
-column, or provide a factory generator that will yield the appropriate
-factory for the table's spatial columns based on their types. For the
-former, call the <tt>set_rgeo_factory_for_column</tt> class method on your
-\ActiveRecord class. For the latter, set the rgeo_factory_generator class
-attribute. This generator should understand the usual <tt>:srid</tt>,
-<tt>:has_z_coordinate</tt>, and <tt>:has_m_coordinate</tt> options. It
-will also be passed a <tt>:geographic</tt> option indicating whether the
-column is a geography column. The set_rgeo_factory_for_column and 
-rgeo_factory_generator methods are actually implemented and documented in
-the "rgeo-activerecord" gem.
-
-Examples, given the spatial table defined above:
-
-  class MySpatialTable < ActiveRecord::Base
-    
-    # By default, use the GEOS implementation for spatial columns.
-    self.rgeo_factory_generator = RGeo::Geos.factory_generator
-    
-    # But use a geographic implementation for the :lonlat column.
-    set_rgeo_factory_for_column(:lonlat, RGeo::Geographic.spherical_factory(:srid => 4326))
-    
-  end
-
-Now you can interact with the data using the RGeo types:
-
-  rec = MySpatialTable.new
-  rec.lonlat = 'POINT(-122 47)'   # You can set by feature object or WKT.
-  loc = rec.lonlat                # Accessing always returns a feature object, in
-                                  # this case, a geographic that understands latitude.
-  loc.latitude                    # => 47
-  rec.shape = loc                 # the factory for the :shape column is GEOS, so the
-                                  # value will be cast from geographic to GEOS.
-  RGeo::Geos.is_geos?(rec.shape)  # => true
-
-=== Spatial Queries
-
-You can create simple queries based on objective equality in the same way
-you would on a scalar column:
-
-  rec = MySpatialTable.where(:lonlat => RGeo::Geos.factory.point(-122, 47)).first
-
-You can also use WKT:
-
-  rec = MySpatialTable.where(:lonlat => 'POINT(-122 47)').first
-
-Most more complex spatial queries require the use of SQL functions. You
-can write such queries in raw SQL, but you may find the "squeel" gem
-very helpful in this regard. Using squeel, you can write queries like
-the following:
-
-  my_polygon = get_my_polygon()
-  MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first
-
-Note that using squeel to create SQL functions requires Rails 3.1 or later.
-
-One common query is to find all objects displaying in a window. This can
-be done using the overlap (&&) operator with a bounding box. Here's an
-example that finds linestrings in the "path" column that intersect a
-bounding box:
-
-  sw = get_sw_corner_in_projected_coordinates()
-  ne = get_ne_corner_in_projected_coordinates()
-  window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-  MySpatialTable.where{path.op('&&', window)}.all
-
-Note that bounding box queries make sense only in a projected coordinate
-system; you shouldn't try to run such a query against a lat/long
-(geographic) column.
-
-== Installation And Configuration
-
-=== Installing The Adapter Gem
-
-This adapter has the following requirements:
-
-* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or
-  later also supported.
+* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or later also supported.
 * PostgreSQL 9.0 or later.
 * PostGIS 1.5, PostGIS 2.0, or later.
-* \ActiveRecord 3.0.3 or later. Earlier versions will not work.
-  Should be compatible with Rails versions through 3.2.x.
-* rgeo gem 0.3.20 or later.
-* rgeo-activerecord gem 0.4.6 or later.
+* \ActiveRecord 3.0.3 or later. Earlier versions will not work. Rails 4.0 is supported on an experimental basis.
+* The rgeo and rgeo-activerecord gems are also required.
 
-Please note that this version of the adapter is targeted towards Rails
-3.x only. The upcoming version 0.6 will target Rails 4.0.
+The adapter has been tested and does work on JRuby using the JDBC Postgres drivers. However, support for this platform is not as good as the standard Ruby implementation. (Note that, as of this writing, the JDBC Postgres driver itself is not yet compatible with Rails 4.) Similarly, Rubinius receives limited testing and support.
 
-Install this adapter as a gem:
+=== Installation and Configuration
+
+To install this adapter in a Rails application, add it to your Gemfile:
+
+  gem 'activerecord-postgis-adapter'
+
+and run bundle install to update your bundle.
+
+Alternately, if you are not using bundler, install it separately as a gem:
 
   gem install activerecord-postgis-adapter
 
-See the README for the "rgeo" gem, a required dependency, for further
-installation information.
+Please note that this adapter uses the rgeo gem, which may have additional dependencies. Please see the README documentation for rgeo for more information.
 
-=== Basic Setup
+Once you have installed the adapter, you'll need to edit your config/database.yml to call for it. At minimum, this means changing the adapter name from "postgresql" to "postgis". It may also require other settings to ensure that other functions (such as rake test) continue to work as expected. We recommend reading the Configuration section in the Documentation.rdoc file carefully before starting to use this adapter.
 
-To use this adapter, add this gem, "activerecord-postgis-adapter", to
-your Gemfile, and then request the adapter name "postgis" in your
-database connection configuration (which, for a Rails application, is in
-the config/database.yml file). Most of the rest of the configuration
-parameters are identical to those used by the stock "postgresql" adapter,
-so you can create a new Rails application using:
-
-  rails new my_app --database=postgresql
-
-...and then just change the adapter name to "postgis".
-
-Next, the PostGIS adapter includes a special railtie that provides
-support for PostGIS databases in ActiveRecord's rake tasks. This railtie
-is required in order to run, e.g., rake test. To install this railtie,
-you should add this line to your config/application.rb:
-
-  require 'active_record/connection_adapters/postgis_adapter/railtie'
-
-Note that this railtie must load after the ActiveRecord railtie. That is,
-the above require command should appear after <tt>require 'rails/all'</tt>.
-
-Besides the adapter name "postgis", most of the other database connection
-configuration parameters are the same as for the stock postgresql adapter.
-However, there are several important differences:
-
-The <i>postgis_extension</i> parameter is specific to the PostGIS adapter,
-and directs the adapter to use PostgreSQL's CREATE EXTENSION mechanism to
-install the PostGIS types, functions, and tables to a newly created
-database. Generally, the value should be set to true, although you can
-also set it to a comma-delimited list of extension names (which should
-include the base "postgis" extension) if you want to customize which
-extensions are installed. This is the easiest and cleanest way to create
-a PostGIS-enabled database, but it requires PostgreSQL 9.1 or later AND
-PostGIS 2.0 or later.
-
-The <i>script_dir</i> parameter is specific to the PostGIS adapter, and
-provides an alternative mechanism for installing the PostGIS definitions
-into a new database if either PostgreSQL 9.1 or PostGIS 2.0 is not
-available. Its value should be set to the path to the directory containing
-the SQL scripts for PostGIS installation. This is the directory containing
-the files <tt>postgis.sql</tt> and <tt>spatial_ref_sys.sql</tt>. (A common
-setting might be <tt>/usr/local/share/contrib/postgis-1.5</tt>.)
-
-If you do not provide <i>postgis_extension</i> or <i>script_dir</i>, you
-will need to add the PostGIS definitions to the database manually.
-Generally, therefore, one of them is required at least for the test
-database, which is usually automatically created by the rake tasks.
-
-The <i>su_username</i> and <i>su_password</i> parameters are provided as
-optional parameters. If present, they specify an auxiliary PostgreSQL role
-that must have superuser privileges, and will be used for two functions:
-
-* Creation of the database. This is so the main database user that you
-  specify doesn't need superuser or createdb privileges.
-* Installation of the PostGIS definitions, if requested by the presence
-  of <i>script_dir</i>. This process normally requires a PostgreSQL role
-  with superuser privileges, so again if you don't want your main database
-  user to have superuser, you can perform this one-time procedure using
-  this alternate user.
-
-Any schemas listed in the <i>schema_search_path</i> parameter are
-automatically created by <tt>rake db:create</tt>. This is arguably what
-the stock PostgreSQL adapter should be doing anyway.
-
-If the schema name "postgis" is included in the <i>schema_search_path</i>
-parameter, the PostGIS adapter omits it from a SQL structure dump. This
-can be useful to prevent PostGIS definitions from appearing in the dump
-as described below.
-
-=== Dealing With PostGIS Definitions
-
-PostGIS adds many objects (types, functions, triggers, meta-information
-tables, and other elements) to a PostgreSQL database. These objects are
-required for PostGIS to do its magic, but they can be a hassle when you
-are managing a database using Rails and \ActiveRecord. For example:
-
-* Dumping the structure as sql (rake db:structure:dump) may include all
-  the PostGIS definitions as well, cluttering your SQL dump.
-* Rake tasks that automatically create the test database (e.g. rake test)
-  may fail or emit a number of errors, because PostGIS definitions are
-  either missing from or being added twice to the test database.
-
-To deal with these issues, we recommend the following technique:
-
-* Set either <i>postgis_extension</i> or <i>script_dir</i> in both your
-  development and test database configurations. This will cause the
-  PostGIS Adapter to automatically add the PostGIS definitions and
-  spatial references to your databases when rake db:create is run.
-* Include "postgis" in your <i>schema_search_path</i> for both your
-  development and test databases. It is recommended that you include it
-  as the <i>last</i> element, so that your application's tables don't get
-  added to it by default. For example:
-    schema_search_path: public,postgis
-  The PostGIS Adapter responds to this special name by sandboxing the
-  PostGIS definitions into it when rake db:create is run, and it omits
-  this schema when running SQL structure dumps.
-* Provide a separate <i>su_username</i> and <i>su_password</i> role for
-  your database, and make sure that separate role has the SUPERUSER
-  privilege. This will cause the PostGIS Adapter to log in as that role
-  when creating the database, since the PostGIS definition installation
-  requires SUPERUSER. Alternately, you can give the normal database role
-  SUPERUSER privilege, which may be okay for a private development
-  database. These are used only by <tt>rake db:create</tt> so you can
-  remove them from your database.yml for your staging or production
-  databases once you've performed the initial creation.
-
-Finally, you generally should _not_ set the \ActiveRecord schema format
-to <tt>:sql</tt>. You should leave it set to <tt>:ruby</tt>. The reason
-is that SQL structure dumps do not currently properly emit the correct
-<tt>AddGeometryColumn</tt> calls to create geometry columns. As a result,
-the <tt>geometry_columns</tt> table will not be populated properly, among
-other issues. Instead, the schema.rb output by the Ruby schema format
-should properly replicate the schema. This is a known issue that we are
-investigating.
-
-Of course, the above steps are only really necessary if you are using the
-\ActiveRecord rake tasks that create databases, either directly such as
-<tt>rake db:create</tt>, or indirectly such as <tt>rake test</tt>. They
-should not be necessary for running migrations or normal website execution.
-
-== Additional Information
-
-=== Known bugs and limitations
-
-The PostGIS Adapter has not yet been tested in a large variety of
-environments, and we are still fixing bugs. Here is a partial list of
-current known issues.
-
-* Dumping as SQL (i.e. rake db:structure:dump) does not properly emit
-  <tt>AddGeometryColumn</tt> calls, and so does not completely create the
-  spatial schema (e.g. it fails to add the proper row to the
-  <tt>geometry_columns</tt> table.) Because of this, you should not depend
-  on a SQL dump to be an accurate representation of the schema. (That is,
-  you should not set <tt>config.active_record.schema_format</tt> to
-  <tt>:sql</tt>.)
-* Other rake tasks may not be supported. Unfortunately, Rails makes it
-  difficult for custom \ActiveRecord adapters to support the standard
-  rake tasks.
-* Rails 4 is not yet supported. The good news is that the base PostgreSQL
-  adapter has been refactored in Rails 4 to make it easier to extend, so
-  once we get it ported to Rails 4, activerecord-postgis-adapter should
-  be cleaner and more stable.
-
-=== Development and support
+== Development and Support
 
 Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
 
@@ -306,7 +58,7 @@ Support available on the rgeo-users google group at http://groups.google.com/gro
 
 Contact the author at dazuma at gmail dot com.
 
-=== Acknowledgments
+== Acknowledgments
 
 The PostGIS Adapter and its supporting libraries (including RGeo) are
 written by Daniel Azuma (http://www.daniel-azuma.com).
@@ -318,9 +70,9 @@ This adapter implementation owes some debt to the spatial_adapter plugin
 different design decisions for this adapter, studying the spatial_adapter
 source gave us a head start on the implementation.
 
-=== License
+== License
 
-Copyright 2010-2012 Daniel Azuma
+Copyright 2010-2013 Daniel Azuma
 
 All rights reserved.
 

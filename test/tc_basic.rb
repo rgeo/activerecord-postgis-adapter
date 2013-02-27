@@ -148,6 +148,14 @@ module RGeo
             end
 
 
+            def test_set_point_wkt_wrong_type
+              klass_ = populate_ar_class(:mercator_point)
+              assert_raises(::ActiveRecord::StatementInvalid) do
+                klass_.create(:latlon => 'LINESTRING(1 2, 3 4, 5 6)')
+              end
+            end
+
+
             def test_custom_factory
               klass_ = create_ar_class
               klass_.connection.create_table(:spatial_test) do |t_|
