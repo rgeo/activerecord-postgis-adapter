@@ -87,8 +87,8 @@ module RGeo
               klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               assert_nil(obj_.latlon)
-              obj_.latlon = @factory.point(1, 2)
-              assert_equal(@factory.point(1, 2), obj_.latlon)
+              obj_.latlon = @factory.point(1.0, 2.0)
+              assert_equal(@factory.point(1.0, 2.0), obj_.latlon)
               assert_equal(3785, obj_.latlon.srid)
             end
 
@@ -98,7 +98,7 @@ module RGeo
               obj_ = klass_.new
               assert_nil(obj_.latlon)
               obj_.latlon = 'POINT(1 2)'
-              assert_equal(@factory.point(1, 2), obj_.latlon)
+              assert_equal(@factory.point(1.0, 2.0), obj_.latlon)
               assert_equal(3785, obj_.latlon.srid)
             end
 
@@ -106,7 +106,7 @@ module RGeo
             def test_save_and_load_point
               klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
-              obj_.latlon = @factory.point(1, 2)
+              obj_.latlon = @factory.point(1.0, 2.0)
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
@@ -119,7 +119,7 @@ module RGeo
             def test_save_and_load_geographic_point
               klass_ = populate_ar_class(:latlon_point_geographic)
               obj_ = klass_.new
-              obj_.latlon = @factory.point(1, 2)
+              obj_.latlon = @factory.point(1.0, 2.0)
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
@@ -136,7 +136,7 @@ module RGeo
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
-              assert_equal(@factory.point(1, 2), obj2_.latlon)
+              assert_equal(@factory.point(1.0, 2.0), obj2_.latlon)
               assert_equal(3785, obj2_.latlon.srid)
             end
 
@@ -204,16 +204,16 @@ module RGeo
               factory1_ = ::RGeo::Cartesian.preferred_factory(:srid => 3785)
               factory2_ = ::RGeo::Cartesian.preferred_factory(:srid => 2000)
               obj_ = klass_.new
-              obj_.geo = factory1_.point(1, 2)
+              obj_.geo = factory1_.point(1.0, 2.0)
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
-              assert_equal(factory1_.point(1, 2), obj2_.geo)
+              assert_equal(factory1_.point(1.0, 2.0), obj2_.geo)
               assert_equal(3785, obj2_.geo.srid)
-              obj2_.geo = factory2_.point(3, 4)
+              obj2_.geo = factory2_.point(3.0, 4.0)
               obj2_.save!
               obj3_ = klass_.find(id_)
-              assert_equal(factory2_.point(3,4), obj3_.geo)
+              assert_equal(factory2_.point(3.0, 4.0), obj3_.geo)
               assert_equal(2000, obj3_.geo.srid)
             end
 
@@ -222,7 +222,7 @@ module RGeo
               klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
               assert_match(/"latlon":null/, obj_.to_json)
-              obj_.latlon = @factory.point(1, 2)
+              obj_.latlon = @factory.point(1.0, 2.0)
               assert_match(/"latlon":"POINT\s\(1\.0\s2\.0\)"/, obj_.to_json)
             end
 

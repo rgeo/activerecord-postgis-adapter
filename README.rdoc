@@ -40,13 +40,13 @@ Alternately, if you are not using bundler, install it separately as a gem:
 
   gem install activerecord-postgis-adapter
 
-Please note that this adapter uses the rgeo gem, which may have additional dependencies. Please see the README documentation for rgeo for more information.
+Please note that this adapter uses the rgeo gem, which may have additional dependencies. Please see the \README documentation for rgeo for more information.
 
 Once you have installed the adapter, you'll need to edit your config/database.yml to call for it. At minimum, this means changing the adapter name from "postgresql" to "postgis". It may also require other settings to ensure that other functions (such as rake test) continue to work as expected. We recommend reading the Configuration section in the Documentation.rdoc file carefully before starting to use this adapter.
 
 == Development and Support
 
-Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
+\Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
 
 Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
 

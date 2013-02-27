@@ -206,8 +206,8 @@ end
 
 task :test => [:build_ext, :build_other] do
   $:.unshift(::File.expand_path('lib', ::File.dirname(__FILE__)))
-  if ::ENV['TESTCASE']
-    test_files_ = ::Dir.glob("test/#{::ENV['TESTCASE']}.rb")
+  if (cases_ = ::ENV['TESTCASE'])
+    test_files_ = cases_.split(',').map{ |c_| ::Dir.glob("test/#{c_}.rb") }.flatten
   else
     test_files_ = ::Dir.glob("test/**/tc_*.rb")
   end
