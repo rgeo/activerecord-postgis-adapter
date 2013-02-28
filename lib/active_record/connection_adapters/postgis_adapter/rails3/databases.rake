@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Rakefile changes for PostGIS adapter
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -32,6 +32,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # -----------------------------------------------------------------------------
 ;
+
+
+# :stopdoc:
 
 
 require 'rgeo/active_record/task_hacker'
@@ -214,3 +217,6 @@ end
   drop_database(config_)
   create_database(config_)
 end
+
+
+# :startdoc:

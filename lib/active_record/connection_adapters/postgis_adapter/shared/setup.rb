@@ -34,25 +34,20 @@
 ;
 
 
-begin
-  require 'versionomy'
-rescue ::LoadError
-end
+module ActiveRecord  # :nodoc:
+
+  module ConnectionAdapters  # :nodoc:
+
+    module PostGISAdapter  # :nodoc:
 
 
-module ActiveRecord
-
-  module ConnectionAdapters
-
-    module PostGISAdapter
-
-
-      # Current version of PostGISAdapter as a frozen string
-      VERSION_STRING = ::File.read(::File.dirname(__FILE__)+'/../../../../Version').strip.freeze
-
-      # Current version of PostGISAdapter as a Versionomy object, if the
-      # Versionomy gem is available; otherwise equal to VERSION_STRING.
-      VERSION = defined?(::Versionomy) ? ::Versionomy.parse(VERSION_STRING) : VERSION_STRING
+      def self.initial_setup
+        gis_ignore_tables_ = ['geometry_columns', 'spatial_ref_sys', 'layer', 'topology']
+        ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
+        gis_ignore_tables_.each do |table_|
+          ignore_tables_ << table_ unless ignore_tables_.include?(table_)
+        end
+      end
 
 
     end

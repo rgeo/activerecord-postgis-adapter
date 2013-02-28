@@ -34,16 +34,14 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  module ConnectionAdapters  # :nodoc:
 
-  module ConnectionAdapters
-
-    module PostGISAdapter
+    module PostGISAdapter  # :nodoc:
 
 
-      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn
+      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
 
         def initialize(factory_settings_, table_name_, name_, default_, oid_type_, sql_type_=nil, null_=true, opts_=nil)
@@ -176,7 +174,7 @@ module ActiveRecord
       # Register spatial types with the postgres OID mechanism
       # so we can recognize custom columns coming from the database.
 
-      class SpatialOID < PostgreSQLAdapter::OID::Type
+      class SpatialOID < PostgreSQLAdapter::OID::Type  # :nodoc:
 
         def initialize(factory_generator_)
           @factory_generator = factory_generator_
@@ -196,7 +194,7 @@ module ActiveRecord
       # This is a hack to ActiveRecord::ModelSchema. We have to "decorate" the decorate_columns
       # method to apply class-specific customizations to spatial type casting.
 
-      module DecorateColumnsModification
+      module DecorateColumnsModification  # :nodoc:
 
         def decorate_columns(columns_hash_)
           columns_hash_ = super(columns_hash_)
@@ -220,5 +218,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

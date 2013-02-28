@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Rakefile changes for PostGIS adapter
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,6 +34,9 @@
 ;
 
 
+# :stopdoc:
+
+
 namespace :db do
   namespace :gis do
     desc "Setup PostGIS data in the database"
@@ -44,3 +47,6 @@ namespace :db do
     end
   end
 end
+
+
+# :startdoc:

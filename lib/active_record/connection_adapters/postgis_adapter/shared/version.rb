@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Railtie for PostGIS adapter
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,7 +34,11 @@
 ;
 
 
-# :stopdoc:
+begin
+  require 'versionomy'
+rescue ::LoadError
+end
+
 
 module ActiveRecord
 
@@ -43,13 +47,12 @@ module ActiveRecord
     module PostGISAdapter
 
 
-      class Railtie < ::Rails::Railtie
+      # Current version of PostGISAdapter as a frozen string
+      VERSION_STRING = ::File.read(::File.expand_path('../../../../../Version', ::File.dirname(__FILE__))).strip.freeze
 
-        rake_tasks do
-          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
-        end
-
-      end
+      # Current version of PostGISAdapter as a Versionomy object, if the
+      # Versionomy gem is available; otherwise equal to VERSION_STRING.
+      VERSION = defined?(::Versionomy) ? ::Versionomy.parse(VERSION_STRING) : VERSION_STRING
 
 
     end
@@ -57,5 +60,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

@@ -133,7 +133,7 @@ Standard spatial databases also include a table called <code>spatial_ref_sys</co
 
 To store spatial data, you must create a column with a spatial type. PostGIS provides a variety of spatial types, including point, linestring, polygon, and different kinds of collections. These types are defined in a standard produced by the Open Geospatial Consortium. Furthermore, you can specify options indicating the coordinate system and number of coordinates for the values you are storing.
 
-The activerecord-postgis-adapter extends ActiveRecord's migration syntax to support these spatial types. The following example creates four spatial columns in a table:
+The activerecord-postgis-adapter extends \ActiveRecord's migration syntax to support these spatial types. The following example creates four spatial columns in a table:
 
   create_table :my_spatial_table do |t|
     t.column :shape1, :geometry
@@ -169,7 +169,7 @@ Following are the options understood by the adapter:
 * <tt>:has_z</tt> -- Specify that objects in this column include a Z coordinate. Default is false.
 * <tt>:has_m</tt> -- Specify that objects in this column include an M coordinate. Default is false.
 
-The adapter also extends the ActiveRecord migration syntax for creating spatial indexes. To create a PostGIS spatial index, simply set the :spatial option to true, as follows:
+The adapter also extends the \ActiveRecord migration syntax for creating spatial indexes. To create a PostGIS spatial index, simply set the :spatial option to true, as follows:
 
   change_table :my_spatial_table do |t|
     t.index :lonlat, :spatial => true
@@ -177,11 +177,11 @@ The adapter also extends the ActiveRecord migration syntax for creating spatial 
 
 === Configuring the \ActiveRecord class
 
-ActiveRecord's usefulness stems from the way it automatically configures classes based on the database structure and schema. If a column in the database has an integer type, ActiveRecord automatically casts the data to a Ruby Integer. In the same way, the activerecord-postgis-adapter automatically casts spatial data to a corresponding RGeo data type.
+\ActiveRecord's usefulness stems from the way it automatically configures classes based on the database structure and schema. If a column in the database has an integer type, \ActiveRecord automatically casts the data to a Ruby Integer. In the same way, the activerecord-postgis-adapter automatically casts spatial data to a corresponding RGeo data type.
 
 However, RGeo offers more "flexibility" in its type system than can be interpreted solely from analyzing the database column. For example, you can configure RGeo objects to exhibit certain behaviors related to their serialization, validation, coordinate system, or computation. These settings are embodied in the RGeo "factory" associated with the object.
 
-Therefore, you can configure the adapter to use a particular factory (i.e. a particular combination of settings) for data associated with each column in the database. This is done by calling class methods on the \ActiveRecord class associated with that database table. Specifically, you can call <code>set_rgeo_factory_for_column</code> to set the factory that ActiveRecord uses for a particular column.
+Therefore, you can configure the adapter to use a particular factory (i.e. a particular combination of settings) for data associated with each column in the database. This is done by calling class methods on the \ActiveRecord class associated with that database table. Specifically, you can call <code>set_rgeo_factory_for_column</code> to set the factory that \ActiveRecord uses for a particular column.
 
 You can also provide a "factory generator" function which takes information from the database column and returns a suitable factory. Set the factory generator by setting the <code>rgeo_factory_generator</code> class attribute of your \ActiveRecord class. The generator should be a callable object that takes a hash that could include the following keys:
 
@@ -206,7 +206,7 @@ The <code>rgeo_factory_generator</code> attribute and <code>set_rgeo_factory_for
 
 === Schema Dump and Reload
 
-The presence of geospatial data in a database causes some issues with ActiveRecord's schema dump and restore functions. This is because (1) installing PostGIS into your database injects a lot of objects in your database that can clutter up schema dumps, and (2) to define a spatial column correctly, you generally must call a SQL function such as AddGeometryColumn(), and Rails's schema dumper isn't smart enough to reproduce those function calls.
+The presence of geospatial data in a database causes some issues with \ActiveRecord's schema dump and restore functions. This is because (1) installing PostGIS into your database injects a lot of objects in your database that can clutter up schema dumps, and (2) to define a spatial column correctly, you generally must call a SQL function such as AddGeometryColumn(), and Rails's schema dumper isn't smart enough to reproduce those function calls.
 
 Because of this, we recommend the following.
 

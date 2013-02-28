@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# PostGIS adapter for Rails 3.x
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,29 +34,26 @@
 ;
 
 
-require 'active_record/connection_adapters/postgresql_adapter'
+module Arel  # :nodoc:
+  module Visitors  # :nodoc:
 
+    class PostGIS < PostgreSQL  # :nodoc:
 
-require 'active_record/connection_adapters/postgis_adapter/rails3/main_adapter.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_table_definition.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_column.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails3/arel_tosql.rb'
+      FUNC_MAP = {
+        'st_wkttosql' => 'ST_GeomFromEWKT',
+      }
 
+      include ::RGeo::ActiveRecord::SpatialToSql
 
-if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'
-  require 'active_record/connection_adapters/postgis_adapter/rails3/jdbc_connection'
-else
-  require 'active_record/connection_adapters/postgis_adapter/rails3/pg_connection'
+      def st_func(standard_name_)
+        FUNC_MAP[standard_name_.downcase] || standard_name_
+      end
+
+      alias_method :visit_in_spatial_context, :visit
+
+    end
+
+    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
+
+  end
 end
-
-
-if defined?(::Rails::Railtie)
-  require 'active_record/connection_adapters/postgis_adapter/rails3/railtie.rb'
-end
-
-
-ignore_tables_ = ::ActiveRecord::SchemaDumper.ignore_tables
-ignore_tables_ << 'geometry_columns' unless ignore_tables_.include?('geometry_columns')
-ignore_tables_ << 'spatial_ref_sys' unless ignore_tables_.include?('spatial_ref_sys')
-ignore_tables_ << 'layer' unless ignore_tables_.include?('layer')
-ignore_tables_ << 'topology' unless ignore_tables_.include?('topology')

@@ -34,16 +34,14 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  module ConnectionAdapters  # :nodoc:
 
-  module ConnectionAdapters
-
-    module PostGISAdapter
+    module PostGISAdapter  # :nodoc:
 
 
-      class SpatialTableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition
+      class SpatialTableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
         def column(name_, type_, options_={})
           if (info_ = @base.spatial_column_constructor(type_.to_sym))
@@ -83,7 +81,7 @@ module ActiveRecord
       end
 
 
-      module SpatialColumnDefinitionMethods
+      module SpatialColumnDefinitionMethods  # :nodoc:
 
         def spatial_type
           @spatial_type
@@ -140,5 +138,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

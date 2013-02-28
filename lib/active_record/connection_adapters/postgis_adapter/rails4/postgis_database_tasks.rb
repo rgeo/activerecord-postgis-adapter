@@ -34,15 +34,13 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  module ConnectionAdapters  # :nodoc:
 
-  module ConnectionAdapters
+    module PostGISAdapter  # :nodoc:
 
-    module PostGISAdapter
-
-      class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks
+      class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
 
 
         def initialize(config_)
@@ -232,5 +230,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

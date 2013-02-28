@@ -26,7 +26,7 @@ The adapter has the following requirements.
 * \ActiveRecord 3.0.3 or later. Earlier versions will not work. Rails 4.0 is supported on an experimental basis.
 * The rgeo and rgeo-activerecord gems are also required.
 
-The adapter has been tested and does work on JRuby using the JDBC Postgres drivers. However, support for this platform is not as good as the standard Ruby implementation. (Note that, as of this writing, the JDBC Postgres driver itself is not yet compatible with Rails 4.) Similarly, Rubinius receives limited testing and support.
+As of this writing, the JDBC Postgres driver is not yet compatible with Rails 4, so the combination of JRuby/JDBC/Rails 4 is not yet supported. Similarly, Rubinius receives limited testing and support.
 
 === Installation and Configuration
 

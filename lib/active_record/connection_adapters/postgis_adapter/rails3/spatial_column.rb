@@ -34,16 +34,14 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  module ConnectionAdapters  # :nodoc:
 
-  module ConnectionAdapters
-
-    module PostGISAdapter
+    module PostGISAdapter  # :nodoc:
 
 
-      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn
+      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
 
         FACTORY_SETTINGS_CACHE = {}
@@ -195,5 +193,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

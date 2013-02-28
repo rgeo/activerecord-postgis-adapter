@@ -34,30 +34,33 @@
 ;
 
 
-# :stopdoc:
+unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::Railtie)
 
-module Arel
-  module Visitors
+  module ActiveRecord  # :nodoc:
 
-    class PostGIS < PostgreSQL
+    module ConnectionAdapters  # :nodoc:
 
-      FUNC_MAP = {
-        'st_wkttosql' => 'ST_GeomFromEWKT',
-      }
+      module PostGISAdapter  # :nodoc:
 
-      include ::RGeo::ActiveRecord::SpatialToSql
 
-      def st_func(standard_name_)
-        FUNC_MAP[standard_name_.downcase] || standard_name_
+        class Railtie < ::Rails::Railtie  # :nodoc:
+
+          rake_tasks do
+            directory_ = case ::ActiveRecord::VERSION::MAJOR
+              when 3 then 'rails3'
+              when 4 then 'rails4'
+              else raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
+            end
+            load ::File.expand_path("../#{directory_}/databases.rake", ::File.dirname(__FILE__))
+          end
+
+        end
+
+
       end
-
-      alias_method :visit_in_spatial_context, :visit
 
     end
 
-    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
-
   end
-end
 
-# :startdoc:
+end

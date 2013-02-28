@@ -34,16 +34,14 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  module ConnectionAdapters  # :nodoc:
 
-  module ConnectionAdapters
-
-    module PostGISAdapter
+    module PostGISAdapter  # :nodoc:
 
 
-      class MainAdapter < PostgreSQLAdapter
+      class MainAdapter < PostgreSQLAdapter  # :nodoc:
 
 
         SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
@@ -337,5 +335,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:

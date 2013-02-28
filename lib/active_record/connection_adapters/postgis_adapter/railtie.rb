@@ -36,3 +36,4 @@
 
 require 'rails/railtie'
 require 'active_record/connection_adapters/postgis_adapter'
+load 'active_record/connection_adapters/postgis_adapter/shared/railtie'

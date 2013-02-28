@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# Railtie for PostGIS adapter
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,20 +34,57 @@
 ;
 
 
-# :stopdoc:
+module ActiveRecord  # :nodoc:
 
-module ActiveRecord
+  class Base  # :nodoc:
 
-  module ConnectionAdapters
-
-    module PostGISAdapter
+    class << self
 
 
-      class Railtie < ::Rails::Railtie
+      if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'
 
-        rake_tasks do
-          load ::File.expand_path('databases.rake', ::File.dirname(__FILE__))
+
+        require 'active_record/connection_adapters/jdbcpostgresql_adapter'
+        require 'active_record/connection_adapters/postgis_adapter/shared/jdbc_compat'
+
+
+        def postgis_connection(config_)
+          ::ActiveRecord::ConnectionAdapters::PostGISAdapter.create_jdbc_connection(self, config_)
         end
+
+        alias_method :jdbcpostgis_connection, :postgis_connection
+
+
+      else
+
+
+        require 'pg'
+
+
+        # ActiveRecord looks for the postgis_connection factory method in
+        # this class.
+        #
+        # Based on the default <tt>postgresql_connection</tt> definition from
+        # ActiveRecord.
+
+        def postgis_connection(config_)
+          config_ = config_.symbolize_keys
+          host_ = config_[:host]
+          port_ = config_[:port] || 5432
+          username_ = config_[:username].to_s if config_[:username]
+          password_ = config_[:password].to_s if config_[:password]
+
+          if config_.key?(:database)
+            database_ = config_[:database]
+          else
+            raise ::ArgumentError, "No database specified. Missing argument: database."
+          end
+
+          # The postgres drivers don't allow the creation of an unconnected PGconn object,
+          # so just pass a nil connection object for the time being.
+          ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, [host_, port_, nil, nil, database_, username_, password_], config_)
+        end
+
 
       end
 
@@ -57,5 +94,3 @@ module ActiveRecord
   end
 
 end
-
-# :startdoc:
