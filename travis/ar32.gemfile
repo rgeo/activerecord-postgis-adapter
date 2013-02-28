@@ -3,6 +3,6 @@ source "http://rubygems.org"
 gem "pg", ">= 0.14.1", :platform => :ruby
 gem "activerecord-jdbcpostgresql-adapter", :platform => :jruby
 gem "ffi-geos", :platform => :jruby
-gem "activerecord", "~> 3.2.11"
+gem "activerecord", "~> 3.2.12"
 
 gemspec :path => "../"
