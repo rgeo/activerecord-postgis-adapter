@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>Table of Contents - PostGIS ActiveRecord Adapter 0.5.1 Documentation</title>
+<title>Table of Contents - PostGIS ActiveRecord Adapter 0.6.1 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -21,15 +21,39 @@
 
 
 <body class="indexpage">
-<h1>Table of Contents - PostGIS ActiveRecord Adapter 0.5.1 Documentation</h1>
+<h1>Table of Contents - PostGIS ActiveRecord Adapter 0.6.1 Documentation</h1>
 
 <h2>Pages</h2>
 <ul>
   <li class="file">
+    <a href="Documentation_rdoc.html">Documentation</a>
+
+    <img class="toc-toggle" src="images/transparent.png" alt="" title="toggle headings">
+    <ul class="initially-hidden">
+      <li><a href="Documentation_rdoc.html#label-Documentation+for+the+PostGIS+ActiveRecord+Adapter">Documentation for the PostGIS ActiveRecord Adapter</a>
+      <li><a href="Documentation_rdoc.html#label-Installation+and+Configuration">Installation and Configuration</a>
+      <li><a href="Documentation_rdoc.html#label-General+Installation+Considerations">General Installation Considerations</a>
+      <li><a href="Documentation_rdoc.html#label-Creating+a+Spatial+Rails+App">Creating a Spatial Rails App</a>
+      <li><a href="Documentation_rdoc.html#label-Upgrading+an+Existing+Database+With+Spatial+Features">Upgrading an Existing Database With Spatial Features</a>
+      <li><a href="Documentation_rdoc.html#label-Recommended+Configuration">Recommended Configuration</a>
+      <li><a href="Documentation_rdoc.html#label-Alternate+Configuration+Schemes">Alternate Configuration Schemes</a>
+      <li><a href="Documentation_rdoc.html#label-Spatial+Database+Structure">Spatial Database Structure</a>
+      <li><a href="Documentation_rdoc.html#label-Creating+Spatial+Tables">Creating Spatial Tables</a>
+      <li><a href="Documentation_rdoc.html#label-Configuring+the+ActiveRecord+class">Configuring the ActiveRecord class</a>
+      <li><a href="Documentation_rdoc.html#label-Schema+Dump+and+Reload">Schema Dump and Reload</a>
+      <li><a href="Documentation_rdoc.html#label-Working+With+Spatial+Data">Working With Spatial Data</a>
+      <li><a href="Documentation_rdoc.html#label-Reading+and+Writing+Spatial+Columns">Reading and Writing Spatial Columns</a>
+      <li><a href="Documentation_rdoc.html#label-Spatial+Queries">Spatial Queries</a>
+      <li><a href="Documentation_rdoc.html#label-License">License</a>
+    </ul>
+  </li>
+    <li class="file">
     <a href="History_rdoc.html">History</a>
 
     <img class="toc-toggle" src="images/transparent.png" alt="" title="toggle headings">
     <ul class="initially-hidden">
+      <li><a href="History_rdoc.html#label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28</a>
+      <li><a href="History_rdoc.html#label-0.6.0+%2F+2013-02-28">0.6.0 / 2013-02-28</a>
       <li><a href="History_rdoc.html#label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04</a>
       <li><a href="History_rdoc.html#label-0.5.0+%2F+2012-12-12">0.5.0 / 2012-12-12</a>
       <li><a href="History_rdoc.html#label-0.4.3+%2F+2012-04-13">0.4.3 / 2012-04-13</a>
@@ -55,17 +79,11 @@
     <img class="toc-toggle" src="images/transparent.png" alt="" title="toggle headings">
     <ul class="initially-hidden">
       <li><a href="README_rdoc.html#label-PostGIS+ActiveRecord+Adapter">PostGIS ActiveRecord Adapter</a>
-      <li><a href="README_rdoc.html#label-What+This+Adapter+Provides">What This Adapter Provides</a>
-      <li><a href="README_rdoc.html#label-Spatial+Migrations">Spatial Migrations</a>
-      <li><a href="README_rdoc.html#label-Spatial+Attributes">Spatial Attributes</a>
-      <li><a href="README_rdoc.html#label-Spatial+Queries">Spatial Queries</a>
-      <li><a href="README_rdoc.html#label-Installation+And+Configuration">Installation And Configuration</a>
-      <li><a href="README_rdoc.html#label-Installing+The+Adapter+Gem">Installing The Adapter Gem</a>
-      <li><a href="README_rdoc.html#label-Basic+Setup">Basic Setup</a>
-      <li><a href="README_rdoc.html#label-Dealing+With+PostGIS+Definitions">Dealing With PostGIS Definitions</a>
-      <li><a href="README_rdoc.html#label-Additional+Information">Additional Information</a>
-      <li><a href="README_rdoc.html#label-Known+bugs+and+limitations">Known bugs and limitations</a>
-      <li><a href="README_rdoc.html#label-Development+and+support">Development and support</a>
+      <li><a href="README_rdoc.html#label-About+the+PostGIS+Adapter">About the PostGIS Adapter</a>
+      <li><a href="README_rdoc.html#label-Features">Features</a>
+      <li><a href="README_rdoc.html#label-Requirements">Requirements</a>
+      <li><a href="README_rdoc.html#label-Installation+and+Configuration">Installation and Configuration</a>
+      <li><a href="README_rdoc.html#label-Development+and+Support">Development and Support</a>
       <li><a href="README_rdoc.html#label-Acknowledgments">Acknowledgments</a>
       <li><a href="README_rdoc.html#label-License">License</a>
     </ul>
@@ -75,11 +93,26 @@
 
 <h2 id="classes">Classes/Modules</h2>
 <ul>
-  <li class="class">
-    <a href="ActiveRecord/Base.html">ActiveRecord::Base</a>
+  <li class="module">
+    <a href="ActiveRecord.html">ActiveRecord</a>
   </li>
-    <li class="class">
-    <a href="ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
+    <li class="module">
+    <a href="ActiveRecord/ConnectionAdapters.html">ActiveRecord::ConnectionAdapters</a>
+  </li>
+    <li class="module">
+    <a href="ActiveRecord/ConnectionAdapters/PostGISAdapter.html">ActiveRecord::ConnectionAdapters::PostGISAdapter</a>
+  </li>
+    <li class="module">
+    <a href="ActiveRecord/ConnectionAdapters/PostGISAdapter/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostGISAdapter::PostgreSQLAdapter</a>
+  </li>
+    <li class="module">
+    <a href="ActiveRecord/ConnectionAdapters/PostGISAdapter/RGeo.html">ActiveRecord::ConnectionAdapters::PostGISAdapter::RGeo</a>
+  </li>
+    <li class="module">
+    <a href="ActiveRecord/Tasks.html">ActiveRecord::Tasks</a>
+  </li>
+    <li class="module">
+    <a href="ActiveRecord/VERSION.html">ActiveRecord::VERSION</a>
   </li>
   
 </ul>
@@ -87,24 +120,12 @@
 <h2 id="methods">Methods</h2>
 <ul>
   
-    <li class="method"><a href="ActiveRecord/Base.html#method-c-jdbcpostgis_connection">::jdbcpostgis_connection &mdash; ActiveRecord::Base</a>
-  
-    <li class="method"><a href="ActiveRecord/Base.html#method-c-postgis_connection">::postgis_connection &mdash; ActiveRecord::Base</a>
-  
-    <li class="method"><a href="ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html#method-c-visitor_for">::visitor_for &mdash; ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
-  
-    <li class="method"><a href="ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html#method-i-query">#query &mdash; ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
-  
-    <li class="method"><a href="ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html#method-i-schema_search_path">#schema_search_path &mdash; ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
-  
-    <li class="method"><a href="ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html#method-i-schema_search_path-3D">#schema_search_path= &mdash; ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
-  
 </ul>
 
 
 <footer id="validator-badges">
   <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 4.0.0.
   <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
 </footer>
 

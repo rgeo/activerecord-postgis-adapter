@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>History - PostGIS ActiveRecord Adapter 0.5.1 Documentation</title>
+<title>History - PostGIS ActiveRecord Adapter 0.6.1 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -43,11 +43,42 @@
 </nav>
 
 
+  
+<div id="table-of-contents">
+  <nav class="section">
+    <h3 class="section-header">Table of Contents</h3>
+    <ul>
+      <li><a href="#label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28</a>
+      <li><a href="#label-0.6.0+%2F+2013-02-28">0.6.0 / 2013-02-28</a>
+      <li><a href="#label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04</a>
+      <li><a href="#label-0.5.0+%2F+2012-12-12">0.5.0 / 2012-12-12</a>
+      <li><a href="#label-0.4.3+%2F+2012-04-13">0.4.3 / 2012-04-13</a>
+      <li><a href="#label-0.4.2+%2F+2012-04-12">0.4.2 / 2012-04-12</a>
+      <li><a href="#label-0.4.1+%2F+2012-02-22">0.4.1 / 2012-02-22</a>
+      <li><a href="#label-0.4.0+%2F+2011-08-15">0.4.0 / 2011-08-15</a>
+      <li><a href="#label-0.3.6+%2F+2011-06-21">0.3.6 / 2011-06-21</a>
+      <li><a href="#label-0.3.5+%2F+2011-04-12">0.3.5 / 2011-04-12</a>
+      <li><a href="#label-0.3.4+%2F+2011-04-11">0.3.4 / 2011-04-11</a>
+      <li><a href="#label-0.3.3+%2F+2011-02-28">0.3.3 / 2011-02-28</a>
+      <li><a href="#label-0.3.2+%2F+2011-02-11">0.3.2 / 2011-02-11</a>
+      <li><a href="#label-0.3.1+%2F+2011-02-01">0.3.1 / 2011-02-01</a>
+      <li><a href="#label-0.3.0+%2F+2011-01-26">0.3.0 / 2011-01-26</a>
+      <li><a href="#label-0.2.3+%2F+2011-01-06">0.2.3 / 2011-01-06</a>
+      <li><a href="#label-0.2.2+%2F+2010-12-27">0.2.2 / 2010-12-27</a>
+      <li><a href="#label-0.2.1+%2F+2010-12-15">0.2.1 / 2010-12-15</a>
+      <li><a href="#label-0.2.0+%2F+2010-12-07">0.2.0 / 2010-12-07</a>
+    </ul>
+  </nav>
+</div>
+
+
   <div id="project-metadata">
     <nav id="fileindex-section" class="section project-section">
   <h3 class="section-header">Pages</h3>
 
   <ul>
+  
+    <li class="file"><a href="./Documentation_rdoc.html">Documentation</a>
   
     <li class="file"><a href="./History_rdoc.html">History</a>
   
@@ -61,9 +92,19 @@
 
   <ul class="link-list">
   
-    <li><a href="./ActiveRecord/Base.html">ActiveRecord::Base</a>
+    <li><a href="./ActiveRecord.html">ActiveRecord</a>
   
-    <li><a href="./ActiveRecord/ConnectionAdapters/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostgreSQLAdapter</a>
+    <li><a href="./ActiveRecord/ConnectionAdapters.html">ActiveRecord::ConnectionAdapters</a>
+  
+    <li><a href="./ActiveRecord/ConnectionAdapters/PostGISAdapter.html">ActiveRecord::ConnectionAdapters::PostGISAdapter</a>
+  
+    <li><a href="./ActiveRecord/ConnectionAdapters/PostGISAdapter/PostgreSQLAdapter.html">ActiveRecord::ConnectionAdapters::PostGISAdapter::PostgreSQLAdapter</a>
+  
+    <li><a href="./ActiveRecord/ConnectionAdapters/PostGISAdapter/RGeo.html">ActiveRecord::ConnectionAdapters::PostGISAdapter::RGeo</a>
+  
+    <li><a href="./ActiveRecord/Tasks.html">ActiveRecord::Tasks</a>
+  
+    <li><a href="./ActiveRecord/VERSION.html">ActiveRecord::VERSION</a>
   
   </ul>
 </nav>
@@ -73,7 +114,19 @@
 
 <div id="documentation" class="description">
   
-<h3 id="label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04</h3>
+<h3 id="label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28<span><a href="#label-0.6.1+%2F+2013-02-28">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
+<ul><li>
+<p>Fixed some gem loading issues.</p>
+</li></ul>
+
+<h3 id="label-0.6.0+%2F+2013-02-28">0.6.0 / 2013-02-28<span><a href="#label-0.6.0+%2F+2013-02-28">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
+<ul><li>
+<p>Experimental support for the recently released Rails 4.0 beta.</p>
+</li><li>
+<p><a href="Documentation_rdoc.html">Documentation</a> improvements.</p>
+</li></ul>
+
+<h3 id="label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04<span><a href="#label-0.5.1+%2F+2013-02-04">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Database creation properly treats geometry_columns as a view when setting
 owner. (Pull request by hendrikstier)</p>
@@ -92,7 +145,7 @@ characters. (Contributed by Toms Mikoss)</p>
 <p>Updates for compatibility with jdbc-postgres 9.2.1002.1</p>
 </li></ul>
 
-<h3 id="label-0.5.0+%2F+2012-12-12">0.5.0 / 2012-12-12</h3>
+<h3 id="label-0.5.0+%2F+2012-12-12">0.5.0 / 2012-12-12<span><a href="#label-0.5.0+%2F+2012-12-12">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
 <p>Thanks to the many who have submitted pull requests. A bunch of them are in
 this release. Special thanks to Nick Muerdter, who succeeded in porting the
@@ -132,13 +185,13 @@ projected coordinate systems. (Reported by Tee Parham)</p>
 <p>Update URLs to point to new website.</p>
 </li></ul>
 
-<h3 id="label-0.4.3+%2F+2012-04-13">0.4.3 / 2012-04-13</h3>
+<h3 id="label-0.4.3+%2F+2012-04-13">0.4.3 / 2012-04-13<span><a href="#label-0.4.3+%2F+2012-04-13">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Rake tasks failed on Rails 3.0.x because of an issue with rgeo-activerecord
 pre-0.4.5. Now we require the fixed version.</p>
 </li></ul>
 
-<h3 id="label-0.4.2+%2F+2012-04-12">0.4.2 / 2012-04-12</h3>
+<h3 id="label-0.4.2+%2F+2012-04-12">0.4.2 / 2012-04-12<span><a href="#label-0.4.2+%2F+2012-04-12">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Support the db:structure:load rake task in recent versions of Rails.</p>
 </li><li>
@@ -151,7 +204,7 @@ finding objects to display in a map region).</p>
 <p>Fix some issues determine the correct default value for spatial columns.</p>
 </li></ul>
 
-<h3 id="label-0.4.1+%2F+2012-02-22">0.4.1 / 2012-02-22</h3>
+<h3 id="label-0.4.1+%2F+2012-02-22">0.4.1 / 2012-02-22<span><a href="#label-0.4.1+%2F+2012-02-22">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Some compatibility fixes for Rails 3.2. (Reported by Ryan Williams with
 implementation help from Radek Paviensky.)</p>
@@ -159,7 +212,7 @@ implementation help from Radek Paviensky.)</p>
 <p>Now requires rgeo-activerecord 0.4.3.</p>
 </li></ul>
 
-<h3 id="label-0.4.0+%2F+2011-08-15">0.4.0 / 2011-08-15</h3>
+<h3 id="label-0.4.0+%2F+2011-08-15">0.4.0 / 2011-08-15<span><a href="#label-0.4.0+%2F+2011-08-15">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Various fixes for Rails 3.1 compatibility.</p>
 </li><li>
@@ -175,7 +228,7 @@ transform these queries to use spatial equality was egregious and broke in
 Rails 3.1 with no clear workaround.</p>
 </li></ul>
 
-<h3 id="label-0.3.6+%2F+2011-06-21">0.3.6 / 2011-06-21</h3>
+<h3 id="label-0.3.6+%2F+2011-06-21">0.3.6 / 2011-06-21<span><a href="#label-0.3.6+%2F+2011-06-21">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Require latest rgeo-activerecord to get some fixes.</p>
 </li><li>
@@ -186,18 +239,18 @@ Rails 3.1 with no clear workaround.</p>
 attribute.</p>
 </li></ul>
 
-<h3 id="label-0.3.5+%2F+2011-04-12">0.3.5 / 2011-04-12</h3>
+<h3 id="label-0.3.5+%2F+2011-04-12">0.3.5 / 2011-04-12<span><a href="#label-0.3.5+%2F+2011-04-12">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>The .gemspec was missing the databases.rake file. Fixed.</p>
 </li></ul>
 
-<h3 id="label-0.3.4+%2F+2011-04-11">0.3.4 / 2011-04-11</h3>
+<h3 id="label-0.3.4+%2F+2011-04-11">0.3.4 / 2011-04-11<span><a href="#label-0.3.4+%2F+2011-04-11">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>A .gemspec file is now available for gem building and bundler git
 integration.</p>
 </li></ul>
 
-<h3 id="label-0.3.3+%2F+2011-02-28">0.3.3 / 2011-02-28</h3>
+<h3 id="label-0.3.3+%2F+2011-02-28">0.3.3 / 2011-02-28<span><a href="#label-0.3.3+%2F+2011-02-28">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>INCOMPATIBLE CHANGE: the default SRID for non-geography columns is now -1,
 rather than 4326. (Geography columns still default to 4326.)</p>
@@ -210,7 +263,7 @@ properly. (Reported by Pirmin Kalberer)</p>
 declaring multiple spatial columns in a migration).</p>
 </li></ul>
 
-<h3 id="label-0.3.2+%2F+2011-02-11">0.3.2 / 2011-02-11</h3>
+<h3 id="label-0.3.2+%2F+2011-02-11">0.3.2 / 2011-02-11<span><a href="#label-0.3.2+%2F+2011-02-11">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>You can now specify a separate “database creation” superuser role so your
 normal PostgreSQL login role doesn’t need superuser privileges when running
@@ -220,13 +273,13 @@ database creation tasks.</p>
 schema search path.</p>
 </li></ul>
 
-<h3 id="label-0.3.1+%2F+2011-02-01">0.3.1 / 2011-02-01</h3>
+<h3 id="label-0.3.1+%2F+2011-02-01">0.3.1 / 2011-02-01<span><a href="#label-0.3.1+%2F+2011-02-01">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Fixed a syntax error that prevented the adapter from loading on Ruby 1.8.
 Whoops. (Reported by miguelperez)</p>
 </li></ul>
 
-<h3 id="label-0.3.0+%2F+2011-01-26">0.3.0 / 2011-01-26</h3>
+<h3 id="label-0.3.0+%2F+2011-01-26">0.3.0 / 2011-01-26<span><a href="#label-0.3.0+%2F+2011-01-26">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Reworked type and constraint handling, which should result in a large
 number of bug fixes, especially related to schema dumps.</p>
@@ -238,18 +291,20 @@ is expected to be released with Rails 3.1.)</p>
 href="README_rdoc.html">README</a>), though a compatibility wrapper has
 been left in the old location.</p>
 </li><li>
-<p>Getting index information from the ActiveRecord class now properly
-recognizes spatial-ness.</p>
+<p>Getting index information from the <a
+href="ActiveRecord.html">ActiveRecord</a> class now properly recognizes
+spatial-ness.</p>
 </li><li>
 <p>Reorganized the code a bit for better clarity.</p>
 </li></ul>
 
-<h3 id="label-0.2.3+%2F+2011-01-06">0.2.3 / 2011-01-06</h3>
+<h3 id="label-0.2.3+%2F+2011-01-06">0.2.3 / 2011-01-06<span><a href="#label-0.2.3+%2F+2011-01-06">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Many of ActiveRecord’s rake tasks weren’t working because they need to know
 about every adapter explicitly. I hesitate to call this “fixed” since I see
-it as a problem in ActiveRecord, but we now at least have a workaround so
-the rake tasks will run properly. (Reported by Tad Thorley.)</p>
+it as a problem in <a href="ActiveRecord.html">ActiveRecord</a>, but we now
+at least have a workaround so the rake tasks will run properly. (Reported
+by Tad Thorley.)</p>
 </li><li>
 <p>Dumping schema.rb now omits the PostGIS internal tables.</p>
 </li><li>
@@ -265,7 +320,7 @@ rebuilding a test database because the PostGIS internals would get applied
 twice.</p>
 </li></ul>
 
-<h3 id="label-0.2.2+%2F+2010-12-27">0.2.2 / 2010-12-27</h3>
+<h3 id="label-0.2.2+%2F+2010-12-27">0.2.2 / 2010-12-27<span><a href="#label-0.2.2+%2F+2010-12-27">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Support for basic spatial equality queries. e.g. constructs such as:</p>
 
@@ -277,13 +332,13 @@ twice.</p>
 specified as a symbol.</p>
 </li></ul>
 
-<h3 id="label-0.2.1+%2F+2010-12-15">0.2.1 / 2010-12-15</h3>
+<h3 id="label-0.2.1+%2F+2010-12-15">0.2.1 / 2010-12-15<span><a href="#label-0.2.1+%2F+2010-12-15">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Provides meta-information to RGeo 0.2.2 or later to support access to
 PostGIS’s spatial reference system table.</p>
 </li></ul>
 
-<h3 id="label-0.2.0+%2F+2010-12-07">0.2.0 / 2010-12-07</h3>
+<h3 id="label-0.2.0+%2F+2010-12-07">0.2.0 / 2010-12-07<span><a href="#label-0.2.0+%2F+2010-12-07">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Initial public alpha release. Spun activerecord-postgis-adapter off from
 the core rgeo gem.</p>
@@ -300,7 +355,7 @@ for the rgeo gem.</p>
 
 <footer id="validator-badges">
   <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
-  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 4.0.0.
   <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
 </footer>
 

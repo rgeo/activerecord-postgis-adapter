@@ -6,6 +6,7 @@
  *
  */
 
+/* vim: ft=css et sw=2 ts=2 sts=2 */
 /* Base Green is: #6C8C22 */
 
 * { padding: 0; margin: 0; }
@@ -27,6 +28,27 @@ h1 {
 }
 h2,h3,h4 { margin-top: 1.5em; }
 
+h1 span,
+h2 span,
+h3 span,
+h4 span,
+h5 span,
+h6 span {
+  display: none;
+  padding-left: 1em;
+  font-size: 50%;
+  vertical-align: super;
+}
+
+h1:hover span,
+h2:hover span,
+h3:hover span,
+h4:hover span,
+h5:hover span,
+h6:hover span {
+  display: inline;
+}
+
 :link,
 :visited {
   color: #6C8C22;
@@ -40,6 +62,16 @@ h2,h3,h4 { margin-top: 1.5em; }
 pre {
   background: #ddd;
   padding: 0.5em 0;
+}
+
+blockquote {
+  background: #ddd;
+  margin: 1em;
+  padding: 0.25em;
+}
+
+blockquote > :first-child {
+  margin-top: 0 !important;
 }
 
 /* @group Generic Classes */
@@ -193,6 +225,15 @@ pre {
   list-style-image: url(images/page_green.png);
 }
 
+#table-of-contents {
+  margin-top: 2em;
+}
+
+#table-of-contents ul {
+  padding-left: 28px;
+  list-style-image: url(images/tag_blue.png);
+}
+
 dl.svninfo {
   color: #666;
   margin: 0;
@@ -203,7 +244,9 @@ dl.svninfo dt {
 
 ul.link-list li {
   white-space: nowrap;
+  line-height: 20px;
 }
+
 ul.link-list .type {
   font-size: 8px;
   text-transform: uppercase;
@@ -211,6 +254,10 @@ ul.link-list .type {
   background: #969696;
   padding: 2px 4px;
   -webkit-border-radius: 5px;
+}
+
+.calls-super {
+  background: url(images/arrow_up.png) no-repeat right center;
 }
 
 /* @end */
@@ -383,6 +430,11 @@ ul.link-list .type {
 
 #documentation .method-source-code {
   display: none;
+}
+
+#documentation .method-description .method-calls-super {
+  color: #333;
+  font-weight: bolder;
 }
 
 #documentation .method-detail {
