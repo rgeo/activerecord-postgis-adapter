@@ -88,7 +88,7 @@ end
 ::ActiveRecord::ConnectionAdapters::PostGISAdapter.initial_setup
 
 if defined?(::Rails::Railtie)
-  load 'active_record/connection_adapters/postgis_adapter/shared/railtie'
+  load ::File.expand_path('postgis_adapter/shared/railtie.rb', ::File.dirname(__FILE__))
 end
 
 # :startdoc:

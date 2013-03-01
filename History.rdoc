@@ -1,3 +1,7 @@
+=== 0.6.1 / 2013-02-28
+
+* Fixed some gem loading issues.
+
 === 0.6.0 / 2013-02-28
 
 * Experimental support for the recently released Rails 4.0 beta.

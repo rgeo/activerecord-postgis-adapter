@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 #
-# PostGIS adapter for Rails 3.x
+# PostGIS adapter for ActiveRecord
 #
 # -----------------------------------------------------------------------------
 # Copyright 2010-2012 Daniel Azuma
@@ -34,6 +34,4 @@
 ;
 
 
-require 'rails/railtie'
-require 'active_record/connection_adapters/postgis_adapter'
-load ::File.expand_path('shared/railtie.rb', ::File.dirname(__FILE__))
+require 'active_record/connection_adapters/postgis_adapter.rb'
