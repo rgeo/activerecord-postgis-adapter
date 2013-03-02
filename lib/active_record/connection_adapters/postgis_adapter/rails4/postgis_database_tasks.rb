@@ -69,7 +69,9 @@ module ActiveRecord  # :nodoc:
           extra_configs_ = {'encoding' => encoding}
           extra_configs_['owner'] = username if has_su?
           connection.create_database(configuration['database'], configuration.merge(extra_configs_))
-          establish_connection(configuration) unless master_established_
+          establish_connection(configuration.merge(
+            'username' => su_username,
+            'password' => su_password)) unless master_established_
           setup_gis
         rescue ::ActiveRecord::StatementInvalid => error_
           if /database .* already exists/ === error_.message
@@ -183,7 +185,9 @@ module ActiveRecord  # :nodoc:
               connection.execute("CREATE SCHEMA #{schema_}#{auth_}")
             end
           end
-          establish_connection(configuration)
+          establish_connection(configuration.merge(
+            'username' => su_username,
+            'password' => su_password))
         end
 
 
