@@ -113,7 +113,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def quoted_username
-          @quoted_username ||= ::PGconn.quote_ident(username)
+          @quoted_username ||= ::ActiveRecord::Base.connection.quote_column_name(username)
         end
 
         def password
