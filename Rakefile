@@ -44,6 +44,7 @@ RAKEFILE_CONFIG = {} unless defined?(::RAKEFILE_CONFIG)
 # Gemspec
 
 require 'rubygems'
+require 'rubygems/package'
 gemspec_ = eval(::File.read(::Dir.glob('*.gemspec').first))
 release_gemspec_ = eval(::File.read(::Dir.glob('*.gemspec').first))
 release_gemspec_.version = gemspec_.version.to_s.sub(/\.nonrelease$/, '')
@@ -184,13 +185,21 @@ end
 task :build_other
 
 task :build_gem => :build_other do
-  ::Gem::Builder.new(gemspec_).build
+  if defined?(::Gem::Builder)
+    ::Gem::Builder.new(gemspec_).build
+  else
+    ::Gem::Package.build(gemspec_)
+  end
   mkdir_p(pkg_directory_)
   mv "#{gemspec_.name}-#{gemspec_.version}.gem", "#{pkg_directory_}/"
 end
 
 task :build_release => :build_other do
-  ::Gem::Builder.new(release_gemspec_).build
+  if defined?(::Gem::Builder)
+    ::Gem::Builder.new(release_gemspec_).build
+  else
+    ::Gem::Package.build(release_gemspec_)
+  end
   mkdir_p(pkg_directory_)
   mv "#{release_gemspec_.name}-#{release_gemspec_.version}.gem", "#{pkg_directory_}/"
 end

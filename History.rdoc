@@ -1,3 +1,9 @@
+=== 0.6.2 / 2013-03-08
+
+* The PostGIS setup now properly connects as the superuser. (Reported by Adam Trilling)
+* Fix database setup rake tasks under jruby/jdbc adapter. (Pull request by Nick Muerdter)
+* The Rakefile is now compatible with RubyGems 2.0.
+
 === 0.6.1 / 2013-02-28
 
 * Fixed some gem loading issues.

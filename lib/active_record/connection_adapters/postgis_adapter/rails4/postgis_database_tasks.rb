@@ -50,6 +50,7 @@ module ActiveRecord  # :nodoc:
 
 
         def setup_gis
+          establish_su_connection
           setup_gis_schemas
           if script_dir
             setup_gis_from_script_dir
@@ -59,6 +60,7 @@ module ActiveRecord  # :nodoc:
           if has_su? && (script_dir || extension_names)
             setup_gis_grant_privileges
           end
+          establish_connection(configuration) if has_su?
         end
 
 
@@ -69,7 +71,6 @@ module ActiveRecord  # :nodoc:
           extra_configs_ = {'encoding' => encoding}
           extra_configs_['owner'] = username if has_su?
           connection.create_database(configuration['database'], configuration.merge(extra_configs_))
-          establish_connection(configuration) unless master_established_
           setup_gis
         rescue ::ActiveRecord::StatementInvalid => error_
           if /database .* already exists/ === error_.message
@@ -102,6 +103,14 @@ module ActiveRecord  # :nodoc:
         def establish_master_connection
           establish_connection(configuration.merge(
             'database' => 'postgres',
+            'schema_search_path' => 'public',
+            'username' => su_username,
+            'password' => su_password))
+        end
+
+
+        def establish_su_connection
+          establish_connection(configuration.merge(
             'schema_search_path' => 'public',
             'username' => su_username,
             'password' => su_password))
@@ -176,14 +185,12 @@ module ActiveRecord  # :nodoc:
 
 
         def setup_gis_schemas
-          establish_connection(configuration.merge('schema_search_path' => 'public'))
           auth_ = has_su? ? " AUTHORIZATION #{quoted_username}" : ''
           search_path.each do |schema_|
             if schema_.downcase != 'public' && !connection.execute("SELECT 1 FROM pg_catalog.pg_namespace WHERE nspname='#{schema_}'").try(:first)
               connection.execute("CREATE SCHEMA #{schema_}#{auth_}")
             end
           end
-          establish_connection(configuration)
         end
 
 
@@ -212,6 +219,7 @@ module ActiveRecord  # :nodoc:
           postgis_version_ = connection.execute( "SELECT #{postgis_schema}.postgis_version();" ).first['postgis_version']
           if postgis_version_ =~ /^2/
             connection.execute("ALTER VIEW #{postgis_schema}.geometry_columns OWNER TO #{quoted_username}")
+            connection.execute("ALTER VIEW #{postgis_schema}.geography_columns OWNER TO #{quoted_username}")
           else
             connection.execute("ALTER TABLE #{postgis_schema}.geometry_columns OWNER TO #{quoted_username}")
           end
