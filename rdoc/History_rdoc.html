@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>History - PostGIS ActiveRecord Adapter 0.6.1 Documentation</title>
+<title>History - PostGIS ActiveRecord Adapter 0.6.2 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -48,6 +48,7 @@
   <nav class="section">
     <h3 class="section-header">Table of Contents</h3>
     <ul>
+      <li><a href="#label-0.6.2+%2F+2013-03-08">0.6.2 / 2013-03-08</a>
       <li><a href="#label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28</a>
       <li><a href="#label-0.6.0+%2F+2013-02-28">0.6.0 / 2013-02-28</a>
       <li><a href="#label-0.5.1+%2F+2013-02-04">0.5.1 / 2013-02-04</a>
@@ -114,6 +115,20 @@
 
 <div id="documentation" class="description">
   
+<h3 id="label-0.6.2+%2F+2013-03-08">0.6.2 / 2013-03-08<span><a href="#label-0.6.2+%2F+2013-03-08">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
+<ul><li>
+<p>The PostGIS setup now properly connects as the superuser. (Reported by Adam
+Trilling)</p>
+</li><li>
+<p>Fix database setup rake tasks under jruby/jdbc adapter. (Pull request by
+Nick Muerdter)</p>
+</li><li>
+<p>Drop table no longer tries to modify the geometry_columns view under
+PostGIS 2.0.</p>
+</li><li>
+<p>The Rakefile is now compatible with RubyGems 2.0.</p>
+</li></ul>
+
 <h3 id="label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28<span><a href="#label-0.6.1+%2F+2013-02-28">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Fixed some gem loading issues.</p>
@@ -158,11 +173,11 @@ Travis up and running for the project.</p>
 <p>Allow WKT to be to be specified as a string-like object rather than having
 to be a String. (Pull request by Bryan Larsen)</p>
 </li><li>
-<p>Ignore postgis_topology tables ‘layer’ and ‘topology’ in rake
-db:schema:dump. (Pull request by Greg Phillips)</p>
+<p>Ignore postgis_topology tables &#39;layer&#39; and &#39;topology&#39; in
+rake db:schema:dump. (Pull request by Greg Phillips)</p>
 </li><li>
-<p>Create schemas specified in schema_search_path only if they don’t exist.
-(Pull request by legendetm)</p>
+<p>Create schemas specified in schema_search_path only if they don&#39;t
+exist. (Pull request by legendetm)</p>
 </li><li>
 <p>Force the postgis_topology extension be created in the topology schema.
 (Pull request by Dimitri Roche)</p>
@@ -221,11 +236,11 @@ implementation help from Radek Paviensky.)</p>
 <p>INCOMPATIBLE CHANGE: simple queries (e.g. MyClass.where(:latlon =&gt;
 my_point)) use an objective rather than spatial equality test. Earlier
 versions transformed this form to use st_equals, but now if you need to
-test for spatial equality, you’ll need to call st_equals explicitly. I’m
-still evaluating which direction we want to go with this in the future, but
-we may be stuck with the current behavior because the hack required to
-transform these queries to use spatial equality was egregious and broke in
-Rails 3.1 with no clear workaround.</p>
+test for spatial equality, you&#39;ll need to call st_equals explicitly.
+I&#39;m still evaluating which direction we want to go with this in the
+future, but we may be stuck with the current behavior because the hack
+required to transform these queries to use spatial equality was egregious
+and broke in Rails 3.1 with no clear workaround.</p>
 </li></ul>
 
 <h3 id="label-0.3.6+%2F+2011-06-21">0.3.6 / 2011-06-21<span><a href="#label-0.3.6+%2F+2011-06-21">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
@@ -235,7 +250,7 @@ Rails 3.1 with no clear workaround.</p>
 <p>Note PostgreSQL 9 requirement in the <a href="README_rdoc.html">README</a>.
 (Reported by Samuel Cochran)</p>
 </li><li>
-<p>Now doesn’t throw exceptions if an RGeo cast fails when setting an
+<p>Now doesn&#39;t throw exceptions if an RGeo cast fails when setting an
 attribute.</p>
 </li></ul>
 
@@ -266,8 +281,8 @@ declaring multiple spatial columns in a migration).</p>
 <h3 id="label-0.3.2+%2F+2011-02-11">0.3.2 / 2011-02-11<span><a href="#label-0.3.2+%2F+2011-02-11">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>You can now specify a separate “database creation” superuser role so your
-normal PostgreSQL login role doesn’t need superuser privileges when running
-database creation tasks.</p>
+normal PostgreSQL login role doesn&#39;t need superuser privileges when
+running database creation tasks.</p>
 </li><li>
 <p>Database creation tasks automatically create all schemas listed in the
 schema search path.</p>
@@ -300,11 +315,11 @@ spatial-ness.</p>
 
 <h3 id="label-0.2.3+%2F+2011-01-06">0.2.3 / 2011-01-06<span><a href="#label-0.2.3+%2F+2011-01-06">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
-<p>Many of ActiveRecord’s rake tasks weren’t working because they need to know
-about every adapter explicitly. I hesitate to call this “fixed” since I see
-it as a problem in <a href="ActiveRecord.html">ActiveRecord</a>, but we now
-at least have a workaround so the rake tasks will run properly. (Reported
-by Tad Thorley.)</p>
+<p>Many of ActiveRecord&#39;s rake tasks weren&#39;t working because they need
+to know about every adapter explicitly. I hesitate to call this “fixed”
+since I see it as a problem in <a
+href="ActiveRecord.html">ActiveRecord</a>, but we now at least have a
+workaround so the rake tasks will run properly. (Reported by Tad Thorley.)</p>
 </li><li>
 <p>Dumping schema.rb now omits the PostGIS internal tables.</p>
 </li><li>
@@ -325,7 +340,7 @@ twice.</p>
 <p>Support for basic spatial equality queries. e.g. constructs such as:</p>
 
 <pre class="ruby"><span class="ruby-constant">MyClass</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">geom_column</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">factory</span>.<span class="ruby-identifier">point</span>(<span class="ruby-value">1</span>, <span class="ruby-value">2</span>))
-<span class="ruby-constant">MyClass</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">geom_column</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'POINT(1 2)'</span>)
+<span class="ruby-constant">MyClass</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">geom_column</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&#39;POINT(1 2)&#39;</span>)
 </pre>
 </li><li>
 <p>Fixed an exception when adding spatial columns where the column name is
@@ -335,7 +350,7 @@ specified as a symbol.</p>
 <h3 id="label-0.2.1+%2F+2010-12-15">0.2.1 / 2010-12-15<span><a href="#label-0.2.1+%2F+2010-12-15">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Provides meta-information to RGeo 0.2.2 or later to support access to
-PostGIS’s spatial reference system table.</p>
+PostGIS&#39;s spatial reference system table.</p>
 </li></ul>
 
 <h3 id="label-0.2.0+%2F+2010-12-07">0.2.0 / 2010-12-07<span><a href="#label-0.2.0+%2F+2010-12-07">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
