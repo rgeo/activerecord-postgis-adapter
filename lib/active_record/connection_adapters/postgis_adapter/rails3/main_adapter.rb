@@ -221,7 +221,9 @@ module ActiveRecord  # :nodoc:
 
 
         def drop_table(table_name_, *options_)
-          execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
+          if postgis_lib_version.to_s.split('.').first.to_i == 1
+            execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
+          end
           super
         end
 

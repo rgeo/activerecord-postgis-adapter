@@ -128,6 +128,7 @@ def setup_gis(config_)
       postgis_version = conn_.execute( "SELECT #{postgis_schema_}.postgis_version();" ).first[ 'postgis_version' ]
       if postgis_version =~ /^2/
         conn_.execute("ALTER VIEW #{postgis_schema_}.geometry_columns OWNER TO #{quoted_username_}")
+        conn_.execute("ALTER VIEW #{postgis_schema_}.geography_columns OWNER TO #{quoted_username_}")
       else
         conn_.execute("ALTER TABLE #{postgis_schema_}.geometry_columns OWNER TO #{quoted_username_}")
       end
