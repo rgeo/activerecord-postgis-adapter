@@ -175,6 +175,13 @@ def drop_database(config_)
 end
 
 
+def set_psql_env(config_)
+  ::ENV['PGHOST'] = config_["host"] if config_["host"]
+  ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
+  ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+end
+
+
 ::RGeo::ActiveRecord::TaskHacker.modify('db:charset', nil, 'postgis') do |config_|
   ::ActiveRecord::Base.establish_connection(config_)
   puts(::ActiveRecord::Base.connection.encoding)
@@ -182,9 +189,7 @@ end
 
 
 ::RGeo::ActiveRecord::TaskHacker.modify('db:structure:dump', nil, 'postgis') do |config_|
-  ::ENV['PGHOST'] = config_["host"] if config_["host"]
-  ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
-  ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  set_psql_env(config_)
   filename_ = ::File.join(::Rails.root, "db/#{::Rails.env}_structure.sql")
   search_path_ = config_["schema_search_path"].to_s.strip
   search_path_ = search_path_.split(",").map{ |sp_| sp_.strip }
@@ -197,18 +202,14 @@ end
 
 
 ::RGeo::ActiveRecord::TaskHacker.modify('db:structure:load', nil, 'postgis') do |config_|
-  ::ENV['PGHOST'] = config_["host"] if config_["host"]
-  ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
-  ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  set_psql_env(config_)
   filename_ = ::File.join(::Rails.root, "db/#{::Rails.env}_structure.sql")
   `psql -f #{filename_} #{config_["database"]}`
 end
 
 
 ::RGeo::ActiveRecord::TaskHacker.modify('db:test:clone_structure', 'test', 'postgis') do |config_|
-  ::ENV['PGHOST'] = config_["host"] if config_["host"]
-  ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
-  ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  set_psql_env(config_)
   `psql -U "#{config_["username"]}" -f #{::Rails.root}/db/#{::Rails.env}_structure.sql #{config_["database"]}`
 end
 
