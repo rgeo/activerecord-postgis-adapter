@@ -179,6 +179,7 @@ def set_psql_env(config_)
   ::ENV['PGHOST'] = config_["host"] if config_["host"]
   ::ENV['PGPORT'] = config_["port"].to_s if config_["port"]
   ::ENV['PGPASSWORD'] = config_["password"].to_s if config_["password"]
+  ::ENV['PGUSER'] = config_["username"].to_s if config_["username"]
 end
 
 
