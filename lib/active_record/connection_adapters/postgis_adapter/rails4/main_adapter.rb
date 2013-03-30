@@ -273,6 +273,7 @@ module ActiveRecord  # :nodoc:
         def add_index(table_name_, column_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
+          options_={} if options_.nil?
           gist_clause_ = options_.delete(:spatial) ? ' USING GIST' : ''
           index_name_, index_type_, index_columns_, index_options_ = add_index_options(table_name_, column_name_, options_)
           execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)}#{gist_clause_} (#{index_columns_})#{index_options_}"
