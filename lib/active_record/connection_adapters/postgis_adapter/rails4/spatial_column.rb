@@ -82,7 +82,7 @@ module ActiveRecord  # :nodoc:
             @geometric_type = @has_z = @has_m = @srid = nil
           end
           super(name_, default_, oid_type_, sql_type_, null_)
-          if type == :spatial
+          if spatial?
             if @srid
               @limit = {:srid => @srid, :type => @geometric_type.type_name.underscore}
               @limit[:has_z] = true if @has_z
@@ -107,7 +107,7 @@ module ActiveRecord  # :nodoc:
 
 
         def spatial?
-          type == :spatial
+          type == :spatial || type == :geography
         end
 
 
@@ -117,12 +117,12 @@ module ActiveRecord  # :nodoc:
 
 
         def klass
-          type == :spatial ? ::RGeo::Feature::Geometry : super
+          spatial? ? ::RGeo::Feature::Geometry : super
         end
 
 
         def type_cast(value_)
-          if type == :spatial
+          if spatial?
             SpatialColumn.convert_to_geometry(value_, @factory_settings, @table_name, name,
               @geographic, @srid, @has_z, @has_m)
           else

@@ -77,7 +77,9 @@ module ActiveRecord  # :nodoc:
         # Overridden to add the :spatial type
 
         def native_database_types
-          @@native_database_types ||= super.merge(:spatial => {:name => 'geometry'})
+          @@native_database_types ||= super.merge(
+            :spatial => {:name => 'geometry'},
+            :geography => {:name => 'geography'})
         end
 
 
@@ -187,9 +189,9 @@ module ActiveRecord  # :nodoc:
         end
 
 
-        def table_definition
-          # Override to create a spatial table definition
-          SpatialTableDefinition.new(self)
+        def create_table_definition(name_, temporary_, options_)
+          # Override to create a spatial table definition (post-4.0.0.beta1)
+          PostGISAdapter::TableDefinition.new(native_database_types, name_, temporary_, options_, self)
         end
 
 

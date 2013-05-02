@@ -1,3 +1,9 @@
+=== 0.6.3 / 2013-05-02
+
+* Several fixes for compatibility with changes to Rails 4.0.0 rc1. (Reports by slbug and Victor Costan)
+* Rails 3 rake tasks properly set PGUSER when appropriate. (Pull request by Mitin Pavel)
+* Fixed a nil exception on some Rails 4 migrations. (Pull request by ivanfoong and Victor Costan)
+
 === 0.6.2 / 2013-03-08
 
 * The PostGIS setup now properly connects as the superuser. (Reported by Adam Trilling)
