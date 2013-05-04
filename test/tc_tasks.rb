@@ -142,17 +142,18 @@ module RGeo
               ::FileUtils.rm_f(filename_)
               ::FileUtils.mkdir_p(::File.dirname(filename_))
               ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t_|
+              conn_ = ::ActiveRecord::Base.connection
+              conn_.create_table(:spatial_test) do |t_|
                 t_.geometry 'object1'
-                t_.spatial "object2", :limit => {:srid=>0, :type=>"geometry"}
+                t_.spatial "object2", :limit => {:srid=>conn_.default_srid, :type=>"geometry"}
               end
               require 'active_record/schema_dumper'
               ::File.open(filename_, "w:utf-8") do |file_|
-                ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file_)
+                ::ActiveRecord::SchemaDumper.dump(conn_, file_)
               end
               data_ = ::File.read(filename_)
-              assert(data_.index('t.spatial "object1", limit: {:srid=>0, :type=>"geometry"}'))
-              assert(data_.index('t.spatial "object2", limit: {:srid=>0, :type=>"geometry"}'))
+              assert(data_.index("t.spatial \"object1\", limit: {:srid=>#{conn_.default_srid}, :type=>\"geometry\"}"))
+              assert(data_.index("t.spatial \"object2\", limit: {:srid=>#{conn_.default_srid}, :type=>\"geometry\"}"))
             end
 
 
@@ -164,13 +165,14 @@ module RGeo
               ::FileUtils.rm_f(filename_)
               ::FileUtils.mkdir_p(::File.dirname(filename_))
               ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t_|
+              conn_ = ::ActiveRecord::Base.connection
+              conn_.create_table(:spatial_test) do |t_|
                 t_.point "latlon1", :geographic => true
                 t_.spatial "latlon2", :limit => {:srid=>4326, :type=>"point", :geographic=>true}
               end
               require 'active_record/schema_dumper'
               ::File.open(filename_, "w:utf-8") do |file_|
-                ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file_)
+                ::ActiveRecord::SchemaDumper.dump(conn_, file_)
               end
               data_ = ::File.read(filename_)
               assert(data_.index('t.spatial "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))

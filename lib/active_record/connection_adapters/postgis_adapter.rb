@@ -66,6 +66,7 @@ require 'rgeo/active_record'
 case ::ActiveRecord::VERSION::MAJOR
 when 3
   require 'active_record/connection_adapters/postgis_adapter/shared/version.rb'
+  require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails3/main_adapter.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_table_definition.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails3/spatial_column.rb'
@@ -74,6 +75,7 @@ when 3
   require 'active_record/connection_adapters/postgis_adapter/rails3/create_connection'
 when 4
   require 'active_record/connection_adapters/postgis_adapter/shared/version.rb'
+  require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
