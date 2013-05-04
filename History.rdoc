@@ -1,4 +1,4 @@
-=== 0.6.3 / 2013-05-02
+=== 0.6.3 / 2013-05-04
 
 * Several fixes for compatibility with changes to Rails 4.0.0 rc1. (Reports by slbug and Victor Costan)
 * Rails 3 rake tasks properly set PGUSER when appropriate. (Pull request by Mitin Pavel)

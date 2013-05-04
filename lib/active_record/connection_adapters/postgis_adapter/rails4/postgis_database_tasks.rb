@@ -60,7 +60,7 @@ module ActiveRecord  # :nodoc:
           if has_su? && (script_dir || extension_names)
             setup_gis_grant_privileges
           end
-          establish_connection(configuration) if has_su?
+          establish_connection(configuration)
         end
 
 

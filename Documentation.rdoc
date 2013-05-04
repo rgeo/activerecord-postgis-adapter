@@ -12,7 +12,7 @@ This document is part of the distribution for the activerecord-postgis-adapter g
 
 === General Installation Considerations
 
-Generally, we recommend starting with the latest versions of Ruby, Rails, PostgreSQL, and PostGIS. As of this writing, those are Ruby 1.9.3, Rails 3.2, PostgreSQL 9.2, and PostGIS 2.0. If you cannot upgrade, the minimum supported configuration is the following:
+Generally, we recommend starting with the latest versions of Ruby, Rails, PostgreSQL, and PostGIS. As of this writing, those are Ruby 2.0.0, Rails 3.2, PostgreSQL 9.2, and PostGIS 2.0. If you cannot upgrade, the minimum supported configuration is the following:
 
 * Ruby 1.8.7
 * Rails 3.0.3
@@ -21,10 +21,10 @@ Generally, we recommend starting with the latest versions of Ruby, Rails, Postgr
 
 However, older software versions can make for a more involved setup process, so we recommend using the latest available if possible.
 
-As of this writing, Rails 4.0.0 beta 1 has just been released. This version of activerecord-postgis-adapter does support Rails 4, but because the software is still beta, the usual caveats apply.
+As of this writing, Rails 4.0.0 release candidate 1 has just been released. This version of activerecord-postgis-adapter does support Rails 4, but because the software is still pre-release, the usual caveats apply. If you are running Rails 4, you must be on the release candidate or later; the beta 1 release is not supported.
 
-JRuby and the JDBC Postgres Adapter is supported. (But, as of this writing, the JDBC adapters themselves are not yet compatible with Rails 4.)
-  
+JRuby and the JDBC Postgres Adapter is supported. But, as of this writing, the JDBC adapters themselves are not yet compatible with Rails 4.
+
 === Creating a Spatial Rails App
 
 This section covers starting a new Rails application from scratch. If you need to add geospatial capabilities to an existing Rails application (i.e. you need to convert a non-spatial database to a spatial database), see the section on "Upgrading a Database With Spatial Features" below.

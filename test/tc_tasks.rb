@@ -86,7 +86,7 @@ module RGeo
             end
 
 
-            def test_schema_dump
+            def test_empty_sql_dump
               unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
                 skip('No task tests for Rails 3')
               end
@@ -97,6 +97,84 @@ module RGeo
               ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
               sql_ = ::File.read(filename_)
               assert(sql_ !~ /CREATE/)
+            end
+
+
+            def test_basic_geography_sql_dump
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              filename_ = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
+              ::FileUtils.rm_f(filename_)
+              ::FileUtils.mkdir_p(::File.dirname(filename_))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t_|
+                t_.point "latlon", :geographic => true
+              end
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename_)
+              data_ = ::File.read(filename_)
+              assert(data_.index('latlon postgis.geography(Point,4326)'))
+            end
+
+
+            def test_empty_schema_dump
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              filename_ = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
+              ::FileUtils.rm_f(filename_)
+              ::FileUtils.mkdir_p(::File.dirname(filename_))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              require 'active_record/schema_dumper'
+              ::File.open(filename_, "w:utf-8") do |file_|
+                ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file_)
+              end
+              data_ = ::File.read(filename_)
+              assert(data_.index('ActiveRecord::Schema'))
+            end
+
+
+            def test_basic_geometry_schema_dump
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              filename_ = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
+              ::FileUtils.rm_f(filename_)
+              ::FileUtils.mkdir_p(::File.dirname(filename_))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t_|
+                t_.geometry 'object1'
+                t_.spatial "object2", :limit => {:srid=>0, :type=>"geometry"}
+              end
+              require 'active_record/schema_dumper'
+              ::File.open(filename_, "w:utf-8") do |file_|
+                ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file_)
+              end
+              data_ = ::File.read(filename_)
+              assert(data_.index('t.spatial "object1", limit: {:srid=>0, :type=>"geometry"}'))
+              assert(data_.index('t.spatial "object2", limit: {:srid=>0, :type=>"geometry"}'))
+            end
+
+
+            def test_basic_geography_schema_dump
+              unless defined?(::ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks)
+                skip('No task tests for Rails 3')
+              end
+              filename_ = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
+              ::FileUtils.rm_f(filename_)
+              ::FileUtils.mkdir_p(::File.dirname(filename_))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
+              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t_|
+                t_.point "latlon1", :geographic => true
+                t_.spatial "latlon2", :limit => {:srid=>4326, :type=>"point", :geographic=>true}
+              end
+              require 'active_record/schema_dumper'
+              ::File.open(filename_, "w:utf-8") do |file_|
+                ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file_)
+              end
+              data_ = ::File.read(filename_)
+              assert(data_.index('t.spatial "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
+              assert(data_.index('t.spatial "latlon2", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
             end
 
 

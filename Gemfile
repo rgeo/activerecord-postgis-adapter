@@ -39,9 +39,9 @@ source "http://rubygems.org"
 gemspec
 
 gem 'pg', '>= 0.14.1', :platform => :ruby
-gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
+gem 'activerecord-jdbcpostgresql-adapter', '>= 1.3.0.beta1', :platform => :jruby
 gem 'ffi-geos', :platform => :jruby
 
 #gem 'activerecord', :git => "git://github.com/rails/rails.git", :branch => 'master'
-#gem 'activerecord', '~> 4.0.0.rc1'
-gem 'activerecord', '~> 3.2.12'
+gem 'activerecord', '~> 4.0.0.rc1'
+#gem 'activerecord', '~> 3.2.12'

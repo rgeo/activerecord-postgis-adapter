@@ -63,6 +63,9 @@ module ActiveRecord  # :nodoc:
             end
           end
           if type_ == :spatial
+            if (limit_ = options_.delete(:limit))
+              options_.merge!(limit_) if limit_.is_a?(::Hash)
+            end
             if options_[:geographic]
               type_ = :geography
               spatial_type_ = (options_[:type] || 'geometry').to_s.upcase.gsub('_', '')
@@ -75,14 +78,12 @@ module ActiveRecord  # :nodoc:
               raise ArgumentError, "you can't redefine the primary key column '#{name_}'. To define a custom primary key, pass { id: false } to create_table."
             end
             col_ = new_column_definition(name_, type_, options_)
-            options_.merge!(col_.limit) if col_.limit.is_a?(::Hash)
             col_.set_spatial_type(options_[:type])
             col_.set_geographic(options_[:geographic])
             col_.set_srid(options_[:srid])
             col_.set_has_z(options_[:has_z])
             col_.set_has_m(options_[:has_m])
-            container_ = col_.geographic? ? @columns_hash : @spatial_columns_hash
-            container_[name_] = col_
+            (col_.geographic? ? @columns_hash : @spatial_columns_hash)[name_] = col_
           else
             super(name_, type_, options_)
           end
