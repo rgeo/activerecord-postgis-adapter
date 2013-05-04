@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>Documentation - PostGIS ActiveRecord Adapter 0.6.2 Documentation</title>
+<title>Documentation - PostGIS ActiveRecord Adapter 0.6.3 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -132,7 +132,7 @@ href="http://dazuma.github.com/activerecord-postgis-adapter">dazuma.github.com/a
 <h3 id="label-General+Installation+Considerations">General Installation Considerations<span><a href="#label-General+Installation+Considerations">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
 <p>Generally, we recommend starting with the latest versions of Ruby, Rails,
-PostgreSQL, and PostGIS. As of this writing, those are Ruby 1.9.3, Rails
+PostgreSQL, and PostGIS. As of this writing, those are Ruby 2.0.0, Rails
 3.2, PostgreSQL 9.2, and PostGIS 2.0. If you cannot upgrade, the minimum
 supported configuration is the following:</p>
 <ul><li>
@@ -148,12 +148,14 @@ supported configuration is the following:</p>
 <p>However, older software versions can make for a more involved setup
 process, so we recommend using the latest available if possible.</p>
 
-<p>As of this writing, Rails 4.0.0 beta 1 has just been released. This version
-of activerecord-postgis-adapter does support Rails 4, but because the
-software is still beta, the usual caveats apply.</p>
+<p>As of this writing, Rails 4.0.0 release candidate 1 has just been released.
+This version of activerecord-postgis-adapter does support Rails 4, but
+because the software is still pre-release, the usual caveats apply. If you
+are running Rails 4, you must be on the release candidate or later; the
+beta 1 release is not supported.</p>
 
-<p>JRuby and the JDBC Postgres Adapter is supported. (But, as of this writing,
-the JDBC adapters themselves are not yet compatible with Rails 4.)</p>
+<p>JRuby and the JDBC Postgres Adapter is supported. But, as of this writing,
+the JDBC adapters themselves are not yet compatible with Rails 4.</p>
 
 <h3 id="label-Creating+a+Spatial+Rails+App">Creating a Spatial Rails App<span><a href="#label-Creating+a+Spatial+Rails+App">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
@@ -169,7 +171,7 @@ by using the postgresql adapter.</p>
 
 <p>Next, add the activerecord-postgis-adapter gem to the Gemfile as follows:</p>
 
-<pre>gem &#39;activerecord-postgis-adapter&#39;</pre>
+<pre>gem 'activerecord-postgis-adapter'</pre>
 
 <p>We also recommend including the “squeel” gem, which comes in very useful
 for writing spatial queries. Then run <code>bundle install</code> to
@@ -197,11 +199,11 @@ see how to set up your database configs properly before proceeding.</p>
 <p>to create your development database. The adapter will automatically add the
 PostGIS spatial definitions to your database.</p>
 
-<p>When you create your production database, you&#39;ll also need to add
-PostGIS to that database. The adapter does not provide rake tasks for
-setting up your production database; you will have to do that yourself.
-Generally, that means logging into your newly created production database
-and running, as a superuser:</p>
+<p>When you create your production database, you’ll also need to add PostGIS
+to that database. The adapter does not provide rake tasks for setting up
+your production database; you will have to do that yourself. Generally,
+that means logging into your newly created production database and running,
+as a superuser:</p>
 
 <pre>CREATE EXTENSION postgis;</pre>
 
@@ -239,10 +241,10 @@ documentation provided by your hosting service.</p>
 
 <h3 id="label-Recommended+Configuration">Recommended Configuration<span><a href="#label-Recommended+Configuration">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
-<p>Setting up the database.yml is a bit of an art. In this section, we&#39;ll
+<p>Setting up the database.yml is a bit of an art. In this section, we’ll
 cover a recommended configuration to get you started. This should be
-sufficient for most cases. We&#39;ll cover some of the alternate
-configuration options in more detail in the next section.</p>
+sufficient for most cases. We’ll cover some of the alternate configuration
+options in more detail in the next section.</p>
 
 <p>Assuming you have at least PostgreSQL 9.2 and PostGIS 2.0, the following is
 the recommended configuration:</p>
@@ -255,9 +257,9 @@ the recommended configuration:</p>
   pool: 5
   database: my_app_development    # substitute your dev database name
   username: my_app_user           # substitute the username your app will use to connect
-  password: my_app_password       # substitute the user&#39;s password
+  password: my_app_password       # substitute the user's password
   su_username: my_global_user     # substitute a superuser for the database
-  su_password: my_global_pasword  # substitute the superuser&#39;s password</pre>
+  su_password: my_global_pasword  # substitute the superuser's password</pre>
 
 <p>The adapter name <em>must</em> be set to “postgis” to invoke the adapter.</p>
 
@@ -358,9 +360,9 @@ standard produced by the Open Geospatial Consortium. Furthermore, you can
 specify options indicating the coordinate system and number of coordinates
 for the values you are storing.</p>
 
-<p>The activerecord-postgis-adapter extends ActiveRecord&#39;s migration
-syntax to support these spatial types. The following example creates four
-spatial columns in a table:</p>
+<p>The activerecord-postgis-adapter extends ActiveRecord’s migration syntax to
+support these spatial types. The following example creates four spatial
+columns in a table:</p>
 
 <pre class="ruby"><span class="ruby-identifier">create_table</span> :<span class="ruby-identifier">my_spatial_table</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
   <span class="ruby-identifier">t</span>.<span class="ruby-identifier">column</span> :<span class="ruby-identifier">shape1</span>, :<span class="ruby-identifier">geometry</span>
@@ -396,39 +398,39 @@ height information.</p>
 <p>The following are the data types understood by PostGIS and exposed by
 activerecord-postgis-adapter:</p>
 <ul><li>
-<p><code>:geometry</code> – Any geometric type</p>
+<p><code>:geometry</code> -- Any geometric type</p>
 </li><li>
-<p><code>:point</code> – Point data</p>
+<p><code>:point</code> -- Point data</p>
 </li><li>
-<p><code>:line_string</code> – LineString data</p>
+<p><code>:line_string</code> -- LineString data</p>
 </li><li>
-<p><code>:polygon</code> – Polygon data</p>
+<p><code>:polygon</code> -- Polygon data</p>
 </li><li>
-<p><code>:geometry_collection</code> – Any collection type</p>
+<p><code>:geometry_collection</code> -- Any collection type</p>
 </li><li>
-<p><code>:multi_point</code> – A collection of Points</p>
+<p><code>:multi_point</code> -- A collection of Points</p>
 </li><li>
-<p><code>:multi_line_string</code> – A collection of LineStrings</p>
+<p><code>:multi_line_string</code> -- A collection of LineStrings</p>
 </li><li>
-<p><code>:multi_polygon</code> – A collection of Polygons</p>
+<p><code>:multi_polygon</code> -- A collection of Polygons</p>
 </li></ul>
 
 <p>Following are the options understood by the adapter:</p>
 <ul><li>
-<p><code>:geographic</code> – If set to true, create a PostGIS geography
+<p><code>:geographic</code> -- If set to true, create a PostGIS geography
 column for longitude/latitude data over a spheroidal domain; otherwise
 create a geometry column in a flat coordinate system. Default is false.
 Also implies :srid set to 4326.</p>
 </li><li>
-<p><code>:srid</code> – Set a SRID constraint for the column. Default is 4326
+<p><code>:srid</code> -- Set a SRID constraint for the column. Default is 4326
 for a geography column, or -1 for a geometry column. Note that PostGIS
 currently (as of version 2.0) requires geography columns to have SRID 4326,
 so this constraint is of limited use for geography columns.</p>
 </li><li>
-<p><code>:has_z</code> – Specify that objects in this column include a Z
+<p><code>:has_z</code> -- Specify that objects in this column include a Z
 coordinate. Default is false.</p>
 </li><li>
-<p><code>:has_m</code> – Specify that objects in this column include an M
+<p><code>:has_m</code> -- Specify that objects in this column include an M
 coordinate. Default is false.</p>
 </li></ul>
 
@@ -443,10 +445,10 @@ option to true, as follows:</p>
 
 <h3 id="label-Configuring+the+ActiveRecord+class">Configuring the ActiveRecord class<span><a href="#label-Configuring+the+ActiveRecord+class">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
-<p>ActiveRecord&#39;s usefulness stems from the way it automatically
-configures classes based on the database structure and schema. If a column
-in the database has an integer type, ActiveRecord automatically casts the
-data to a Ruby Integer. In the same way, the activerecord-postgis-adapter
+<p>ActiveRecord’s usefulness stems from the way it automatically configures
+classes based on the database structure and schema. If a column in the
+database has an integer type, ActiveRecord automatically casts the data to
+a Ruby Integer. In the same way, the activerecord-postgis-adapter
 automatically casts spatial data to a corresponding RGeo data type.</p>
 
 <p>However, RGeo offers more “flexibility” in its type system than can be
@@ -468,15 +470,15 @@ generator by setting the <code>rgeo_factory_generator</code> class
 attribute of your ActiveRecord class. The generator should be a callable
 object that takes a hash that could include the following keys:</p>
 <ul><li>
-<p><code>:srid</code> – the SRID of the database column</p>
+<p><code>:srid</code> -- the SRID of the database column</p>
 </li><li>
-<p><code>:has_z_coordinate</code> – true if the database column has a Z
+<p><code>:has_z_coordinate</code> -- true if the database column has a Z
 coordinate</p>
 </li><li>
-<p><code>:has_m_coordinate</code> – true if the database column has a M
+<p><code>:has_m_coordinate</code> -- true if the database column has a M
 coordinate</p>
 </li><li>
-<p><code>:geographic</code> – true if the database column is geographic
+<p><code>:geographic</code> -- true if the database column is geographic
 instead of geometric</p>
 </li></ul>
 
@@ -501,12 +503,12 @@ the activerecord-postgis-adapter.</p>
 <h3 id="label-Schema+Dump+and+Reload">Schema Dump and Reload<span><a href="#label-Schema+Dump+and+Reload">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 
 <p>The presence of geospatial data in a database causes some issues with
-ActiveRecord&#39;s schema dump and restore functions. This is because (1)
+ActiveRecord’s schema dump and restore functions. This is because (1)
 installing PostGIS into your database injects a lot of objects in your
 database that can clutter up schema dumps, and (2) to define a spatial
 column correctly, you generally must call a SQL function such as
-AddGeometryColumn(), and Rails&#39;s schema dumper isn&#39;t smart enough
-to reproduce those function calls.</p>
+AddGeometryColumn(), and Rails’s schema dumper isn’t smart enough to
+reproduce those function calls.</p>
 
 <p>Because of this, we recommend the following.</p>
 <ul><li>
@@ -532,13 +534,13 @@ or normal website execution.</p>
 
 <h2 id="label-Working+With+Spatial+Data">Working With Spatial Data<span><a href="#label-Working+With+Spatial+Data">&para;</a> <a href="#documentation">&uarr;</a></span></h2>
 
-<p>Of course, you&#39;re using this adapter because you want to work with
-geospatial data in your ActiveRecord models. Once you&#39;ve installed the
+<p>Of course, you’re using this adapter because you want to work with
+geospatial data in your ActiveRecord models. Once you’ve installed the
 adapter, set up your database, and run your migrations, you can interact
 directly with spatial data in your models as RGeo objects.</p>
 
 <p>RGeo is a Ruby implementation of the industry standard OGC Simple Features
-specification. It&#39;s a set of data types that can represent a variety of
+specification. It’s a set of data types that can represent a variety of
 geospatial objects such as points, lines, polygons, and collections. It
 also provides the standard set of spatial analysis operations such as
 computing intersections or bounding boxes, calculating length or area, and
@@ -569,12 +571,12 @@ providing the WKT string representation of the geometry. If a string is
 provided, the activerecord-postgis-adapter will attempt to parse it as WKT
 and set the value accordingly.</p>
 
-<pre>record.lonlat = &#39;POINT(-122, 47)&#39;  # sets the value to the given point</pre>
+<pre>record.lonlat = 'POINT(-122, 47)'  # sets the value to the given point</pre>
 
 <p>If the WKT parsing fails, the value currently will be silently set to nil.
 In the future, however, this will raise an exception.</p>
 
-<pre>record.lonlat = &#39;POINT(x)&#39;         # sets the value to nil</pre>
+<pre>record.lonlat = 'POINT(x)'         # sets the value to nil</pre>
 
 <p>If you set the value to an RGeo object, the factory needs to match the
 factory for the attribute. If the factories do not match,
@@ -605,28 +607,27 @@ same way you would on a scalar column:</p>
 
 <p>You can also use WKT:</p>
 
-<pre class="ruby"><span class="ruby-identifier">record3</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">lonlat</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&#39;POINT(-122 47)&#39;</span>).<span class="ruby-identifier">first</span>
+<pre class="ruby"><span class="ruby-identifier">record3</span> = <span class="ruby-constant">MySpatialTable</span>.<span class="ruby-identifier">where</span>(:<span class="ruby-identifier">lonlat</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'POINT(-122 47)'</span>).<span class="ruby-identifier">first</span>
 </pre>
 
 <p>Note that these queries use representational equality, meaning they return
 records where the lonlat value matches the given value exactly. A 0.00001
 degree difference would not match, nor would a different representation of
 the same geometry (like a multipoint with a single element). Equality
-queries aren&#39;t generally all that useful in real world applications.
-Typically, if you want to perform a spatial query, you&#39;ll look for,
-say, all the points within a given area. For those queries, you&#39;ll need
-to use the standard spatial SQL functions provided by PostGIS.</p>
+queries aren’t generally all that useful in real world applications.
+Typically, if you want to perform a spatial query, you’ll look for, say,
+all the points within a given area. For those queries, you’ll need to use
+the standard spatial SQL functions provided by PostGIS.</p>
 
-<p>Unfortunately, Rails by itself doesn&#39;t provide good support for
-embedding arbitrary function calls in your where clause. You could get
-around this by writing raw SQL. But the solution we recommend is to use the
-“squeel” gem. This gem extends the ActiveRecord syntax to support more
-complex queries.</p>
+<p>Unfortunately, Rails by itself doesn’t provide good support for embedding
+arbitrary function calls in your where clause. You could get around this by
+writing raw SQL. But the solution we recommend is to use the “squeel” gem.
+This gem extends the ActiveRecord syntax to support more complex queries.</p>
 
-<p>Let&#39;s say you wanted to find all records whose lonlat fell within a
+<p>Let’s say you wanted to find all records whose lonlat fell within a
 particular polygon. In the query, you can accomplish this by calling the
-ST_Intersects() SQL function on the lonlat and the polygon. That is,
-you&#39;d want to generate SQL that looks something like this:</p>
+ST_Intersects() SQL function on the lonlat and the polygon. That is, you’d
+want to generate SQL that looks something like this:</p>
 
 <pre>SELECT * FROM my_spatial_table WHERE ST_Intersects(lonlat, &lt;i&gt;my-polygon&lt;/i&gt;);</pre>
 
@@ -636,23 +637,23 @@ you&#39;d want to generate SQL that looks something like this:</p>
 MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first</pre>
 
 <p>Notice the curly brackets instead of parentheses in the where clause. This
-is how to write squeel queries: squeel is actually a DSL, and you&#39;re
+is how to write squeel queries: squeel is actually a DSL, and you’re
 passing a block to the where method instead of an argument list. Also note
 that Squeel requires ActiveRecord 3.1 or later to handle SQL function calls
 such as ST_Intersects.</p>
 
 <p>As another example, one common query is to find all objects displaying in a
 window. This can be done using the overlap (&amp;&amp;) operator with a
-bounding box. Here&#39;s an example that finds linestrings in the “path”
-column that intersect a bounding box:</p>
+bounding box. Here’s an example that finds linestrings in the “path” column
+that intersect a bounding box:</p>
 
 <pre>sw = get_sw_corner_in_projected_coordinates()
 ne = get_ne_corner_in_projected_coordinates()
 window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-MySpatialTable.where{path.op(&#39;&amp;&amp;&#39;, window)}.all</pre>
+MySpatialTable.where{path.op('&amp;&amp;', window)}.all</pre>
 
 <p>Note that bounding box queries make sense only in a projected coordinate
-system; you shouldn&#39;t try to run such a query against a lat/long
+system; you shouldn’t try to run such a query against a lat/long
 (geographic) column.</p>
 
 <h2 id="label-License">License<span><a href="#label-License">&para;</a> <a href="#documentation">&uarr;</a></span></h2>
