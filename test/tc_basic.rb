@@ -110,7 +110,7 @@ module RGeo
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
-              assert_equal(@factory.point(1, 2), obj2_.latlon)
+              assert_equal(@factory.point(1.0, 2.0), obj2_.latlon)
               assert_equal(3785, obj2_.latlon.srid)
               assert_equal(true, ::RGeo::Geos.is_geos?(obj2_.latlon))
             end
@@ -123,7 +123,7 @@ module RGeo
               obj_.save!
               id_ = obj_.id
               obj2_ = klass_.find(id_)
-              assert_equal(@geographic_factory.point(1, 2), obj2_.latlon)
+              assert_equal(@geographic_factory.point(1.0, 2.0), obj2_.latlon)
               assert_equal(4326, obj2_.latlon.srid)
               assert_equal(false, ::RGeo::Geos.is_geos?(obj2_.latlon))
             end

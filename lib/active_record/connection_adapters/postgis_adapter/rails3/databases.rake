@@ -50,7 +50,14 @@ namespace :db do
   namespace :gis do
     desc "Setup PostGIS data in the database"
     task :setup => [:load_config, :rails_env] do
-      configs_for_environment.each { |config| setup_gis(config) }
+      if self.respond_to?(:configs_for_environment)
+        configs_ = configs_for_environment
+      else
+        environments_ = [::Rails.env]
+        environments_ << 'test' if ::Rails.env.development?
+        configs_ ::ActiveRecord::Base.configurations.values_at(*environments_).compact.reject{ |config_| config_['database'].blank? }
+      end
+      configs_.each { |config_| setup_gis(config_) }
     end
   end
 end

@@ -1,6 +1,7 @@
 === 0.6.4 / 2013-??-??
 
 * Fixed a crash with array conversions in Rails 4. (Contributed by Christopher Bull)
+* The gis setup task was broken in any Rails other than 3.2.x. Fixed (I think). (Reports by Rupert de Guzman and slbug)
 
 === 0.6.3 / 2013-05-04
 
