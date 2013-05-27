@@ -64,6 +64,15 @@ module ActiveRecord  # :nodoc:
         end
 
 
+        def type_cast(value_, column_, array_member_=false)
+          if ::RGeo::Feature::Geometry.check_type(value_)
+            ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
+          else
+            super
+          end
+        end
+
+
         def columns(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We needed to return a spatial column subclass.
