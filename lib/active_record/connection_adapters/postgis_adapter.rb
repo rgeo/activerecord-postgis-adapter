@@ -74,6 +74,12 @@ when 3
   require 'active_record/connection_adapters/postgis_adapter/shared/setup.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails3/create_connection'
 when 4
+
+  # TEMP
+  if defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby'
+    raise "**** Sorry, activerecord-postgis-adapter does not yet support Rails 4 on JRuby ****"
+  end
+
   require 'active_record/connection_adapters/postgis_adapter/shared/version.rb'
   require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
   require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
