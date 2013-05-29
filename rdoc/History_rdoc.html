@@ -4,7 +4,7 @@
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
-<title>History - PostGIS ActiveRecord Adapter 0.6.3 Documentation</title>
+<title>History - PostGIS ActiveRecord Adapter 0.6.4 Documentation</title>
 
 <link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
 
@@ -48,6 +48,7 @@
   <nav class="section">
     <h3 class="section-header">Table of Contents</h3>
     <ul>
+      <li><a href="#label-0.6.4+%2F+2013-05-28">0.6.4 / 2013-05-28</a>
       <li><a href="#label-0.6.3+%2F+2013-05-04">0.6.3 / 2013-05-04</a>
       <li><a href="#label-0.6.2+%2F+2013-03-08">0.6.2 / 2013-03-08</a>
       <li><a href="#label-0.6.1+%2F+2013-02-28">0.6.1 / 2013-02-28</a>
@@ -116,6 +117,18 @@
 
 <div id="documentation" class="description">
   
+<h3 id="label-0.6.4+%2F+2013-05-28">0.6.4 / 2013-05-28<span><a href="#label-0.6.4+%2F+2013-05-28">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
+<ul><li>
+<p>Fixed a crash with array conversions in Rails 4. (Contributed by
+Christopher Bull)</p>
+</li><li>
+<p>The gis setup task was broken in any Rails other than 3.2.x. Fixed (I
+think). (Reports by Rupert de Guzman and slbug)</p>
+</li><li>
+<p>Raise a more useful exception for the (as yet) unsupported combination of
+Rails 4 and JRuby.</p>
+</li></ul>
+
 <h3 id="label-0.6.3+%2F+2013-05-04">0.6.3 / 2013-05-04<span><a href="#label-0.6.3+%2F+2013-05-04">&para;</a> <a href="#documentation">&uarr;</a></span></h3>
 <ul><li>
 <p>Several fixes for compatibility with changes to Rails 4.0.0 rc1. (Reports
