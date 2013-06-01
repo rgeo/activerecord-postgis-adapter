@@ -55,7 +55,7 @@ namespace :db do
       else
         environments_ = [::Rails.env]
         environments_ << 'test' if ::Rails.env.development?
-        configs_ ::ActiveRecord::Base.configurations.values_at(*environments_).compact.reject{ |config_| config_['database'].blank? }
+        configs_ = ::ActiveRecord::Base.configurations.values_at(*environments_).compact.reject{ |config_| config_['database'].blank? }
       end
       configs_.each { |config_| setup_gis(config_) }
     end
