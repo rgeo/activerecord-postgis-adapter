@@ -1,3 +1,7 @@
+=== 0.6.5 / 2013-06-24
+
+* Fixed stoopid syntax errors in rake db:gis:setup tass. (Pull requests by rhodrid and jdurand)
+
 === 0.6.4 / 2013-05-28
 
 * Fixed a crash with array conversions in Rails 4. (Contributed by Christopher Bull)
