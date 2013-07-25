@@ -198,9 +198,9 @@ module ActiveRecord  # :nodoc:
           extension_names.each do |extname_|
             if extname_ == 'postgis_topology'
               raise ::ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
-              connection.execute("CREATE EXTENSION #{extname_} SCHEMA topology")
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname_} SCHEMA topology")
             else
-              connection.execute("CREATE EXTENSION #{extname_} SCHEMA #{postgis_schema}")
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname_} SCHEMA #{postgis_schema}")
             end
           end
         end
