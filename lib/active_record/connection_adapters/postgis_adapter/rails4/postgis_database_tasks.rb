@@ -208,7 +208,7 @@ module ActiveRecord  # :nodoc:
 
         def setup_gis_from_script_dir
           connection.execute("SET search_path TO #{postgis_schema}")
-          connection.execute("CREATE LANGUAGE plpgsql")
+          connection.execute("CREATE OR REPLACE LANGUAGE plpgsql")
           connection.execute(::File.read(::File.expand_path('postgis.sql', script_dir)))
           connection.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir)))
         end
