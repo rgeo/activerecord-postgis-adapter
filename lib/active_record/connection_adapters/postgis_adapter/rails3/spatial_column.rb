@@ -157,6 +157,7 @@ module ActiveRecord  # :nodoc:
 
 
         def self.convert_to_geometry(input_, factory_settings_, table_name_, column_, geographic_, srid_, has_z_, has_m_)
+          input_ = "POINT(#{input_[0]} #{input_[1]})" if (input_.is_a?(Array) && input_.count == 2)
           if srid_
             constraints_ = {:geographic => geographic_, :has_z_coordinate => has_z_,
               :has_m_coordinate => has_m_, :srid => srid_}

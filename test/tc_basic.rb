@@ -155,6 +155,17 @@ module RGeo
               end
             end
 
+            def test_set_point_from_array
+              klass_ = populate_ar_class(:latlon_point_geographic)
+              obj_ = klass_.new
+              obj_.latlon = [1.0, 2.0]
+              obj_.save!
+              id_ = obj_.id
+              obj2_ = klass_.find(id_)
+              assert_equal(@geographic_factory.point(1.0, 2.0), obj2_.latlon)
+              assert_equal(4326, obj2_.latlon.srid)
+              assert_equal(false, ::RGeo::Geos.is_geos?(obj2_.latlon))
+            end
 
             def test_custom_factory
               klass_ = create_ar_class
