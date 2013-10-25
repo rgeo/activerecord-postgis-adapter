@@ -52,6 +52,7 @@
   s_.test_files = ::Dir.glob("test/**/tc_*.rb")
   s_.platform = ::Gem::Platform::RUBY
   s_.add_dependency('rgeo-activerecord', '~> 0.5.0')
+  s_.add_dependency('to_wkt_')
 
   s_.add_development_dependency('rake')
   s_.add_development_dependency('minitest')

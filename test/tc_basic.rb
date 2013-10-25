@@ -35,6 +35,7 @@
 
 require 'minitest/autorun'
 require 'rgeo/active_record/adapter_test_helper'
+require 'to_wkt_'
 
 
 module RGeo
@@ -61,6 +62,10 @@ module RGeo
               when :latlon_point_geographic
                 klass_.connection.create_table(:spatial_test) do |t_|
                   t_.column 'latlon', :point, :srid => 4326, :geographic => true
+                end
+              when :line_string
+                klass_.connection.create_table(:spatial_test) do |t_|
+                  t_.column 'line', :line_string, :srid => 4326, :geographic => true
                 end
               when :no_constraints
                 klass_.connection.create_table(:spatial_test) do |t_|
@@ -165,6 +170,22 @@ module RGeo
               assert_equal(@geographic_factory.point(1.0, 2.0), obj2_.latlon)
               assert_equal(4326, obj2_.latlon.srid)
               assert_equal(false, ::RGeo::Geos.is_geos?(obj2_.latlon))
+            end
+
+            def test_set_line_string_from_array
+              klass_ = populate_ar_class(:line_string)
+              obj_ = klass_.new
+              line_array = [ [1.0, 1.0], [2.0, 2.0], [3.0, 3.0] ]
+              points = line_array.map{ |a| @geographic_factory.point(*a) }
+              line_string = @geographic_factory.line_string(points)
+              obj_.line = line_array
+              obj_.save!
+              id_ = obj_.id
+              obj2_ = klass_.find(id_)
+
+              assert_equal(obj2_.line, line_string)
+              assert_equal(4326, obj2_.line.srid)
+              assert_equal(false, ::RGeo::Geos.is_geos?(obj2_.line))
             end
 
             def test_custom_factory
