@@ -237,7 +237,7 @@ The RGeo factory for the value is determined by how you configured the \ActiveRe
 
 You can set a spatial attribute by providing an RGeo geometry object, or by providing the WKT string representation of the geometry. If a string is provided, the activerecord-postgis-adapter will attempt to parse it as WKT and set the value accordingly.
 
-  record.lonlat = 'POINT(-122, 47)'  # sets the value to the given point
+  record.lonlat = 'POINT(-122 47)'  # sets the value to the given point
 
 If the WKT parsing fails, the value currently will be silently set to nil. In the future, however, this will raise an exception.
 
