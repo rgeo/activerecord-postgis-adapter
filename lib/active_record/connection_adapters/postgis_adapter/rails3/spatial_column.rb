@@ -33,6 +33,7 @@
 # -----------------------------------------------------------------------------
 ;
 
+require 'to_wkt_'
 
 module ActiveRecord  # :nodoc:
 
@@ -127,9 +128,8 @@ module ActiveRecord  # :nodoc:
 
         def type_cast(value_)
           if type == :spatial
-            value_ = value_.to_wkt(geometric_type.type_name.underscore.to_sym) if value_.is_a?(Array)
             SpatialColumn.convert_to_geometry(value_, @factory_settings, @table_name, name,
-              @geographic, @srid, @has_z, @has_m)
+              @geographic, @srid, @geometric_type, @has_z, @has_m)
           else
             super
           end
@@ -157,7 +157,9 @@ module ActiveRecord  # :nodoc:
         end
 
 
-        def self.convert_to_geometry(input_, factory_settings_, table_name_, column_, geographic_, srid_, has_z_, has_m_)
+        def self.convert_to_geometry(input_, factory_settings_, table_name_, column_, geographic_, srid_, geometric_type_, has_z_, has_m_)
+          input_ = input_.to_wkt(geometric_type_.type_name.underscore.to_sym) if input_.is_a?(Array)
+
           if srid_
             constraints_ = {:geographic => geographic_, :has_z_coordinate => has_z_,
               :has_m_coordinate => has_m_, :srid => srid_}
