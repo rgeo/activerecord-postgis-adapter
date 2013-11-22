@@ -142,7 +142,7 @@ module ActiveRecord  # :nodoc:
               "#{var_name_}, ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumn::"+
               "FACTORY_SETTINGS_CACHE[#{@factory_settings.object_id}], #{@table_name.inspect}, "+
               "#{name.inspect}, #{@geographic ? 'true' : 'false'}, #{@srid.inspect}, "+
-              "#{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
+              "::RGeo::Feature::#{@geometric_type}, #{@has_z ? 'true' : 'false'}, #{@has_m ? 'true' : 'false'})"
           else
             super
           end
