@@ -88,7 +88,7 @@ module ActiveRecord  # :nodoc:
               col_name_ = col_name_["column_name"]
               # TODO: get oid and fmod from jdbc
             end
-            oid_ = OID::TYPE_MAP.fetch(oid_.to_i, fmod_.to_i) {
+            oid_ = type_map.fetch(oid_.to_i, fmod_.to_i) {
               OID::Identity.new
             }
             SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, oid_, type_,
