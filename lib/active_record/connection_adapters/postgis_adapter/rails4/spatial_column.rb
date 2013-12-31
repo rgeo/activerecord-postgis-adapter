@@ -40,6 +40,12 @@ module ActiveRecord  # :nodoc:
 
     module PostGISAdapter  # :nodoc:
 
+      # a hack. Active record is still instantiating the column as this type. it then calls spatial? on that column 
+      class ConnectionAdapters::PostgreSQLColumn  # :nodoc:
+        def spatial?
+          type == :spatial || type == :geography
+        end
+      end 
 
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
@@ -106,9 +112,6 @@ module ActiveRecord  # :nodoc:
         alias_method :has_m?, :has_m
 
 
-        def spatial?
-          type == :spatial || type == :geography
-        end
 
 
         def has_spatial_constraints?
