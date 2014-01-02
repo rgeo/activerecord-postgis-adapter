@@ -206,6 +206,10 @@ end
   search_path_ = search_path_.map{ |sp_| "--schema=#{sp_}" }.join(" ")
   `pg_dump -i -U "#{config_["username"]}" -s -x -O -f #{filename_} #{search_path_} #{config_["database"]}`
   raise "Error dumping database" if $?.exitstatus == 1
+
+  if ActiveRecord::Base.connection.supports_migrations?
+    File.open(filename_, "a") { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+  end
 end
 
 
