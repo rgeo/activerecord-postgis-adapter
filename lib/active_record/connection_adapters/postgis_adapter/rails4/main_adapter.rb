@@ -1,22 +1,14 @@
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
-
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
-
-
         def initialize(*args_)
           # Overridden to change the visitor
           super
           @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
 
-
         include PostGISAdapter::CommonAdapterMethods
-
 
         @@native_database_types = nil
 
@@ -27,7 +19,6 @@ module ActiveRecord  # :nodoc:
             :geography => {:name => 'geography'})
         end
 
-
         def type_cast(value_, column_, array_member_=false)
           if ::RGeo::Feature::Geometry.check_type(value_)
             ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
@@ -36,22 +27,12 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def columns(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_, oid_, fmod_|
-            # JDBC support: JDBC adapter returns a hash for column definitions,
-            # instead of an array of values.
-            if col_name_.kind_of?(::Hash)
-              notnull_ = col_name_["column_not_null"]
-              default_ = col_name_["column_default"]
-              type_ = col_name_["column_type"]
-              col_name_ = col_name_["column_name"]
-              # TODO: get oid and fmod from jdbc
-            end
             oid_ = OID::TYPE_MAP.fetch(oid_.to_i, fmod_.to_i) {
               OID::Identity.new
             }
@@ -59,7 +40,6 @@ module ActiveRecord  # :nodoc:
               notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
           end
         end
-
 
         def indexes(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
@@ -107,12 +87,10 @@ module ActiveRecord  # :nodoc:
           end.compact
         end
 
-
         def create_table_definition(name_, temporary_, options_)
           # Override to create a spatial table definition (post-4.0.0.beta1)
           PostGISAdapter::TableDefinition.new(native_database_types, name_, temporary_, options_, self)
         end
-
 
         def create_table(table_name_, options_={}, &block_)
           table_name_ = table_name_.to_s
@@ -134,14 +112,12 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def drop_table(table_name_, *options_)
           if postgis_lib_version.to_s.split('.').first.to_i == 1
             execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
           end
           super
         end
-
 
         def add_column(table_name_, column_name_, type_, options_={})
           table_name_ = table_name_.to_s
@@ -178,7 +154,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def remove_column(table_name_, column_name_, type_=nil, options_={})
           table_name_ = table_name_.to_s
           column_name_ = column_name_.to_s
@@ -190,7 +165,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def add_index(table_name_, column_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
@@ -199,7 +173,6 @@ module ActiveRecord  # :nodoc:
           index_name_, index_type_, index_columns_, index_options_ = add_index_options(table_name_, column_name_, options_)
           execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)}#{gist_clause_} (#{index_columns_})#{index_options_}"
         end
-
 
         def spatial_column_info(table_name_)
           info_ = query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{quote_string(table_name_.to_s)}'")
@@ -223,12 +196,7 @@ module ActiveRecord  # :nodoc:
           result_
         end
 
-
       end
-
-
     end
-
   end
-
 end
