@@ -43,7 +43,6 @@ RAKEFILE_CONFIG = {} unless defined?(::RAKEFILE_CONFIG)
 
 # Gemspec
 
-require 'rubygems'
 require 'rubygems/package'
 gemspec_ = eval(::File.read(::Dir.glob('*.gemspec').first))
 release_gemspec_ = eval(::File.read(::Dir.glob('*.gemspec').first))
@@ -65,11 +64,7 @@ platform_ =
 platform_suffix_ =
   case platform_
   when :mri
-    if ::RUBY_VERSION =~ /^1\.8\..*$/
-      'mri18'
-    elsif ::RUBY_VERSION =~ /^1\.9\..*$/
-      'mri19'
-    elsif ::RUBY_VERSION =~ /^2\.0\..*$/
+    if ::RUBY_VERSION =~ /^2\.0\..*$/
       'mri20'
     elsif ::RUBY_VERSION =~ /^2\.1\..*$/
       'mri21'
