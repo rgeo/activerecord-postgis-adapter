@@ -1,3 +1,9 @@
+=== 0.7.0
+
+* Require ruby 2.0
+* Require ActiveRecord 4.0
+* Drop JRuby support
+
 === 0.6.5 / 2013-06-24
 
 * Fixed stoopid syntax errors in rake db:gis:setup tass. (Pull requests by rhodrid and jdurand)
