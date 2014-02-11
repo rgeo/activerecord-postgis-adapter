@@ -7,8 +7,7 @@
   s_.email = 'dazuma@gmail.com'
   s_.homepage = "http://dazuma.github.com/activerecord-postgis-adapter"
   s_.licenses = ['BSD']
-  s_.rubyforge_project = 'virtuoso'
-  s_.required_ruby_version = '>= 1.8.7'
+  s_.required_ruby_version = '>= 2.0.0'
   s_.files = ::Dir.glob("lib/**/*.{rb,rake}") +
     ::Dir.glob("test/**/*.rb") +
     ::Dir.glob("*.rdoc") +
