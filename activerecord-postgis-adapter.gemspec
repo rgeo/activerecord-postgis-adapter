@@ -10,12 +10,9 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.homepage = "http://dazuma.github.com/activerecord-postgis-adapter"
   spec.licenses = ['BSD']
 
-  spec.files = ::Dir.glob("lib/**/*.{rb,rake}") +
-    ::Dir.glob("test/**/*.rb") +
-    ::Dir.glob("*.rdoc") +
-    ['LICENSE.txt']
-  spec.extra_rdoc_files = ::Dir.glob("*.rdoc")
-  spec.test_files = ::Dir.glob("test/**/tc_*.rb")
+  spec.files = Dir['lib/**/*', 'test/**/*', '*.rdoc', 'LICENSE.txt']
+  spec.extra_rdoc_files = Dir['*.rdoc']
+  spec.test_files = Dir['test/**/*']
   spec.platform = ::Gem::Platform::RUBY
 
   spec.required_ruby_version = '>= 2.0.0'
