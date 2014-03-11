@@ -80,17 +80,18 @@ module ActiveRecord  # :nodoc:
       end
 
 
-      # For ActiveRecord 3.1 compatibility: Add the "postgis" adapter to the
-      # matcher of jdbc-like adapters.
-
-      def self.visitor_for(pool)
-        config = pool.spec.config
-        adapter = config[:adapter]
-        adapter_spec = config[:adapter_spec] || self
-        if adapter =~ /^(jdbc|jndi|postgis)$/
-          adapter_spec.arel2_visitors(config).values.first.new(pool)
-        else
-          adapter_spec.arel2_visitors(config)[adapter].new(pool)
+      # For ActiveRecord 3.1 compatibility under activerecord-jdbc-adapter
+      # 1.2.x: Add the "postgis" adapter to the matcher of jdbc-like adapters.
+      if(defined?(ArJdbc::Version::VERSION) && ArJdbc::Version::VERSION.to_f < 1.3)
+        def self.visitor_for(pool)
+          config = pool.spec.config
+          adapter = config[:adapter]
+          adapter_spec = config[:adapter_spec] || self
+          if adapter =~ /^(jdbc|jndi|postgis)$/
+            adapter_spec.arel2_visitors(config).values.first.new(pool)
+          else
+            adapter_spec.arel2_visitors(config)[adapter].new(pool)
+          end
         end
       end
 
