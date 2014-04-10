@@ -7,10 +7,10 @@ module ActiveRecord  # :nodoc:
 
       class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
-        def initialize(types_, name_, temporary_, options_, base_)
+        def initialize(types_, name_, temporary_, options_, as_, base_)
           @base = base_
           @spatial_columns_hash = {}
-          super(types_, name_, temporary_, options_)
+          super(types_, name_, temporary_, options_, as_)
         end
 
         def column(name_, type_, options_={})
