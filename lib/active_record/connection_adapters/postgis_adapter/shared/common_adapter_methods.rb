@@ -1,32 +1,22 @@
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
-
       SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
         :geography => {:type => 'geometry', :geographic => true}
       )
 
-
       module CommonAdapterMethods  # :nodoc:
-
-
         def set_rgeo_factory_settings(factory_settings_)
           @rgeo_factory_settings = factory_settings_
         end
-
 
         def adapter_name
           PostGISAdapter::ADAPTER_NAME
         end
 
-
         def spatial_column_constructor(name_)
           PostGISAdapter::SPATIAL_COLUMN_CONSTRUCTORS[name_]
         end
-
 
         def postgis_lib_version
           unless defined?(@postgis_lib_version)
@@ -35,26 +25,14 @@ module ActiveRecord  # :nodoc:
           @postgis_lib_version
         end
 
-
+        # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
         def default_srid
-          unless defined?(@default_srid)
-            case postgis_lib_version
-            when nil
-              @default_srid = nil
-            when /^1/
-              @default_srid = -1
-            else
-              @default_srid = 0
-            end
-          end
-          @default_srid
+          0
         end
-
 
         def srs_database_columns
           {:srtext_column => 'srtext', :proj4text_column => 'proj4text', :auth_name_column => 'auth_name', :auth_srid_column => 'auth_srid'}
         end
-
 
         def quote(value_, column_=nil)
           if ::RGeo::Feature::Geometry.check_type(value_)
@@ -65,13 +43,7 @@ module ActiveRecord  # :nodoc:
             super
           end
         end
-
-
       end
-
-
     end
-
   end
-
 end
