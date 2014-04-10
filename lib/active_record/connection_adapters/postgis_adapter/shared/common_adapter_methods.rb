@@ -19,10 +19,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def postgis_lib_version
-          unless defined?(@postgis_lib_version)
-            @postgis_lib_version = select_value("SELECT PostGIS_Lib_Version()") rescue nil
-          end
-          @postgis_lib_version
+          @postgis_lib_version ||= select_value("SELECT PostGIS_Lib_Version()")
         end
 
         # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
