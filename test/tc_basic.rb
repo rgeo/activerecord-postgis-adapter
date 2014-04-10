@@ -11,6 +11,7 @@ module RGeo
 
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
+
           include AdapterTestHelper
 
           define_test_methods do
