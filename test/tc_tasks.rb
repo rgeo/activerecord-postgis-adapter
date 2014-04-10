@@ -26,11 +26,6 @@ module RGeo
           end
 
           define_test_methods do
-            def test_create_database_from_extension_in_postgis_schema
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              ::ActiveRecord::Base.connection.select_values("SELECT * from postgis.spatial_ref_sys")
-            end
-
             def test_create_database_from_extension_in_public_schema
               ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config)
               ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
