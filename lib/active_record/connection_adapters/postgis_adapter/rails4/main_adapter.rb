@@ -33,7 +33,7 @@ module ActiveRecord  # :nodoc:
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_, oid_, fmod_|
-            oid_ = OID::TYPE_MAP.fetch(oid_.to_i, fmod_.to_i) {
+            oid_ = type_map.fetch(oid_.to_i, fmod_.to_i) {
               OID::Identity.new
             }
             SpatialColumn.new(@rgeo_factory_settings, table_name_, col_name_, default_, oid_, type_,
