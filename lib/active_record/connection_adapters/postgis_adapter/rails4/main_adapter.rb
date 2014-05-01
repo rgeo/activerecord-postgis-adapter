@@ -112,13 +112,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        def drop_table(table_name_, *options_)
-          if postgis_lib_version.to_s.split('.').first.to_i == 1
-            execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
-          end
-          super
-        end
-
         def add_column(table_name_, column_name_, type_, options_={})
           table_name_ = table_name_.to_s
           column_name_ = column_name_.to_s
