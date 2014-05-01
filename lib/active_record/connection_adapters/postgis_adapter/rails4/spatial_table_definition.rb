@@ -80,7 +80,11 @@ module ActiveRecord  # :nodoc:
         end
 
         def srid
-          @srid ? @srid.to_i : (geographic? ? 4326 : -1)
+          if @srid
+            @srid.to_i
+          else
+            geographic? ? 4326 : PostGISAdapter::DEFAULT_SRID
+          end
         end
 
         def has_z?

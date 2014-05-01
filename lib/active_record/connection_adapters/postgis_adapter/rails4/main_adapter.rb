@@ -127,7 +127,7 @@ module ActiveRecord  # :nodoc:
               type_ = (options_[:type] || info_[:type] || type_).to_s.gsub('_', '').upcase
               has_z_ = options_[:has_z]
               has_m_ = options_[:has_m]
-              srid_ = (options_[:srid] || -1).to_i
+              srid_ = (options_[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
               if options_[:geographic]
                 type_ << 'Z' if has_z_
                 type_ << 'M' if has_m_

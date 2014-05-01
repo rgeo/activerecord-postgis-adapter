@@ -5,6 +5,9 @@ module ActiveRecord  # :nodoc:
         :geography => {:type => 'geometry', :geographic => true}
       )
 
+      # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
+      DEFAULT_SRID = 0
+
       module CommonAdapterMethods  # :nodoc:
         def set_rgeo_factory_settings(factory_settings_)
           @rgeo_factory_settings = factory_settings_
@@ -22,9 +25,8 @@ module ActiveRecord  # :nodoc:
           @postgis_lib_version ||= select_value("SELECT PostGIS_Lib_Version()")
         end
 
-        # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
         def default_srid
-          0
+          DEFAULT_SRID
         end
 
         def srs_database_columns
