@@ -11,14 +11,13 @@ module ActiveRecord  # :nodoc:
         def initialize(factory_settings_, table_name_, name_, default_, oid_type_, sql_type_=nil, null_=true, opts_=nil)
           @factory_settings = factory_settings_
           @table_name = table_name_
-          @geographic = sql_type_ =~ /geography/i ? true : false
+          @geographic = !!(sql_type_ =~ /geography/i)
           if opts_
             # This case comes from an entry in the geometry_columns table
-            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type]) ||
-              ::RGeo::Feature::Geometry
+            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts_[:type]) || ::RGeo::Feature::Geometry
             @srid = opts_[:srid].to_i
-            @has_z = opts_[:has_z] ? true : false
-            @has_m = opts_[:has_m] ? true : false
+            @has_z = !!opts_[:has_z]
+            @has_m = !!opts_[:has_m]
           elsif @geographic
             # Geographic type information is embedded in the SQL type
             @geometric_type = ::RGeo::Feature::Geometry
