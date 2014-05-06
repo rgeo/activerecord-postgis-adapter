@@ -1,3 +1,7 @@
+=== 0.7.1 / 2014-05-04
+
+* Require rgeo-activerecord 0.6.0, which includes bug fixes for Rails 4.0.x
+
 === 0.7.0 / 2014-05-04
 
 * Version 0.7.0 is for Rails 4.0.x
