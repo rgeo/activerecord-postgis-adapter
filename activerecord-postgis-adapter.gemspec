@@ -19,7 +19,6 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
 
   spec.add_dependency 'activerecord', '~> 4.0.2'
   spec.add_dependency 'rgeo-activerecord', '~> 0.5.0'
->>>>>>> f746f47... Remove activerecord from Gemfile (in gemspec)
 
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'minitest'
