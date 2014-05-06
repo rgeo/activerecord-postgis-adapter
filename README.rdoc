@@ -2,9 +2,9 @@
 
 The activerecord-postgis-adapter is a plugin that provides access to features of the PostGIS geospatial database from \ActiveRecord. Technically, it extends the standard postgresql adapter to provide support for the spatial data types and features added by the PostGIS extension. It uses the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial data in Ruby.
 
-== About the PostGIS Adapter
+=== Documentation
 
-This is a brief summary covering how to use activerecord-postgis-adapter. For full documentation, see Documentation.rdoc.
+Full documentation including how to run spatial migrations, how to query for spatial data, how to create a spatial index, as well as what data types and srid are supported is all contained in Documentation.rdoc[link:Documentation.rdoc].
 
 === Features
 
@@ -46,7 +46,7 @@ Once you have installed the adapter, you'll need to edit your config/database.ym
 
 == Development and Support
 
-\Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
+\Rdoc-style documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
 
 Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
 
