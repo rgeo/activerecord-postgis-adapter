@@ -15,7 +15,7 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.test_files = Dir['test/**/*']
   spec.platform = ::Gem::Platform::RUBY
 
-  spec.required_ruby_version = '>= 2.0.0'
+  spec.required_ruby_version = '>= 1.9.3'
 
   spec.add_dependency 'activerecord', '~> 4.0.2'
   spec.add_dependency 'rgeo-activerecord', '~> 0.5.0'
