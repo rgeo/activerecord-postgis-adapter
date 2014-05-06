@@ -18,7 +18,7 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.required_ruby_version = '>= 1.9.3'
 
   spec.add_dependency 'activerecord', '~> 4.0.2'
-  spec.add_dependency 'rgeo-activerecord', '~> 0.5.0'
+  spec.add_dependency 'rgeo-activerecord', '~> 0.6.0'
 
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'minitest'
