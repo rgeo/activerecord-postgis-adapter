@@ -8,6 +8,8 @@ env:
   - POSTGIS=2.0
 gemfile:
   - travis/ar40.gemfile
+allow_failures:
+  - rbx-2
 matrix:
   exclude:
 before_install: ./travis/before_install.sh
