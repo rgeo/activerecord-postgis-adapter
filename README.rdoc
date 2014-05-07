@@ -16,29 +16,43 @@ Second, it recognizes spatial types and casts them properly to RGeo geometry obj
 
 Third, it lets you include simple spatial data in queries. WKT format data and RGeo objects can be embedded in where clauses. If you include the Squeel gem, the adapter also supports advanced queries utilizing the standard SQL spatial function set.
 
-=== Requirements
+=== Install
 
-The adapter has the following requirements.
+The adapter requires PostgreSQL 9.0+.
 
-* Ruby 1.8.7 or later. Ruby 1.9.2 or later preferred. JRuby 1.6.3 or later also supported.
-* PostgreSQL 9.0 or later.
-* PostGIS 1.5, PostGIS 2.0, or later.
-* \ActiveRecord 3.0.3 or later. Earlier versions will not work. Rails 4.0 is supported on an experimental basis.
-* The rgeo and rgeo-activerecord gems are also required.
+===== Version 1.x: ActiveRecord 4.1+
 
-As of this writing, the design of the JDBC Postgres driver for Rails 4 still appears to be in flux. Accordingly, I'm holding off on supporting Rails 4 on JRuby for now. Similarly, Rubinius receives limited testing and support.
+Requirements:
+  ActiveRecord 4.1+
+  Ruby 1.9.3+
+  PostGIS 2.0+
 
-=== Installation and Configuration
-
-To install this adapter in a Rails application, add it to your Gemfile:
-
+Gemfile:
   gem 'activerecord-postgis-adapter'
 
-and run bundle install to update your bundle.
+Support for JRuby will be added soon.
 
-Alternately, if you are not using bundler, install it separately as a gem:
+===== Version 0.7.x: ActiveRecord 4.0.x
 
-  gem install activerecord-postgis-adapter
+Requirements:
+  ActiveRecord 4.0.x
+  Ruby 1.9.3+
+  PostGIS 2.0+
+
+Gemfile:
+  gem 'activerecord-postgis-adapter', '~> 0.7.1'
+
+Support for JRuby will be added soon.
+
+===== Version 0.6.x: ActiveRecord 3.x
+
+Requirements:
+  ActiveRecord 3.x only
+  Ruby 1.8.7+, JRuby, Rubinius
+  PostGIS 1.5+
+
+Gemfile:
+  gem 'activerecord-postgis-adapter', '~> 0.6.6'
 
 Please note that this adapter uses the rgeo gem, which may have additional dependencies. Please see the \README documentation for rgeo for more information.
 
@@ -46,17 +60,15 @@ Once you have installed the adapter, you'll need to edit your config/database.ym
 
 == Development and Support
 
-\Documentation is available at http://dazuma.github.com/activerecord-postgis-adapter/rdoc
+\Documentation is available at http://rgeo.github.com/activerecord-postgis-adapter/rdoc
 
-Source code is hosted on Github at http://github.com/dazuma/activerecord-postgis-adapter
+Source code is hosted on Github at http://github.com/rgeo/activerecord-postgis-adapter
 
 Contributions are welcome. Fork the project on Github.
 
-Report bugs on Github issues at http://github.org/dazuma/activerecord-postgis-adapter/issues
+Report issues at http://github.com/rgeo/activerecord-postgis-adapter/issues
 
-Support available on the rgeo-users google group at http://groups.google.com/group/rgeo-users
-
-Contact the author at dazuma at gmail dot com.
+Support is available on the rgeo-users google group at http://groups.google.com/group/rgeo-users
 
 == Acknowledgments
 
