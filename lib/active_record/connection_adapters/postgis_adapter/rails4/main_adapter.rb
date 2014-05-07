@@ -87,10 +87,6 @@ module ActiveRecord  # :nodoc:
           end.compact
         end
 
-<<<<<<< HEAD
-
-=======
->>>>>>> rgeo/master
         def create_table_definition(name_, temporary_, options_, as_=nil)
           # Override to create a spatial table definition (post-4.0.0.beta1)
           PostGISAdapter::TableDefinition.new(native_database_types, name_, temporary_, options_, as_, self)
