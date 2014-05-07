@@ -1,3 +1,20 @@
+=== 1.0.0 / 2014-05-06
+
+* Require rgeo-activerecord 1.0.0
+* Require ActiveRecord 4.1
+
+=== 0.7.1 / 2014-05-06
+
+* Updates for the Rails 4.0.x-compatible adapater can be found on the 0.7-stable branch
+* Require rgeo-activerecord 0.6.0, which includes bug fixes for Rails 4.0.x
+
+=== 0.7.0 / 2014-05-06
+
+* Version 0.7.0 is for Rails 4.0.x
+* Require ruby 1.9.3+
+* Require ActiveRecord 4.0
+* Drop JRuby support (temporary)
+
 === 0.6.5 / 2013-06-24
 
 * Fixed stoopid syntax errors in rake db:gis:setup tass. (Pull requests by rhodrid and jdurand)

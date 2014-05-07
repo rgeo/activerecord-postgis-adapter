@@ -1,58 +1,14 @@
-# -----------------------------------------------------------------------------
-#
-# PostGIS adapter for ActiveRecord
-#
-# -----------------------------------------------------------------------------
-# Copyright 2010-2012 Daniel Azuma
-#
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice,
-#   this list of conditions and the following disclaimer.
-# * Redistributions in binary form must reproduce the above copyright notice,
-#   this list of conditions and the following disclaimer in the documentation
-#   and/or other materials provided with the distribution.
-# * Neither the name of the copyright holder, nor the names of any other
-#   contributors to this software, may be used to endorse or promote products
-#   derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-# POSSIBILITY OF SUCH DAMAGE.
-# -----------------------------------------------------------------------------
-;
-
-
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
-
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
-
-
         def initialize(*args_)
           # Overridden to change the visitor
           super
           @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
 
-
         include PostGISAdapter::CommonAdapterMethods
-
 
         @@native_database_types = nil
 
@@ -63,7 +19,6 @@ module ActiveRecord  # :nodoc:
             :geography => {:name => 'geography'})
         end
 
-
         def type_cast(value_, column_, array_member_=false)
           if ::RGeo::Feature::Geometry.check_type(value_)
             ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value_)
@@ -72,22 +27,12 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def columns(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We needed to return a spatial column subclass.
           table_name_ = table_name_.to_s
           spatial_info_ = spatial_column_info(table_name_)
           column_definitions(table_name_).collect do |col_name_, type_, default_, notnull_, oid_, fmod_|
-            # JDBC support: JDBC adapter returns a hash for column definitions,
-            # instead of an array of values.
-            if col_name_.kind_of?(::Hash)
-              notnull_ = col_name_["column_not_null"]
-              default_ = col_name_["column_default"]
-              type_ = col_name_["column_type"]
-              col_name_ = col_name_["column_name"]
-              # TODO: get oid and fmod from jdbc
-            end
             oid_ = type_map.fetch(oid_.to_i, fmod_.to_i) {
               OID::Identity.new
             }
@@ -95,7 +40,6 @@ module ActiveRecord  # :nodoc:
               notnull_ == 'f', type_ =~ /geometry/i ? spatial_info_[col_name_] : nil)
           end
         end
-
 
         def indexes(table_name_, name_=nil)
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
@@ -143,12 +87,14 @@ module ActiveRecord  # :nodoc:
           end.compact
         end
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> rgeo/master
         def create_table_definition(name_, temporary_, options_, as_=nil)
           # Override to create a spatial table definition (post-4.0.0.beta1)
           PostGISAdapter::TableDefinition.new(native_database_types, name_, temporary_, options_, as_, self)
         end
-
 
         def create_table(table_name_, options_={}, &block_)
           table_name_ = table_name_.to_s
@@ -170,15 +116,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
-        def drop_table(table_name_, *options_)
-          if postgis_lib_version.to_s.split('.').first.to_i == 1
-            execute("DELETE from geometry_columns where f_table_name='#{quote_string(table_name_.to_s)}'")
-          end
-          super
-        end
-
-
         def add_column(table_name_, column_name_, type_, options_={})
           table_name_ = table_name_.to_s
           column_name_ = column_name_.to_s
@@ -194,7 +131,7 @@ module ActiveRecord  # :nodoc:
               type_ = (options_[:type] || info_[:type] || type_).to_s.gsub('_', '').upcase
               has_z_ = options_[:has_z]
               has_m_ = options_[:has_m]
-              srid_ = (options_[:srid] || -1).to_i
+              srid_ = (options_[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
               if options_[:geographic]
                 type_ << 'Z' if has_z_
                 type_ << 'M' if has_m_
@@ -214,7 +151,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def remove_column(table_name_, column_name_, type_=nil, options_={})
           table_name_ = table_name_.to_s
           column_name_ = column_name_.to_s
@@ -226,7 +162,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def add_index(table_name_, column_name_, options_={})
           # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
@@ -235,7 +170,6 @@ module ActiveRecord  # :nodoc:
           index_name_, index_type_, index_columns_, index_options_ = add_index_options(table_name_, column_name_, options_)
           execute "CREATE #{index_type_} INDEX #{quote_column_name(index_name_)} ON #{quote_table_name(table_name_)}#{gist_clause_} (#{index_columns_})#{index_options_}"
         end
-
 
         def spatial_column_info(table_name_)
           info_ = query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{quote_string(table_name_.to_s)}'")
@@ -259,12 +193,7 @@ module ActiveRecord  # :nodoc:
           result_
         end
 
-
       end
-
-
     end
-
   end
-
 end
