@@ -1,6 +1,6 @@
 == PostGIS \ActiveRecord Adapter
 
-The activerecord-postgis-adapter is a plugin that provides access to features of the PostGIS geospatial database from \ActiveRecord. Technically, it extends the standard postgresql adapter to provide support for the spatial data types and features added by the PostGIS extension. It uses the {RGeo}[http://github.com/dazuma/rgeo] library to represent spatial data in Ruby.
+The activerecord-postgis-adapter is a plugin that provides access to features of the PostGIS geospatial database from \ActiveRecord. Technically, it extends the standard postgresql adapter to provide support for the spatial data types and features added by the PostGIS extension. It uses the {RGeo}[http://github.com/rgeo/rgeo] library to represent spatial data in Ruby.
 
 == About the PostGIS Adapter
 

@@ -5,9 +5,9 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.summary = 'An ActiveRecord adapter for PostGIS, based on RGeo.'
   spec.description = "This is an ActiveRecord connection adapter for PostGIS. It is based on the stock PostgreSQL adapter, but provides built-in support for the spatial extensions provided by PostGIS. It uses the RGeo library to represent spatial data in Ruby."
   spec.version = ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
-  spec.author = 'Daniel Azuma'
-  spec.email = 'dazuma@gmail.com'
-  spec.homepage = "http://dazuma.github.com/activerecord-postgis-adapter"
+  spec.author = 'Daniel Azuma, Tee Parham'
+  spec.email = 'dazuma@gmail.com, parhameter@gmail.com'
+  spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
   spec.licenses = ['BSD']
 
   spec.files = Dir['lib/**/*', 'test/**/*', '*.rdoc', 'LICENSE.txt']

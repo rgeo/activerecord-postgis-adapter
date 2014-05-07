@@ -6,24 +6,22 @@ This document provides basic how-to information that should help get you started
 * How to set up and configure spatial columns and tables.
 * How to read, write, and query spatial data.
 
-This document is part of the distribution for the activerecord-postgis-adapter gem. For more information, please visit http://dazuma.github.com/activerecord-postgis-adapter.
+This document is part of the distribution for the activerecord-postgis-adapter gem. For more information, please visit http://rgeo.github.com/activerecord-postgis-adapter.
 
 == Installation and Configuration
 
-=== General Installation Considerations
+=== Dependencies
 
-Generally, we recommend starting with the latest versions of Ruby, Rails, PostgreSQL, and PostGIS. As of this writing, those are Ruby 2.0.0, Rails 3.2, PostgreSQL 9.2, and PostGIS 2.0. If you cannot upgrade, the minimum supported configuration is the following:
+Generally, we recommend starting with the latest versions of Ruby, Rails, PostgreSQL, and PostGIS. The minimum supported configuration is the following:
 
 * Ruby 1.8.7
 * Rails 3.0.3
 * PostgreSQL 9.0
 * PostGIS 1.5
 
-However, older software versions can make for a more involved setup process, so we recommend using the latest available if possible.
+We recommend using the latest available if possible.
 
-As of this writing, Rails 4.0.0 release candidate 1 has just been released. This version of activerecord-postgis-adapter does support Rails 4, but because the software is still pre-release, the usual caveats apply. If you are running Rails 4, you must be on the release candidate or later; the beta 1 release is not supported.
-
-JRuby and the JDBC Postgres Adapter is supported. But, as of this writing, the JDBC adapters themselves are not yet compatible with Rails 4.
+JRuby and the JDBC Postgres Adapter are supported for Rails 3.x. Support is coming soon for Rails 4.
 
 === Creating a Spatial Rails App
 
