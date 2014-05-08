@@ -1,10 +1,6 @@
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
-
       class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
         def initialize(types_, name_, temporary_, options_, as_, base_)
@@ -68,7 +64,6 @@ module ActiveRecord  # :nodoc:
 
       end
 
-
       class ColumnDefinition < ConnectionAdapters::ColumnDefinition  # :nodoc:
 
         def spatial_type
@@ -117,9 +112,6 @@ module ActiveRecord  # :nodoc:
 
       end
 
-
     end
-
   end
-
 end

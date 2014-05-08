@@ -1,12 +1,7 @@
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
-
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
-
 
         def initialize(factory_settings_, table_name_, name_, default_, oid_type_, sql_type_=nil, null_=true, opts_=nil)
           @factory_settings = factory_settings_
@@ -57,7 +52,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         attr_reader :geographic
         attr_reader :srid
         attr_reader :geometric_type
@@ -68,21 +62,17 @@ module ActiveRecord  # :nodoc:
         alias_method :has_z?, :has_z
         alias_method :has_m?, :has_m
 
-
         def spatial?
           type == :spatial || type == :geography
         end
-
 
         def has_spatial_constraints?
           !@srid.nil?
         end
 
-
         def klass
           spatial? ? ::RGeo::Feature::Geometry : super
         end
-
 
         def type_cast(value_)
           if spatial?
@@ -93,14 +83,11 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         private
-
 
         def simplified_type(sql_type_)
           sql_type_ =~ /geography|geometry|point|linestring|polygon/i ? :spatial : super
         end
-
 
         def self.convert_to_geometry(input_, factory_settings_, table_name_, column_, geographic_, srid_, has_z_, has_m_)
           if srid_
@@ -130,13 +117,10 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
       end
-
 
       # Register spatial types with the postgres OID mechanism
       # so we can recognize custom columns coming from the database.
-
       class SpatialOID < PostgreSQLAdapter::OID::Type  # :nodoc:
 
         def initialize(factory_generator_)
@@ -153,10 +137,8 @@ module ActiveRecord  # :nodoc:
       PostgreSQLAdapter::OID.register_type('geometry', SpatialOID.new(nil))
       PostgreSQLAdapter::OID.register_type('geography', SpatialOID.new(::RGeo::Geographic.method(:spherical_factory)))
 
-
       # This is a hack to ActiveRecord::ModelSchema. We have to "decorate" the decorate_columns
       # method to apply class-specific customizations to spatial type casting.
-
       module DecorateColumnsModification  # :nodoc:
 
         def decorate_columns(columns_hash_)
@@ -175,9 +157,6 @@ module ActiveRecord  # :nodoc:
 
       ::ActiveRecord::Base.extend(DecorateColumnsModification)
 
-
     end
-
   end
-
 end

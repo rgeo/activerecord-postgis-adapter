@@ -1,17 +1,12 @@
 module ActiveRecord  # :nodoc:
-
   module ConnectionAdapters  # :nodoc:
-
     module PostGISAdapter  # :nodoc:
-
       class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
-
 
         def initialize(config_)
           super
           ensure_installation_configs
         end
-
 
         def setup_gis
           establish_su_connection
@@ -27,9 +22,7 @@ module ActiveRecord  # :nodoc:
           establish_connection(configuration)
         end
 
-
         # Overridden to set the database owner and call setup_gis
-
         def create(master_established_=false)
           establish_master_connection unless master_established_
           extra_configs_ = {'encoding' => encoding}
@@ -44,9 +37,7 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         # Overridden to remove postgis schema
-
         def structure_dump(filename_)
           set_psql_env
           search_path_ = search_path.dup
@@ -58,12 +49,9 @@ module ActiveRecord  # :nodoc:
           ::File.open(filename_, "a") { |f_| f_ << "SET search_path TO #{ActiveRecord::Base.connection.schema_search_path};\n\n" }
         end
 
-
         private
 
-
         # Overridden to use su_username and su_password
-
         def establish_master_connection
           establish_connection(configuration.merge(
             'database' => 'postgres',
@@ -72,14 +60,12 @@ module ActiveRecord  # :nodoc:
             'password' => su_password))
         end
 
-
         def establish_su_connection
           establish_connection(configuration.merge(
             'schema_search_path' => 'public',
             'username' => su_username,
             'password' => su_password))
         end
-
 
         def username
           @username ||= configuration['username']
@@ -133,7 +119,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def ensure_installation_configs
           if configuration['setup'] == 'default' && !configuration['script_dir'] && !configuration['postgis_extension']
             share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
@@ -147,7 +132,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def setup_gis_schemas
           auth_ = has_su? ? " AUTHORIZATION #{quoted_username}" : ''
           search_path.each do |schema_|
@@ -156,7 +140,6 @@ module ActiveRecord  # :nodoc:
             end
           end
         end
-
 
         def setup_gis_from_extension
           extension_names.each do |extname_|
@@ -169,13 +152,11 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-
         def setup_gis_from_script_dir
           connection.execute("SET search_path TO #{postgis_schema}")
           connection.execute(::File.read(::File.expand_path('postgis.sql', script_dir)))
           connection.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir)))
         end
-
 
         def setup_gis_grant_privileges
           connection.execute("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA #{postgis_schema} TO #{quoted_username}")
@@ -190,15 +171,10 @@ module ActiveRecord  # :nodoc:
           connection.execute("ALTER TABLE #{postgis_schema}.spatial_ref_sys OWNER TO #{quoted_username}")
         end
 
-
       end
-
 
       ::ActiveRecord::Tasks::DatabaseTasks.register_task(/postgis/, PostGISDatabaseTasks)
 
-
     end
-
   end
-
 end
