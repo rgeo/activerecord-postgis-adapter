@@ -7,7 +7,7 @@ module RGeo
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
 
-        class TestBasic < ::MiniTest::Test  # :nodoc:
+        class BasicTest < ::MiniTest::Test  # :nodoc:
 
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
