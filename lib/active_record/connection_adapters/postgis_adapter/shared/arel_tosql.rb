@@ -9,8 +9,8 @@ module Arel  # :nodoc:
 
       include ::RGeo::ActiveRecord::SpatialToSql
 
-      def st_func(standard_name_)
-        FUNC_MAP[standard_name_.downcase] || standard_name_
+      def st_func(standard_name)
+        FUNC_MAP[standard_name.downcase] || standard_name
       end
 
       alias_method :visit_in_spatial_context, :visit
