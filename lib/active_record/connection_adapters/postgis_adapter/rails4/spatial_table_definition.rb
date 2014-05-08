@@ -3,56 +3,56 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
-        def initialize(types_, name_, temporary_, options_, as_, base_)
-          @base = base_
+        def initialize(types, name, temporary, options, as, base)
+          @base = base
           @spatial_columns_hash = {}
-          super(types_, name_, temporary_, options_, as_)
+          super(types, name, temporary, options, as)
         end
 
-        def column(name_, type_, options_={})
-          if (info_ = @base.spatial_column_constructor(type_.to_sym))
-            type_ = options_[:type] || info_[:type] || type_
-            if type_.to_s == 'geometry' &&
-              (options_[:no_constraints] ||
-               options_[:limit].is_a?(::Hash) && options_[:limit][:no_constraints])
+        def column(name, type, options={})
+          if (info = @base.spatial_column_constructor(type.to_sym))
+            type = options[:type] || info[:type] || type
+            if type.to_s == 'geometry' &&
+              (options[:no_constraints] ||
+               options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
             then
-              options_.delete(:limit)
+              options.delete(:limit)
             else
-              options_[:type] = type_
-              type_ = :spatial
+              options[:type] = type
+              type = :spatial
             end
           end
-          if type_ == :spatial
-            if (limit_ = options_.delete(:limit))
-              options_.merge!(limit_) if limit_.is_a?(::Hash)
+          if type == :spatial
+            if (limit = options.delete(:limit))
+              options.merge!(limit) if limit.is_a?(::Hash)
             end
-            if options_[:geographic]
-              type_ = :geography
-              spatial_type_ = (options_[:type] || 'geometry').to_s.upcase.gsub('_', '')
-              spatial_type_ << 'Z' if options_[:has_z]
-              spatial_type_ << 'M' if options_[:has_m]
-              options_[:limit] = "#{spatial_type_},#{options_[:srid] || 4326}"
+            if options[:geographic]
+              type = :geography
+              spatial_type = (options[:type] || 'geometry').to_s.upcase.gsub('_', '')
+              spatial_type << 'Z' if options[:has_z]
+              spatial_type << 'M' if options[:has_m]
+              options[:limit] = "#{spatial_type},#{options[:srid] || 4326}"
             end
-            name_ = name_.to_s
-            if primary_key_column_name == name_
-              raise ArgumentError, "you can't redefine the primary key column '#{name_}'. To define a custom primary key, pass { id: false } to create_table."
+            name = name.to_s
+            if primary_key_column_name == name
+              raise ArgumentError, "you can't redefine the primary key column '#{name}'. To define a custom primary key, pass { id: false } to create_table."
             end
-            col_ = new_column_definition(name_, type_, options_)
-            col_.set_spatial_type(options_[:type])
-            col_.set_geographic(options_[:geographic])
-            col_.set_srid(options_[:srid])
-            col_.set_has_z(options_[:has_z])
-            col_.set_has_m(options_[:has_m])
-            (col_.geographic? ? @columns_hash : @spatial_columns_hash)[name_] = col_
+            column = new_column_definition(name, type, options)
+            column.set_spatial_type(options[:type])
+            column.set_geographic(options[:geographic])
+            column.set_srid(options[:srid])
+            column.set_has_z(options[:has_z])
+            column.set_has_m(options[:has_m])
+            (column.geographic? ? @columns_hash : @spatial_columns_hash)[name] = column
           else
-            super(name_, type_, options_)
+            super(name, type, options)
           end
           self
         end
 
-        def create_column_definition(name_, type_)
-          if type_ == :spatial || type_ == :geography
-            PostGISAdapter::ColumnDefinition.new(name_, type_)
+        def create_column_definition(name, type)
+          if type == :spatial || type == :geography
+            PostGISAdapter::ColumnDefinition.new(name, type)
           else
             super
           end
@@ -90,24 +90,24 @@ module ActiveRecord  # :nodoc:
           @has_m
         end
 
-        def set_geographic(value_)
-          @geographic = value_ ? true : false
+        def set_geographic(value)
+          @geographic = value ? true : false
         end
 
-        def set_spatial_type(value_)
-          @spatial_type = value_.to_s
+        def set_spatial_type(value)
+          @spatial_type = value.to_s
         end
 
-        def set_srid(value_)
-          @srid = value_
+        def set_srid(value)
+          @srid = value
         end
 
-        def set_has_z(value_)
-          @has_z = value_ ? true : false
+        def set_has_z(value)
+          @has_z = value ? true : false
         end
 
-        def set_has_m(value_)
-          @has_m = value_ ? true : false
+        def set_has_m(value)
+          @has_m = value ? true : false
         end
 
       end
