@@ -1,20 +1,18 @@
 require 'minitest/autorun'
 require 'rgeo/active_record/adapter_test_helper'
 
-
 module RGeo
   module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
-
         class SpatialQueriesTest < ::MiniTest::Test  # :nodoc:
 
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
+
           include AdapterTestHelper
 
           define_test_methods do
-
 
             def populate_ar_class(content_)
               klass_ = create_ar_class
@@ -35,7 +33,6 @@ module RGeo
               klass_
             end
 
-
             def test_query_point
               klass_ = populate_ar_class(:mercator_point)
               obj_ = klass_.new
@@ -48,7 +45,6 @@ module RGeo
               obj3_ = klass_.where(:latlon => @factory.point(2.0, 2.0)).first
               assert_nil(obj3_)
             end
-
 
             def test_query_point_wkt
               klass_ = populate_ar_class(:mercator_point)
@@ -63,9 +59,7 @@ module RGeo
               assert_nil(obj3_)
             end
 
-
             if ::RGeo::ActiveRecord.spatial_expressions_supported?
-
 
               def test_query_st_distance
                 klass_ = populate_ar_class(:mercator_point)
@@ -80,7 +74,6 @@ module RGeo
                 assert_nil(obj3_)
               end
 
-
               def test_query_st_distance_from_constant
                 klass_ = populate_ar_class(:mercator_point)
                 obj_ = klass_.new
@@ -93,7 +86,6 @@ module RGeo
                 obj3_ = klass_.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass_.arel_table[:latlon]).gt(2)).first
                 assert_nil(obj3_)
               end
-
 
               def test_query_st_length
                 klass_ = populate_ar_class(:path_linestring)
@@ -108,18 +100,11 @@ module RGeo
                 assert_nil(obj3_)
               end
 
-
             else
-
               puts "WARNING: The current Arel does not support named functions. Spatial expression tests skipped."
-
             end
-
-
           end
-
         end
-
       end
     end
   end

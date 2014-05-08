@@ -1,18 +1,15 @@
 require 'minitest/autorun'
 require 'rgeo/active_record/adapter_test_helper'
 
-
 module RGeo
   module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
-
         class NestedClassTest < ::MiniTest::Test  # :nodoc:
-
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
-          include AdapterTestHelper
 
+          include AdapterTestHelper
 
           module Foo
             def self.table_name_prefix
@@ -22,9 +19,7 @@ module RGeo
             end
           end
 
-
           define_test_methods do
-
 
             def test_nested_model
               Foo::Bar.class_eval do
@@ -37,11 +32,9 @@ module RGeo
               Foo::Bar.connection.drop_table(:foo_bars)
             end
 
-
           end
 
         end
-
       end
     end
   end
