@@ -58,6 +58,12 @@ Please note that this adapter uses the rgeo gem, which may have additional depen
 
 Once you have installed the adapter, you'll need to edit your config/database.yml to call for it. At minimum, this means changing the adapter name from "postgresql" to "postgis". It may also require other settings to ensure that other functions (such as rake test) continue to work as expected. We recommend reading the Configuration section in the Documentation.rdoc file carefully before starting to use this adapter.
 
+== Heroku
+
+Heroku has PostGIS support in beta. Current documentation is located at: https://devcenter.heroku.com/articles/heroku-postgres-extensions-postgis-full-text-search#postgis
+
+Note: it has been observed that certain addons and extensions do not work seamlessly on Heroku. In at least one case, the pgbackups tool (which automatically takes daily backups of your database) began failing silently upon chaning the DATABSE_URL from "postgres://" to "postgis://". This issue has been raised with Heroku support. Other issues / solutions are being discussed here: https://github.com/dazuma/activerecord-postgis-adapter/issues/14
+
 == Development and Support
 
 \Documentation is available at http://rgeo.github.com/activerecord-postgis-adapter/rdoc
