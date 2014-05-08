@@ -12,10 +12,7 @@ module ActiveRecord  # :nodoc:
         def column(name, type, options={})
           if (info = @base.spatial_column_constructor(type.to_sym))
             type = options[:type] || info[:type] || type
-            if type.to_s == 'geometry' &&
-              (options[:no_constraints] ||
-               options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
-            then
+            if type.to_s == 'geometry' && (options[:no_constraints] || options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
               options.delete(:limit)
             else
               options[:type] = type
@@ -91,7 +88,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def set_geographic(value)
-          @geographic = value ? true : false
+          @geographic = !!value
         end
 
         def set_spatial_type(value)
@@ -103,11 +100,11 @@ module ActiveRecord  # :nodoc:
         end
 
         def set_has_z(value)
-          @has_z = value ? true : false
+          @has_z = !!value
         end
 
         def set_has_m(value)
-          @has_m = value ? true : false
+          @has_m = !!value
         end
 
       end

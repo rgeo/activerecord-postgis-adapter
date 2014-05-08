@@ -36,8 +36,14 @@ module ActiveRecord  # :nodoc:
             oid = type_map.fetch(oid.to_i, fmod.to_i) {
               OID::Identity.new
             }
-            SpatialColumn.new(@rgeo_factory_settings, table_name, col_name, default, oid, type,
-              notnull == 'f', type =~ /geometry/i ? spatial_info_[col_name] : nil)
+            SpatialColumn.new(@rgeo_factory_settings,
+                              table_name,
+                              col_name,
+                              default,
+                              oid,
+                              type,
+                              notnull == 'f',
+                              type =~ /geometry/i ? spatial_info_[col_name] : nil)
           end
         end
 
@@ -82,7 +88,7 @@ module ActiveRecord  # :nodoc:
             if column_names.empty?
               nil
             else
-              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name_, unique, column_names, [], orders, where, spatial ? true : false)
+              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name_, unique, column_names, [], orders, where, !!spatial)
             end
           end.compact
         end
@@ -174,7 +180,7 @@ module ActiveRecord  # :nodoc:
             name = row[0]
             type = row[3]
             dimension = row[1].to_i
-            has_m = type =~ /m$/i ? true : false
+            has_m = !!(type =~ /m$/i)
             type.sub!(/m$/, '')
             has_z = dimension > 3 || dimension == 3 && !has_m
             result[name] = {
