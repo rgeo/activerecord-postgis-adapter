@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "pg", "~> 0.17"
+gem "activerecord", '~> 4.0.5'
+
+gemspec :path => "../"

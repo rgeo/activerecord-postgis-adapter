@@ -1,11 +1,10 @@
-require 'minitest/autorun'
-require 'rgeo/active_record/adapter_test_helper'
+require 'test_helper'
 
 module RGeo
   module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
-        class DDLTest < ::MiniTest::Test  # :nodoc:
+        class DDLTest < BASE_TEST_CLASS  # :nodoc:
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database_local.yml'
 

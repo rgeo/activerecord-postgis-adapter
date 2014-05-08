@@ -33,7 +33,7 @@ module ActiveRecord  # :nodoc:
           table_name = table_name.to_s
           spatial_info_ = spatial_column_info(table_name)
           column_definitions(table_name).collect do |col_name, type, default, notnull, oid, fmod|
-            oid = type_map.fetch(oid.to_i, fmod.to_i) {
+            oid = column_type_map.fetch(oid.to_i, fmod.to_i) {
               OID::Identity.new
             }
             SpatialColumn.new(@rgeo_factory_settings,
@@ -95,7 +95,11 @@ module ActiveRecord  # :nodoc:
 
         def create_table_definition(name, temporary, options, as = nil)
           # Override to create a spatial table definition
-          PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as, self)
+          if ActiveRecord::VERSION::STRING > '4.1'
+            PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as, self)
+          else
+            PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, self)
+          end
         end
 
         def create_table(table_name, options = {}, &block)
@@ -193,6 +197,16 @@ module ActiveRecord  # :nodoc:
             }
           end
           result
+        end
+
+        private
+
+        def column_type_map
+          if defined?(type_map) # ActiveRecord 4.1+
+            type_map
+          else # ActiveRecord 4.0.x
+            OID::TYPE_MAP
+          end
         end
 
       end
