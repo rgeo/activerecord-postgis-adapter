@@ -19,20 +19,15 @@ require 'active_record'
 require 'active_record/connection_adapters/postgresql_adapter'
 require 'rgeo/active_record'
 
-case ::ActiveRecord::VERSION::MAJOR
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/version.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/arel_tosql.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/setup.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/create_connection'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/postgis_database_tasks.rb'
-else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
-end
+require 'active_record/connection_adapters/postgis_adapter/version.rb'
+require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
+require 'active_record/connection_adapters/postgis_adapter/shared/arel_tosql.rb'
+require 'active_record/connection_adapters/postgis_adapter/shared/setup.rb'
+require 'active_record/connection_adapters/postgis_adapter/rails4/create_connection'
+require 'active_record/connection_adapters/postgis_adapter/rails4/postgis_database_tasks.rb'
 
 ::ActiveRecord::ConnectionAdapters::PostGISAdapter.initial_setup
 
