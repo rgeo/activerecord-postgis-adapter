@@ -1,3 +1,8 @@
+=== 1.1.0 / 2014-05-07
+
+* Relax the ActiveRecord version requirement to support both 4.0.x and 4.1.x in a single gem.
+* The 0.7.x versions and 0.7-stable branch are now obsolete.
+
 === 1.0.0 / 2014-05-06
 
 * Require rgeo-activerecord 1.0.0

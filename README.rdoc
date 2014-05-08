@@ -20,27 +20,15 @@ Third, it lets you include simple spatial data in queries. WKT format data and R
 
 The adapter requires PostgreSQL 9.0+.
 
-===== Version 1.x: ActiveRecord 4.1+
+===== Version 1.1.x: ActiveRecord 4.0+
 
 Requirements:
-  ActiveRecord 4.1+
+  ActiveRecord 4.0+
   Ruby 1.9.3+
   PostGIS 2.0+
 
 Gemfile:
   gem 'activerecord-postgis-adapter'
-
-Support for JRuby will be added soon.
-
-===== Version 0.7.x: ActiveRecord 4.0.x
-
-Requirements:
-  ActiveRecord 4.0.x
-  Ruby 1.9.3+
-  PostGIS 2.0+
-
-Gemfile:
-  gem 'activerecord-postgis-adapter', '~> 0.7.1'
 
 Support for JRuby will be added soon.
 
