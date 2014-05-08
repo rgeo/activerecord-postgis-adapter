@@ -100,15 +100,15 @@ module ActiveRecord  # :nodoc:
             block.call(td) if block
             table_definition = td
           end
-          table_definition.non_geographic_spatial_columns.each do |col_|
-            type = col_.spatial_type.gsub('_', '').upcase
-            has_z = col_.has_z?
-            has_m = col_.has_m?
+          table_definition.non_geographic_spatial_columns.each do |col|
+            type = col.spatial_type.gsub('_', '').upcase
+            has_z = col.has_z?
+            has_m = col.has_m?
             type = "#{type}M" if has_m && !has_z
             dimensions_ = 2
             dimensions_ += 1 if has_z
             dimensions_ += 1 if has_m
-            execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(col_.name.to_s)}', #{col_.srid}, '#{quote_string(type)}', #{dimensions_})")
+            execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(col.name.to_s)}', #{col.srid}, '#{quote_string(type)}', #{dimensions_})")
           end
         end
 
