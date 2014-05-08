@@ -6,8 +6,8 @@ module RGeo
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
         class NestedClassTest < ::MiniTest::Test  # :nodoc:
-          DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
-          OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
+          DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
+          OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database_local.yml'
 
           include AdapterTestHelper
 
@@ -25,8 +25,8 @@ module RGeo
               Foo::Bar.class_eval do
                 establish_connection(DATABASE_CONFIG)
               end
-              Foo::Bar.connection.create_table(:foo_bars) do |t_|
-                t_.column 'latlon', :point, :srid => 3785
+              Foo::Bar.connection.create_table(:foo_bars) do |t|
+                t.column 'latlon', :point, :srid => 3785
               end
               Foo::Bar.all
               Foo::Bar.connection.drop_table(:foo_bars)

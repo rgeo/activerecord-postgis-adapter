@@ -7,95 +7,95 @@ module RGeo
       module Tests  # :nodoc:
         class SpatialQueriesTest < ::MiniTest::Test  # :nodoc:
 
-          DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
-          OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
+          DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
+          OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database_local.yml'
 
           include AdapterTestHelper
 
           define_test_methods do
 
-            def populate_ar_class(content_)
-              klass_ = create_ar_class
-              case content_
+            def populate_ar_class(content)
+              klass = create_ar_class
+              case content
               when :mercator_point
-                klass_.connection.create_table(:spatial_test) do |t_|
-                  t_.column 'latlon', :point, :srid => 3785
+                klass.connection.create_table(:spatial_test) do |t|
+                  t.column 'latlon', :point, :srid => 3785
                 end
               when :latlon_point_geographic
-                klass_.connection.create_table(:spatial_test) do |t_|
-                  t_.column 'latlon', :point, :srid => 4326, :geographic => true
+                klass.connection.create_table(:spatial_test) do |t|
+                  t.column 'latlon', :point, :srid => 4326, :geographic => true
                 end
               when :path_linestring
-                klass_.connection.create_table(:spatial_test) do |t_|
-                  t_.column 'path', :line_string, :srid => 3785
+                klass.connection.create_table(:spatial_test) do |t|
+                  t.column 'path', :line_string, :srid => 3785
                 end
               end
-              klass_
+              klass
             end
 
             def test_query_point
-              klass_ = populate_ar_class(:mercator_point)
-              obj_ = klass_.new
-              obj_.latlon = @factory.point(1.0, 2.0)
-              obj_.save!
-              id_ = obj_.id
-              obj2_ = klass_.where(:latlon => @factory.multi_point([@factory.point(1.0, 2.0)])).first
-              refute_nil(obj2_)
-              assert_equal(id_, obj2_.id)
-              obj3_ = klass_.where(:latlon => @factory.point(2.0, 2.0)).first
-              assert_nil(obj3_)
+              klass = populate_ar_class(:mercator_point)
+              obj = klass.new
+              obj.latlon = @factory.point(1.0, 2.0)
+              obj.save!
+              id = obj.id
+              obj2 = klass.where(:latlon => @factory.multi_point([@factory.point(1.0, 2.0)])).first
+              refute_nil(obj2)
+              assert_equal(id, obj2.id)
+              obj3 = klass.where(:latlon => @factory.point(2.0, 2.0)).first
+              assert_nil(obj3)
             end
 
             def test_query_point_wkt
-              klass_ = populate_ar_class(:mercator_point)
-              obj_ = klass_.new
-              obj_.latlon = @factory.point(1.0, 2.0)
-              obj_.save!
-              id_ = obj_.id
-              obj2_ = klass_.where(:latlon => 'SRID=3785;POINT(1 2)').first
-              refute_nil(obj2_)
-              assert_equal(id_, obj2_.id)
-              obj3_ = klass_.where(:latlon => 'SRID=3785;POINT(2 2)').first
-              assert_nil(obj3_)
+              klass = populate_ar_class(:mercator_point)
+              obj = klass.new
+              obj.latlon = @factory.point(1.0, 2.0)
+              obj.save!
+              id = obj.id
+              obj2 = klass.where(:latlon => 'SRID=3785;POINT(1 2)').first
+              refute_nil(obj2)
+              assert_equal(id, obj2.id)
+              obj3 = klass.where(:latlon => 'SRID=3785;POINT(2 2)').first
+              assert_nil(obj3)
             end
 
             def test_query_st_distance
-              klass_ = populate_ar_class(:mercator_point)
-              obj_ = klass_.new
-              obj_.latlon = @factory.point(1.0, 2.0)
-              obj_.save!
-              id_ = obj_.id
-              obj2_ = klass_.where(klass_.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').lt(2)).first
-              refute_nil(obj2_)
-              assert_equal(id_, obj2_.id)
-              obj3_ = klass_.where(klass_.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').gt(2)).first
-              assert_nil(obj3_)
+              klass = populate_ar_class(:mercator_point)
+              obj = klass.new
+              obj.latlon = @factory.point(1.0, 2.0)
+              obj.save!
+              id = obj.id
+              obj2 = klass.where(klass.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').lt(2)).first
+              refute_nil(obj2)
+              assert_equal(id, obj2.id)
+              obj3 = klass.where(klass.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').gt(2)).first
+              assert_nil(obj3)
             end
 
             def test_query_st_distance_from_constant
-              klass_ = populate_ar_class(:mercator_point)
-              obj_ = klass_.new
-              obj_.latlon = @factory.point(1.0, 2.0)
-              obj_.save!
-              id_ = obj_.id
-              obj2_ = klass_.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass_.arel_table[:latlon]).lt(2)).first
-              refute_nil(obj2_)
-              assert_equal(id_, obj2_.id)
-              obj3_ = klass_.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass_.arel_table[:latlon]).gt(2)).first
-              assert_nil(obj3_)
+              klass = populate_ar_class(:mercator_point)
+              obj = klass.new
+              obj.latlon = @factory.point(1.0, 2.0)
+              obj.save!
+              id = obj.id
+              obj2 = klass.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass.arel_table[:latlon]).lt(2)).first
+              refute_nil(obj2)
+              assert_equal(id, obj2.id)
+              obj3 = klass.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass.arel_table[:latlon]).gt(2)).first
+              assert_nil(obj3)
             end
 
             def test_query_st_length
-              klass_ = populate_ar_class(:path_linestring)
-              obj_ = klass_.new
-              obj_.path = @factory.line(@factory.point(1.0, 2.0), @factory.point(3.0, 2.0))
-              obj_.save!
-              id_ = obj_.id
-              obj2_ = klass_.where(klass_.arel_table[:path].st_length.eq(2)).first
-              refute_nil(obj2_)
-              assert_equal(id_, obj2_.id)
-              obj3_ = klass_.where(klass_.arel_table[:path].st_length.gt(3)).first
-              assert_nil(obj3_)
+              klass = populate_ar_class(:path_linestring)
+              obj = klass.new
+              obj.path = @factory.line(@factory.point(1.0, 2.0), @factory.point(3.0, 2.0))
+              obj.save!
+              id = obj.id
+              obj2 = klass.where(klass.arel_table[:path].st_length.eq(2)).first
+              refute_nil(obj2)
+              assert_equal(id, obj2.id)
+              obj3 = klass.where(klass.arel_table[:path].st_length.gt(3)).first
+              assert_nil(obj3)
             end
 
           end
