@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
 
-        def initialize(config_)
+        def initialize(config)
           super
           ensure_installation_configs
         end
@@ -23,14 +23,14 @@ module ActiveRecord  # :nodoc:
         end
 
         # Overridden to set the database owner and call setup_gis
-        def create(master_established_=false)
-          establish_master_connection unless master_established_
-          extra_configs_ = {'encoding' => encoding}
-          extra_configs_['owner'] = username if has_su?
-          connection.create_database(configuration['database'], configuration.merge(extra_configs_))
+        def create(master_established = false)
+          establish_master_connection unless master_established
+          extra_configs = {'encoding' => encoding}
+          extra_configs['owner'] = username if has_su?
+          connection.create_database(configuration['database'], configuration.merge(extra_configs))
           setup_gis
-        rescue ::ActiveRecord::StatementInvalid => error_
-          if /database .* already exists/ === error_.message
+        rescue ::ActiveRecord::StatementInvalid => error
+          if /database .* already exists/ === error.message
             raise ::ActiveRecord::Tasks::DatabaseAlreadyExists
           else
             raise
@@ -38,15 +38,15 @@ module ActiveRecord  # :nodoc:
         end
 
         # Overridden to remove postgis schema
-        def structure_dump(filename_)
+        def structure_dump(filename)
           set_psql_env
-          search_path_ = search_path.dup
-          search_path_.delete('postgis')
-          search_path_ = ['public'] if search_path_.length == 0
-          search_path_clause_ = search_path_.map{ |part_| "--schema=#{::Shellwords.escape(part_)}" }.join(' ')
-          command_ = "pg_dump -i -s -x -O -f #{::Shellwords.escape(filename_)} #{search_path_clause_} #{::Shellwords.escape(configuration['database'])}"
-          raise 'Error dumping database' unless ::Kernel.system(command_)
-          ::File.open(filename_, "a") { |f_| f_ << "SET search_path TO #{ActiveRecord::Base.connection.schema_search_path};\n\n" }
+          _search_path = search_path.dup
+          _search_path.delete('postgis')
+          _search_path = ['public'] if _search_path.length == 0
+          search_path_clause_ = _search_path.map{ |part_| "--schema=#{::Shellwords.escape(part_)}" }.join(' ')
+          command = "pg_dump -i -s -x -O -f #{::Shellwords.escape(filename)} #{search_path_clause_} #{::Shellwords.escape(configuration['database'])}"
+          raise 'Error dumping database' unless ::Kernel.system(command)
+          ::File.open(filename, "a") { |f_| f_ << "SET search_path TO #{ActiveRecord::Base.connection.schema_search_path};\n\n" }
         end
 
         private
@@ -142,12 +142,12 @@ module ActiveRecord  # :nodoc:
         end
 
         def setup_gis_from_extension
-          extension_names.each do |extname_|
-            if extname_ == 'postgis_topology'
+          extension_names.each do |extname|
+            if extname == 'postgis_topology'
               raise ::ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
-              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname_} SCHEMA topology")
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             else
-              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname_} SCHEMA #{postgis_schema}")
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA #{postgis_schema}")
             end
           end
         end
