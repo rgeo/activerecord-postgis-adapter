@@ -48,7 +48,7 @@ Once you have installed the adapter, you'll need to edit your config/database.ym
 
 == Development and Support
 
-\Documentation is available at http://rgeo.github.com/activerecord-postgis-adapter/rdoc
+\Documentation is available at http://rdoc.info/gems/activerecord-postgis-adapter
 
 Source code is hosted on Github at http://github.com/rgeo/activerecord-postgis-adapter
 
