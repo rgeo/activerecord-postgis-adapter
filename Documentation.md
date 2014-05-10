@@ -4,29 +4,30 @@ This document provides basic how-to information that should help get you
 started with integrating your Rails application with a PostGIS database. We
 cover three parts:
 
-*   How to install the adapter, and how to configure your database.yml.
-*   How to set up and configure spatial columns and tables.
-*   How to read, write, and query spatial data.
-
-
-This document is part of the distribution for the activerecord-postgis-adapter
-gem. For more information, please visit
-http://rgeo.github.com/activerecord-postgis-adapter.
+* How to install the adapter, and how to configure your database.yml.
+* How to set up and configure spatial columns and tables.
+* How to read, write, and query spatial data.
 
 ## Installation and Configuration
 
 ### Dependencies
 
 Generally, we recommend starting with the latest versions of Ruby, Rails,
-PostgreSQL, and PostGIS. The minimum supported configuration is the following:
+PostgreSQL, and PostGIS. 
 
-*   Ruby 1.8.7
-*   Rails 3.0.3
-*   PostgreSQL 9.0
-*   PostGIS 1.5
+For the latest version, these are required:
 
+* Ruby 1.9.3
+* Rails 4.0
+* PostgreSQL 9.0
+* PostGIS 2.0
 
-We recommend using the latest available if possible.
+For version 0.6.x, the minimum supported configuration is the following:
+
+* Ruby 1.8.7
+* Rails 3.0.3
+* PostgreSQL 9.0
+* PostGIS 1.5
 
 JRuby and the JDBC Postgres Adapter are supported for Rails 3.x. Support is
 coming soon for Rails 4.
@@ -38,33 +39,22 @@ to add geospatial capabilities to an existing Rails application (i.e. you need
 to convert a non-spatial database to a spatial database), see the section on
 "Upgrading a Database With Spatial Features" below.
 
-To create a new Rails application using activerecord-postgis-adapter, start by
+To create a new Rails application using `activerecord-postgis-adapter`, start by
 using the postgresql adapter.
 
     rails new my_app --database=postgresql
 
-Next, add the activerecord-postgis-adapter gem to the Gemfile as follows:
+Add the adapter gem to the Gemfile:
 
     gem 'activerecord-postgis-adapter'
 
-We also recommend including the "squeel" gem, which comes in very useful for
-writing spatial queries. Then run `bundle install` to complete your bundle.
-
-The adapter includes a railtie that provides specialized rake tasks for
-managing spatial databases. Earlier versions of this adapter required you to
-load that railtie explicitly by adding a certain require statement to your
-`config/application.rb`. As of version 0.6, that explicit require statement is
-no longer necessary. If your code already has that require statement, it will
-not harm anything in this version, but it is considered deprecated.
-
-Next, you need to modify your `config/database.yml` file to invoke the postgis
+Next, modify your `config/database.yml` file to use the postgis
 adapter, and to provide additional information it may need to set up a new
-database with spatial features. For example, at minimum, you will need to
-change the `adapter` field from "postgresql" to "postgis". Please see the
-Configuration sections below to see how to set up your database configs
-properly before proceeding.
+database with spatial features. At minimum, you will need to
+change the `adapter` field from `postgresql` to `postgis`. Please see the
+Configuration sections below.
 
-Once you have set up your database configs, you should be able to run:
+Once you have set up your database config, run:
 
     rake db:create
 
@@ -493,33 +483,3 @@ bounding box:
 Note that bounding box queries make sense only in a projected coordinate
 system; you shouldn't try to run such a query against a lat/long (geographic)
 column.
-
-## License
-
-Copyright 2010-2013 Daniel Azuma
-
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-*   Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-*   Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-*   Neither the name of the copyright holder, nor the names of any other
-    contributors to this software, may be used to endorse or promote products
-    derived from this software without specific prior written permission.
-
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
