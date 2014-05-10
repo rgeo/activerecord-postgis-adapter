@@ -37,24 +37,36 @@ The adapter requires PostgreSQL 9.0+.
 ##### Version 1.1.x: ActiveRecord 4.0+
 
 Requirements:
-    ActiveRecord 4.0+
-    Ruby 1.9.3+
-    PostGIS 2.0+
+
+```
+ActiveRecord 4.0+
+Ruby 1.9.3+
+PostGIS 2.0+
+```
 
 Gemfile:
-    gem 'activerecord-postgis-adapter'
+
+```ruby
+gem 'activerecord-postgis-adapter'
+```
 
 Support for JRuby will be added soon.
 
 ##### Version 0.6.x: ActiveRecord 3.x
 
 Requirements:
-    ActiveRecord 3.x only
-    Ruby 1.8.7+, JRuby, Rubinius
-    PostGIS 1.5+
+
+```
+ActiveRecord 3.x only
+Ruby 1.8.7+, JRuby, Rubinius
+PostGIS 1.5+
+```
 
 Gemfile:
-    gem 'activerecord-postgis-adapter', '~> 0.6.6'
+
+```
+gem 'activerecord-postgis-adapter', '~> 0.6.6'
+```
 
 Please note that this adapter uses the rgeo gem, which may have additional
 dependencies. Please see the README documentation for rgeo for more
@@ -69,18 +81,15 @@ Documentation.rdoc file carefully before starting to use this adapter.
 
 ## Development and Support
 
-Documentation is available at
-http://rdoc.info/gems/activerecord-postgis-adapter
+Documentation is available at http://rdoc.info/gems/activerecord-postgis-adapter
 
-Source code is hosted on Github at
-http://github.com/rgeo/activerecord-postgis-adapter
+Source code is hosted on Github at http://github.com/rgeo/activerecord-postgis-adapter
 
 Contributions are welcome. Fork the project on Github.
 
 Report issues at http://github.com/rgeo/activerecord-postgis-adapter/issues
 
-Support is available on the rgeo-users google group at
-http://groups.google.com/group/rgeo-users
+Support is available on the rgeo-users google group at http://groups.google.com/group/rgeo-users
 
 ## Acknowledgments
 
