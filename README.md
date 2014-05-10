@@ -1,4 +1,6 @@
 ## PostGIS ActiveRecord Adapter
+[![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
+[![Code Climate](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter.png)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter)
 
 The activerecord-postgis-adapter is a plugin that provides access to features
 of the PostGIS geospatial database from ActiveRecord. Technically, it extends
