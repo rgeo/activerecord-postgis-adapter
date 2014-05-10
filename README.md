@@ -93,9 +93,9 @@ Support is available on the rgeo-users google group at http://groups.google.com/
 
 ## Acknowledgments
 
-The PostGIS Adapter and its supporting libraries (including RGeo) are written
-by Daniel Azuma (http://www.daniel-azuma.com). 
-Tee Parham (https://twitter.com/teeparham) is the current maintainer.
+[Daniel Azuma](http://www.daniel-azuma.com) authored the PostGIS Adapter and its supporting 
+libraries (including RGeo). 
+[Tee Parham](https://twitter.com/teeparham) is the current maintainer.
 
 Development is supported by:
 
