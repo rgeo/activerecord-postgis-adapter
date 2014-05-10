@@ -1,4 +1,6 @@
 ## PostGIS ActiveRecord Adapter
+
+[![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](http://badge.fury.io/rb/activerecord-postgis-adapter)
 [![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
 [![Code Climate](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter.png)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter)
 
@@ -7,11 +9,6 @@ of the PostGIS geospatial database from ActiveRecord. Technically, it extends
 the standard postgresql adapter to provide support for the spatial data types
 and features added by the PostGIS extension. It uses the
 [RGeo](http://github.com/rgeo/rgeo) library to represent spatial data in Ruby.
-
-## About the PostGIS Adapter
-
-This is a brief summary covering how to use activerecord-postgis-adapter. For
-full documentation, see Documentation.rdoc.
 
 ### Features
 
