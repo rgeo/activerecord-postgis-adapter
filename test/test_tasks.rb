@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'active_record/schema_dumper'
 
 module RGeo
   module ActiveRecord  # :nodoc:
@@ -58,7 +59,6 @@ module RGeo
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
               ::ActiveRecord::Tasks::DatabaseTasks.create(TestTasks.new_database_config.merge('schema_search_path' => 'public,postgis'))
-              require 'active_record/schema_dumper'
               ::File.open(filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file)
               end
@@ -76,7 +76,6 @@ module RGeo
                 t.geometry 'object1'
                 t.spatial "object2", :limit => {:srid=>conn.default_srid, :type=>"geometry"}
               end
-              require 'active_record/schema_dumper'
               ::File.open(filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(conn, file)
               end
@@ -95,7 +94,6 @@ module RGeo
                 t.point "latlon1", :geographic => true
                 t.spatial "latlon2", :limit => {:srid=>4326, :type=>"point", :geographic=>true}
               end
-              require 'active_record/schema_dumper'
               ::File.open(filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(conn, file)
               end
