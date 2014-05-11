@@ -37,18 +37,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        # Overridden to remove postgis schema
-        def structure_dump(filename)
-          set_psql_env
-          _search_path = search_path.dup
-          _search_path.delete('postgis')
-          _search_path = ['public'] if _search_path.length == 0
-          search_path_clause_ = _search_path.map{ |part_| "--schema=#{::Shellwords.escape(part_)}" }.join(' ')
-          command = "pg_dump -i -s -x -O -f #{::Shellwords.escape(filename)} #{search_path_clause_} #{::Shellwords.escape(configuration['database'])}"
-          raise 'Error dumping database' unless ::Kernel.system(command)
-          ::File.open(filename, "a") { |f_| f_ << "SET search_path TO #{ActiveRecord::Base.connection.schema_search_path};\n\n" }
-        end
-
         private
 
         # Overridden to use su_username and su_password
