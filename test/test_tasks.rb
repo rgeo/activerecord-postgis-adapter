@@ -50,7 +50,7 @@ module RGeo
               end
               ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TestTasks.new_database_config, filename)
               data = ::File.read(filename)
-              assert(data.index('latlon geography(Point,4326)'))
+              assert(data.index('latlon postgis.geography(Point,4326)'))
             end
 
             def test_empty_schema_dump
