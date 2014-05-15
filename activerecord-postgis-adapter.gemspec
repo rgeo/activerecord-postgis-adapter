@@ -10,8 +10,7 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
   spec.licenses = ['BSD']
 
-  spec.files = Dir['lib/**/*', 'test/**/*', '*.rdoc', 'LICENSE.txt']
-  spec.extra_rdoc_files = Dir['*.rdoc']
+  spec.files = Dir['lib/**/*', 'test/**/*', 'LICENSE.txt']
   spec.test_files = Dir['test/**/*']
   spec.platform = ::Gem::Platform::RUBY
 
@@ -21,5 +20,4 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.add_dependency 'rgeo-activerecord', '~> 1.0.0'
 
   spec.add_development_dependency 'rake', '~> 10.2'
-  spec.add_development_dependency 'rdoc', '~> 4.1'
 end
