@@ -20,19 +20,19 @@ require 'active_record/connection_adapters/postgresql_adapter'
 require 'rgeo/active_record'
 
 require 'active_record/connection_adapters/postgis_adapter/version.rb'
-require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
-require 'active_record/connection_adapters/postgis_adapter/shared/arel_tosql.rb'
-require 'active_record/connection_adapters/postgis_adapter/shared/setup.rb'
-require 'active_record/connection_adapters/postgis_adapter/rails4/create_connection'
-require 'active_record/connection_adapters/postgis_adapter/rails4/postgis_database_tasks.rb'
+require 'active_record/connection_adapters/postgis_adapter/common_adapter_methods.rb'
+require 'active_record/connection_adapters/postgis_adapter/main_adapter.rb'
+require 'active_record/connection_adapters/postgis_adapter/spatial_table_definition.rb'
+require 'active_record/connection_adapters/postgis_adapter/spatial_column.rb'
+require 'active_record/connection_adapters/postgis_adapter/arel_tosql.rb'
+require 'active_record/connection_adapters/postgis_adapter/setup.rb'
+require 'active_record/connection_adapters/postgis_adapter/create_connection'
+require 'active_record/connection_adapters/postgis_adapter/postgis_database_tasks.rb'
 
 ::ActiveRecord::ConnectionAdapters::PostGISAdapter.initial_setup
 
 if defined?(::Rails::Railtie)
-  load ::File.expand_path('postgis_adapter/shared/railtie.rb', ::File.dirname(__FILE__))
+  load ::File.expand_path('postgis_adapter/railtie.rb', ::File.dirname(__FILE__))
 end
 
 # :startdoc:
