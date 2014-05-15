@@ -76,9 +76,10 @@ adapter. At minimum, you will need to change the `adapter` field from
 
 ```
 development:
-  username: your_username
-  adapter:  postgis
-  host:     localhost
+  username:           your_username
+  adapter:            postgis
+  host:               localhost
+  schema_search_path: public
 ```
 
 If you have installed your PostGIS extension in a schema other than `public`, which
@@ -86,7 +87,7 @@ is the default, add that schema to your `schema_search_path`:
 
 ```
 development:
-  schema_search_path: 'public, postgis'
+  schema_search_path: public, postgis
 ```
 
 Here are some other options that are supported:
