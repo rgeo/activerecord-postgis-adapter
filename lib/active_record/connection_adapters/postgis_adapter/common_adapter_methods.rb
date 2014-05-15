@@ -30,7 +30,12 @@ module ActiveRecord  # :nodoc:
         end
 
         def srs_database_columns
-          {:srtext_column => 'srtext', :proj4text_column => 'proj4text', :auth_name_column => 'auth_name', :auth_srid_column => 'auth_srid'}
+          {
+            :auth_name_column => 'auth_name',
+            :auth_srid_column => 'auth_srid',
+            :proj4text_column => 'proj4text',
+            :srtext_column    => 'srtext',
+          }
         end
 
         def quote(value, column=nil)
