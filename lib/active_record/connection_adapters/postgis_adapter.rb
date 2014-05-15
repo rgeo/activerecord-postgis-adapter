@@ -2,12 +2,9 @@
 # connection adapter into ActiveRecord.
 
 module ActiveRecord
-  # All ActiveRecord adapters go in this namespace.
-  # This adapter is installed into the PostGISAdapter submodule.
   module ConnectionAdapters
-    # The PostGIS Adapter lives in this namespace.
     module PostGISAdapter
-      # The name returned by the adapter_name method of this adapter.
+      # The name returned by #adapter_name
       ADAPTER_NAME = 'PostGIS'.freeze
     end
   end
