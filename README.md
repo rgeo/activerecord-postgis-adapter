@@ -31,7 +31,7 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-##### Version 1.1.x: ActiveRecord 4.0+
+##### Version 1.1+: ActiveRecord 4.0+
 
 Requirements:
 
