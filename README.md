@@ -65,7 +65,7 @@ Gemfile:
 gem 'activerecord-postgis-adapter', '~> 0.6.6'
 ```
 
-Please read [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/PostGIS_1.md)
+Please read [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md)
 if you would like to use the adapter with an older version of PostGIS.
 
 ##### database.yml
