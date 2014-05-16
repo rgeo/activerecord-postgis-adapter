@@ -35,7 +35,7 @@ module RGeo
               filename = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config.merge('schema_search_path' => 'public'))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
               ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, filename)
               sql = ::File.read(filename)
               assert(sql !~ /CREATE TABLE/)
@@ -45,7 +45,7 @@ module RGeo
               filename = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config.merge('schema_search_path' => 'public'))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
               ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t|
                 t.point "latlon", :geographic => true
               end
@@ -58,7 +58,7 @@ module RGeo
               filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config.merge('schema_search_path' => 'public'))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
               ::File.open(filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file)
               end
@@ -70,7 +70,7 @@ module RGeo
               filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config.merge('schema_search_path' => 'public'))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
               conn = ::ActiveRecord::Base.connection
               conn.create_table(:spatial_test) do |t|
                 t.geometry 'object1'
@@ -88,7 +88,7 @@ module RGeo
               filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
               ::FileUtils.rm_f(filename)
               ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config.merge('schema_search_path' => 'public'))
+              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
               conn = ::ActiveRecord::Base.connection
               conn.create_table(:spatial_test) do |t|
                 t.point "latlon1", :geographic => true
