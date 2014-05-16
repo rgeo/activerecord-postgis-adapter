@@ -1,3 +1,7 @@
+=== 2.0.0 / 2014-05-16
+
+* Fix sql index dump for non-spatial columns (https://github.com/rgeo/activerecord-postgis-adapter/issues/92)
+
 === 2.0.0 / 2014-05-15
 
 * Bump Major version bump because the location of the railtie.rb file has moved and some methods were removed.
