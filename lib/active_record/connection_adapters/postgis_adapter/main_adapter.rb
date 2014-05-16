@@ -27,28 +27,27 @@ module ActiveRecord  # :nodoc:
           end
         end
 
+        # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def columns(table_name, name = nil)
-          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
-          # We needed to return a spatial column subclass.
-          table_name = table_name.to_s
+          # Limit, precision, and scale are all handled by the superclass.
           spatial_info_ = spatial_column_info(table_name)
-          column_definitions(table_name).collect do |col_name, type, default, notnull, oid, fmod|
-            oid = column_type_map.fetch(oid.to_i, fmod.to_i) {
-              OID::Identity.new
-            }
+          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
+            oid = column_type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
             SpatialColumn.new(@rgeo_factory_settings,
                               table_name,
-                              col_name,
+                              column_name,
                               default,
                               oid,
                               type,
                               notnull == 'f',
-                              type =~ /geometry/i ? spatial_info_[col_name] : nil)
+                              type =~ /geometry/i ? spatial_info_[column_name] : nil)
           end
         end
 
+        # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def indexes(table_name, name = nil)
-          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           result = query(<<-SQL, 'SCHEMA')
             SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
             FROM pg_class t
@@ -62,7 +61,7 @@ module ActiveRecord  # :nodoc:
           SQL
 
           result.map do |row|
-            index_name_ = row[0]
+            index_name = row[0]
             unique = row[1] == 't'
             indkey = row[2].split(" ")
             inddef = row[3]
@@ -78,17 +77,19 @@ module ActiveRecord  # :nodoc:
             columns = columns.inject({}){ |h, r| h[r[0].to_s] = [r[1], r[2]]; h }
             column_names = columns.values_at(*indkey).compact.map{ |a| a[0] }
 
-            # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
-            desc_order_columns_ = inddef.scan(/(\w+) DESC/).flatten
-            orders = desc_order_columns_.any? ? Hash[desc_order_columns_.map {|order_column_| [order_column_, :desc]}] : {}
-            where = inddef.scan(/WHERE (.+)$/).flatten[0]
-            spatial = inddef =~ /using\s+gist/i && columns.size == 1 &&
-              (columns.values.first[1] == 'geometry' || columns.values.first[1] == 'geography')
+            unless column_names.empty?
+              # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
+              desc_order_columns = inddef.scan(/(\w+) DESC/).flatten
+              orders = desc_order_columns.any? ? Hash[desc_order_columns.map {|order_column| [order_column, :desc]}] : {}
+              where = inddef.scan(/WHERE (.+)$/).flatten[0]
+              # using = inddef.scan(/USING (.+?) /).flatten[0].to_sym
 
-            if column_names.empty?
-              nil
-            else
-              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name_, unique, column_names, [], orders, where, !!spatial)
+              spatial = inddef =~ /using\s+gist/i &&
+                        columns.size == 1 &&
+                        %w[geometry geography].include?(columns.values.first[1])
+
+              # IndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, nil, using)
+              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, !!spatial)
             end
           end.compact
         end
@@ -168,13 +169,15 @@ module ActiveRecord  # :nodoc:
           end
         end
 
+        # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def add_index(table_name, column_name, options = {})
-          # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS.
           # We have to fully-replace because of the gist_clause.
-          options ||= {}
-          gist_clause = options.delete(:spatial) ? ' USING GIST' : ''
-          index_name, index_type, index_columns, index_options = add_index_options(table_name, column_name, options)
-          execute "CREATE #{index_type} INDEX #{quote_column_name(index_name)} ON #{quote_table_name(table_name)}#{gist_clause} (#{index_columns})#{index_options}"
+
+          gist = options.delete(:spatial)
+          index_name, index_type, index_columns, index_options, index_algorithm, index_using = add_index_options(table_name, column_name, options)
+          index_using = 'USING GIST' if gist
+          execute "CREATE #{index_type} INDEX #{index_algorithm} #{quote_column_name(index_name)} ON #{quote_table_name(table_name)} #{index_using} (#{index_columns})#{index_options}"
         end
 
         def spatial_column_info(table_name)
