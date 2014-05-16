@@ -1,4 +1,4 @@
-### 2.0.0 / 2014-05-16
+### 2.0.1 / 2014-05-16
 
 *   Fix sql index dump for non-spatial columns
     (https://github.com/rgeo/activerecord-postgis-adapter/issues/92)
