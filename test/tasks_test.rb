@@ -28,80 +28,81 @@ module RGeo
           define_test_methods do
             def test_create_database_from_extension_in_public_schema
               ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              ::ActiveRecord::Base.connection.select_values("SELECT * from public.spatial_ref_sys")
+              refute_empty connection.select_values("SELECT * from public.spatial_ref_sys")
             end
 
             def test_empty_sql_dump
-              filename = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename)
-              ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, filename)
-              sql = ::File.read(filename)
+              setup_database_tasks
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
+              sql = ::File.read(tmp_sql_filename)
               assert(sql !~ /CREATE TABLE/)
             end
 
             def test_basic_geography_sql_dump
-              filename = ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename)
-              ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              ::ActiveRecord::Base.connection.create_table(:spatial_test) do |t|
+              setup_database_tasks
+              connection.create_table(:spatial_test) do |t|
                 t.point "latlon", :geographic => true
               end
-              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, filename)
-              data = ::File.read(filename)
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
+              data = ::File.read(tmp_sql_filename)
               assert(data.index('latlon geography(Point,4326)'))
             end
 
             def test_empty_schema_dump
-              filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename)
-              ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              ::File.open(filename, "w:utf-8") do |file|
+              setup_database_tasks
+              ::File.open(tmp_sql_filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file)
               end
-              data = ::File.read(filename)
+              data = ::File.read(tmp_sql_filename)
               assert(data.index('ActiveRecord::Schema'))
             end
 
             def test_basic_geometry_schema_dump
-              filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename)
-              ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              conn = ::ActiveRecord::Base.connection
-              conn.create_table(:spatial_test) do |t|
+              setup_database_tasks
+              connection.create_table(:spatial_test) do |t|
                 t.geometry 'object1'
-                t.spatial "object2", :limit => {:srid=>conn.default_srid, :type=>"geometry"}
+                t.spatial "object2", :limit => { :srid => connection.default_srid, :type => "geometry" }
               end
-              ::File.open(filename, "w:utf-8") do |file|
-                ::ActiveRecord::SchemaDumper.dump(conn, file)
+              ::File.open(tmp_sql_filename, "w:utf-8") do |file|
+                ::ActiveRecord::SchemaDumper.dump(connection, file)
               end
-              data = ::File.read(filename)
-              assert(data.index("t.spatial \"object1\", limit: {:srid=>#{conn.default_srid}, :type=>\"geometry\"}"))
-              assert(data.index("t.spatial \"object2\", limit: {:srid=>#{conn.default_srid}, :type=>\"geometry\"}"))
+              data = ::File.read(tmp_sql_filename)
+              assert(data.index("t.spatial \"object1\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\"}"))
+              assert(data.index("t.spatial \"object2\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\"}"))
             end
 
             def test_basic_geography_schema_dump
-              filename = ::File.expand_path('../tmp/tmp.rb', ::File.dirname(__FILE__))
-              ::FileUtils.rm_f(filename)
-              ::FileUtils.mkdir_p(::File.dirname(filename))
-              ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
-              conn = ::ActiveRecord::Base.connection
-              conn.create_table(:spatial_test) do |t|
+              setup_database_tasks
+              connection.create_table(:spatial_test) do |t|
                 t.point "latlon1", :geographic => true
-                t.spatial "latlon2", :limit => {:srid=>4326, :type=>"point", :geographic=>true}
+                t.spatial "latlon2", :limit => { :srid => 4326, :type => "point", :geographic => true}
               end
-              ::File.open(filename, "w:utf-8") do |file|
-                ::ActiveRecord::SchemaDumper.dump(conn, file)
+              ::File.open(tmp_sql_filename, "w:utf-8") do |file|
+                ::ActiveRecord::SchemaDumper.dump(connection, file)
               end
-              data = ::File.read(filename)
+              data = ::File.read(tmp_sql_filename)
               assert(data.index('t.spatial "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
               assert(data.index('t.spatial "latlon2", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
             end
+
           end
+
+          private
+
+          def connection
+            ::ActiveRecord::Base.connection
+          end
+
+          def tmp_sql_filename
+            ::File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
+          end
+
+          def setup_database_tasks
+            ::FileUtils.rm_f(tmp_sql_filename)
+            ::FileUtils.mkdir_p(::File.dirname(tmp_sql_filename))
+            ::ActiveRecord::Tasks::DatabaseTasks.create(TasksTest.new_database_config)
+          end
+
         end
       end
     end
