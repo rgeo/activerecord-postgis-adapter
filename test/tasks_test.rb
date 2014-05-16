@@ -41,11 +41,26 @@ module RGeo
             def test_basic_geography_sql_dump
               setup_database_tasks
               connection.create_table(:spatial_test) do |t|
-                t.point "latlon", :geographic => true
+                t.point "latlon", geographic: true
               end
               ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
               data = ::File.read(tmp_sql_filename)
               assert(data.index('latlon geography(Point,4326)'))
+            end
+
+            def test_index_sql_dump
+              setup_database_tasks
+              connection.create_table(:spatial_test) do |t|
+                t.point "latlon", geographic: true
+                t.string "name"
+              end
+              connection.add_index :spatial_test, :latlon, spatial: true
+              connection.add_index :spatial_test, :name, using: :btree
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
+              data = ::File.read(tmp_sql_filename)
+              assert(data.index('latlon geography(Point,4326)'))
+              assert data.index('CREATE INDEX index_spatial_test_on_latlon ON spatial_test USING gist (latlon);')
+              assert data.index('CREATE INDEX index_spatial_test_on_name ON spatial_test USING btree (name);')
             end
 
             def test_empty_schema_dump
@@ -61,7 +76,7 @@ module RGeo
               setup_database_tasks
               connection.create_table(:spatial_test) do |t|
                 t.geometry 'object1'
-                t.spatial "object2", :limit => { :srid => connection.default_srid, :type => "geometry" }
+                t.spatial "object2", limit: { srid: connection.default_srid, type: "geometry" }
               end
               ::File.open(tmp_sql_filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(connection, file)
@@ -74,8 +89,8 @@ module RGeo
             def test_basic_geography_schema_dump
               setup_database_tasks
               connection.create_table(:spatial_test) do |t|
-                t.point "latlon1", :geographic => true
-                t.spatial "latlon2", :limit => { :srid => 4326, :type => "point", :geographic => true}
+                t.point "latlon1", geographic: true
+                t.spatial "latlon2", limit: { srid: 4326, type: "point", geographic: true }
               end
               ::File.open(tmp_sql_filename, "w:utf-8") do |file|
                 ::ActiveRecord::SchemaDumper.dump(connection, file)
@@ -85,6 +100,19 @@ module RGeo
               assert(data.index('t.spatial "latlon2", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
             end
 
+            def test_index_schema_dump
+              setup_database_tasks
+              connection.create_table(:spatial_test) do |t|
+                t.point "latlon", geographic: true
+              end
+              connection.add_index :spatial_test, :latlon, spatial: true
+              ::File.open(tmp_sql_filename, "w:utf-8") do |file|
+                ::ActiveRecord::SchemaDumper.dump(connection, file)
+              end
+              data = ::File.read(tmp_sql_filename)
+              assert data.index('t.spatial "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}')
+              assert data.index('add_index "spatial_test", ["latlon"], :name => "index_spatial_test_on_latlon", :spatial => true')
+            end
           end
 
           private
