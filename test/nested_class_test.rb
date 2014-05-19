@@ -4,7 +4,7 @@ module RGeo
   module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       module Tests  # :nodoc:
-        class NestedClassTest < BASE_TEST_CLASS  # :nodoc:
+        class NestedClassTest < ActiveSupport::TestCase  # :nodoc:
           DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
           OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database_local.yml'
 
