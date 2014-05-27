@@ -116,9 +116,7 @@ module ActiveRecord  # :nodoc:
             has_z = col.has_z?
             has_m = col.has_m?
             type = "#{type}M" if has_m && !has_z
-            dimensions_ = 2
-            dimensions_ += 1 if has_z
-            dimensions_ += 1 if has_m
+            dimensions_ = set_dimensions(has_m, has_z)
             execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(col.name.to_s)}', #{col.srid}, '#{quote_string(type)}', #{dimensions_})")
           end
         end
@@ -127,32 +125,7 @@ module ActiveRecord  # :nodoc:
           table_name = table_name.to_s
           column_name = column_name.to_s
           if (info = spatial_column_constructor(type.to_sym))
-            limit = options[:limit]
-            if type.to_s == 'geometry' &&
-              (options[:no_constraints] || limit.is_a?(::Hash) && limit[:no_constraints])
-            then
-              options.delete(:limit)
-              super
-            else
-              options.merge!(limit) if limit.is_a?(::Hash)
-              type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
-              has_z = options[:has_z]
-              has_m = options[:has_m]
-              srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
-              if options[:geographic]
-                type << 'Z' if has_z
-                type << 'M' if has_m
-                execute("ALTER TABLE #{quote_table_name(table_name)} ADD COLUMN #{quote_column_name(column_name)} GEOGRAPHY(#{type},#{srid})")
-                change_column_default(table_name, column_name, options[:default]) if options_include_default?(options)
-                change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
-              else
-                type = "#{type}M" if has_m && !has_z
-                dimensions = 2
-                dimensions += 1 if has_z
-                dimensions += 1 if has_m
-                execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{srid}, '#{quote_string(type)}', #{dimensions})")
-              end
-            end
+            add_spatial_column(column_name, table_name, info, type, options)
           else
             super
           end
@@ -204,12 +177,39 @@ module ActiveRecord  # :nodoc:
 
         private
 
+        def add_spatial_column(column_name, table_name, info, type, options)
+          limit = options[:limit]
+          options.merge!(limit) if limit.is_a?(::Hash)
+          type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
+          has_z = options[:has_z]
+          has_m = options[:has_m]
+          srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
+          if options[:geographic]
+            type << 'Z' if has_z
+            type << 'M' if has_m
+            execute("ALTER TABLE #{quote_table_name(table_name)} ADD COLUMN #{quote_column_name(column_name)} GEOGRAPHY(#{type},#{srid})")
+            change_column_default(table_name, column_name, options[:default]) if options_include_default?(options)
+            change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
+          else
+            type = "#{type}M" if has_m && !has_z
+            dimensions = set_dimensions(has_m, has_z)
+            execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{srid}, '#{quote_string(type)}', #{dimensions})")
+          end
+        end
+
         def column_type_map
           if defined?(type_map) # ActiveRecord 4.1+
             type_map
           else # ActiveRecord 4.0.x
             OID::TYPE_MAP
           end
+        end
+
+        def set_dimensions(has_m, has_z)
+          dimensions = 2
+          dimensions += 1 if has_z
+          dimensions += 1 if has_m
+          dimensions
         end
 
       end
