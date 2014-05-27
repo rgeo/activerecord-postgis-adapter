@@ -452,7 +452,7 @@ view into the system catalogs.
 
 RDoc Documentation is available at http://rdoc.info/gems/activerecord-postgis-adapter
 
-Contributions are welcome. Fork the project on Github.
+Contributions are welcome. See CONTRIBUTING.md for instructions.
 
 Report issues at http://github.com/rgeo/activerecord-postgis-adapter/issues
 
