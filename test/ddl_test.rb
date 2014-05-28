@@ -27,23 +27,6 @@ module RGeo
               assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
 
-            # no_constraints no longer supported in PostGIS 2.0
-            def _test_create_no_constraints_geometry
-              klass = create_ar_class
-              klass.connection.create_table(:spatial_test) do |t|
-                t.column 'geom', :geometry, :limit => {:no_constraints => true}
-              end
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
-              col = klass.columns.last
-              assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
-              assert_equal(false, col.geographic?)
-              assert_equal(false, col.has_spatial_constraints?)
-              assert_nil(col.srid)
-              assert(klass.cached_attributes.include?('geom'))
-              klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
-            end
-
             def test_create_simple_geography
               klass = create_ar_class
               klass.connection.create_table(:spatial_test) do |t|
@@ -96,29 +79,6 @@ module RGeo
               assert_equal(4326, cols_[-2].srid)
               assert_equal(false, cols_[-2].geographic?)
               assert_equal(true, cols_[-2].has_spatial_constraints?)
-              assert_nil(cols_[-1].geometric_type)
-              assert_equal(false, cols_[-1].has_spatial_constraints?)
-            end
-
-            # no_constraints no longer supported in PostGIS 2.0
-            def _test_add_no_constraints_geometry_column
-              klass = create_ar_class
-              klass.connection.create_table(:spatial_test) do |t|
-                t.column('latlon', :geometry)
-              end
-              klass.connection.change_table(:spatial_test) do |t|
-                t.column('geom2', :geometry, :no_constraints => true)
-                t.column('name', :string)
-              end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
-              cols_ = klass.columns
-              assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
-              assert_equal(0, cols_[-3].srid)
-              assert_equal(true, cols_[-3].has_spatial_constraints?)
-              assert_equal(::RGeo::Feature::Geometry, cols_[-2].geometric_type)
-              assert_nil(cols_[-2].srid)
-              assert_equal(false, cols_[-2].geographic?)
-              assert_equal(false, cols_[-2].has_spatial_constraints?)
               assert_nil(cols_[-1].geometric_type)
               assert_equal(false, cols_[-1].has_spatial_constraints?)
             end
@@ -193,22 +153,6 @@ module RGeo
               assert_equal(false, col.geographic?)
               assert_equal(0, col.srid)
               assert(klass.cached_attributes.include?('latlon'))
-              klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
-            end
-
-            # no_constraints no longer supported in PostGIS 2.0
-            def _test_create_no_constraints_geometry_using_shortcut
-              klass = create_ar_class
-              klass.connection.create_table(:spatial_test) do |t|
-                t.spatial 'geom', :no_constraints => true
-              end
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
-              col = klass.columns.last
-              assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
-              assert_equal(false, col.geographic?)
-              assert_nil(col.srid)
-              assert(klass.cached_attributes.include?('geom'))
               klass.connection.drop_table(:spatial_test)
               assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
             end
