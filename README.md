@@ -31,7 +31,7 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-##### Version 1.1+: ActiveRecord 4.0+
+#### Version 1.1+ supports ActiveRecord 4.0+
 
 Requirements:
 
@@ -49,7 +49,7 @@ gem 'activerecord-postgis-adapter'
 
 Support for JRuby will be added soon.
 
-##### Version 0.6.x: ActiveRecord 3.x
+#### Version 0.6.x supports ActiveRecord 3.x
 
 Requirements:
 
