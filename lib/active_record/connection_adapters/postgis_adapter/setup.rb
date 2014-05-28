@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
 
       def self.initial_setup
-        ::ActiveRecord::SchemaDumper.ignore_tables |= %w[geometry_columns spatial_ref_sys layer topology]
+        ::ActiveRecord::SchemaDumper.ignore_tables |= %w[geometry_columns spatial_ref_sys layer topology tiger]
       end
 
     end
