@@ -117,15 +117,21 @@ module ActiveRecord  # :nodoc:
             if extname == 'postgis_topology'
               raise ::ArgumentError, "Extension 'postgis_topology' is not available on this database" if connection.execute("SELECT EXISTS (SELECT * FROM pg_available_extensions WHERE name='postgis_topology')::int;").getvalue(0,0).to_i.zero?
               raise ::ArgumentError, "Schema 'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
-              connection.execute("CREATE SCHEMA IF NOT EXISTS topology")
+              if connection.execute("SELECT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name='topology')::int;").getvalue(0,0).to_i.zero?
+                connection.execute("CREATE SCHEMA topology")
+              end
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             elsif extname == 'postgis_tiger_geocoder'
               raise ::ArgumentError, "Extension 'fuzzystrmatch' is not available on this database (required by postgis_tiger_geocoder)" if connection.execute("SELECT EXISTS (SELECT * FROM pg_available_extensions WHERE name='fuzzystrmatch')::int;").getvalue(0,0).to_i.zero?
               raise ::ArgumentError, "Extension 'postgis_tiger_geocoder' is not available on this database" if connection.execute("SELECT EXISTS (SELECT * FROM pg_available_extensions WHERE name='postgis_tiger_geocoder')::int;").getvalue(0,0).to_i.zero?
               raise ::ArgumentError, "Schema 'tiger' and 'tiger_data' must be in schema_search_path for postgis_tiger_geocoder" unless search_path.include?('tiger') || search_path.include?('tiger_data')
               connection.execute("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;");
-              connection.execute("CREATE SCHEMA IF NOT EXISTS tiger")
-              connection.execute("CREATE SCHEMA IF NOT EXISTS tiger_data")
+              if connection.execute("SELECT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name='tiger')::int;").getvalue(0,0).to_i.zero?
+                connection.execute("CREATE SCHEMA tiger")
+              end
+              if connection.execute("SELECT EXISTS (SELECT schema_name FROM information_schema.schemata WHERE schema_name='tiger_data')::int;").getvalue(0,0).to_i.zero?
+                connection.execute("CREATE SCHEMA tiger_data")
+              end
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA tiger")
             else
                raise ::ArgumentError, "'Extension #{extname}' is not available on this database" if connection.execute("SELECT EXISTS (SELECT * FROM pg_available_extensions WHERE name='#{extname}')::int;").getvalue(0,0).to_i.zero?
