@@ -10,9 +10,7 @@ module ActiveRecord  # :nodoc:
 
         def setup_gis
           establish_su_connection
-          if script_dir
-            setup_gis_from_script_dir
-          elsif extension_names
+          if extension_names
             setup_gis_from_extension
           end
           establish_connection(configuration)
@@ -80,11 +78,6 @@ module ActiveRecord  # :nodoc:
           @search_path ||= configuration['schema_search_path'].to_s.strip.split(',').map(&:strip)
         end
 
-        def script_dir
-          @script_dir = configuration['script_dir'] unless defined?(@script_dir)
-          @script_dir
-        end
-
         def extension_names
           @extension_names ||= begin
             ext_ = configuration['postgis_extension']
@@ -100,14 +93,11 @@ module ActiveRecord  # :nodoc:
         end
 
         def ensure_installation_configs
-          if configuration['setup'] == 'default' && !configuration['script_dir'] && !configuration['postgis_extension']
+          if configuration['setup'] == 'default' && !configuration['postgis_extension']
             share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
-            script_dir_ = ::File.expand_path('contrib/postgis-1.5', share_dir_)
             control_file_ = ::File.expand_path('extension/postgis.control', share_dir_)
             if ::File.readable?(control_file_)
               configuration['postgis_extension'] = 'postgis'
-            elsif ::File.directory?(script_dir_)
-              configuration['script_dir'] = script_dir_
             end
           end
         end
@@ -121,11 +111,6 @@ module ActiveRecord  # :nodoc:
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname}")
             end
           end
-        end
-
-        def setup_gis_from_script_dir
-          connection.execute(::File.read(::File.expand_path('postgis.sql', script_dir)))
-          connection.execute(::File.read(::File.expand_path('spatial_ref_sys.sql', script_dir)))
         end
       end
 
