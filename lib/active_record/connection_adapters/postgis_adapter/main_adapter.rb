@@ -118,6 +118,7 @@ module ActiveRecord  # :nodoc:
             type = "#{type}M" if has_m && !has_z
             dimensions_ = set_dimensions(has_m, has_z)
             execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(col.name.to_s)}', #{col.srid}, '#{quote_string(type)}', #{dimensions_})")
+            change_column_null(table_name, col.name.to_s, false) if col.null == false
           end
         end
 

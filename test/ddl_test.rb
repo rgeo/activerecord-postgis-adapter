@@ -83,6 +83,16 @@ module RGeo
               assert_equal(false, cols_[-1].has_spatial_constraints?)
             end
 
+            def test_add_geometry_column_null_false
+              klass = create_ar_class
+              klass.connection.create_table(:spatial_test) do |t|
+                t.column('latlon', :geometry, null: false)
+              end
+              geometry_column = klass.columns.first
+
+              refute(geometry_column.null, 'Column should be null: false')
+            end
+
             def test_add_geography_column
               klass = create_ar_class
               klass.connection.create_table(:spatial_test) do |t|
