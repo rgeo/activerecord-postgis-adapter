@@ -145,8 +145,8 @@ module ActiveRecord  # :nodoc:
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def add_index(table_name, column_name, options = {})
-          # We have to fully-replace because of the gist_clause.
-
+          # We have to fully replace to add the gist clause.
+          options ||= {} # in case nil explicitly passed
           gist = options.delete(:spatial)
           index_name, index_type, index_columns, index_options, index_algorithm, index_using = add_index_options(table_name, column_name, options)
           index_using = 'USING GIST' if gist

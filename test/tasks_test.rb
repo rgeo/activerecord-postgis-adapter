@@ -113,6 +113,28 @@ module RGeo
               assert data.index('t.spatial "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}')
               assert data.index('add_index "spatial_test", ["latlon"], :name => "index_spatial_test_on_latlon", :spatial => true')
             end
+
+            def test_add_index_with_nil_options
+              setup_database_tasks
+              connection.create_table(:test) do |t|
+                t.string "name"
+              end
+              connection.add_index :test, :name, nil
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
+              data = ::File.read(tmp_sql_filename)
+              assert data.index('CREATE INDEX index_test_on_name ON test USING btree (name);')
+            end
+
+            def test_add_index_via_references
+              setup_database_tasks
+              connection.create_table(:cats)
+              connection.create_table(:dogs) do |t|
+                t.references :cats, index: true
+              end
+              ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
+              data = ::File.read(tmp_sql_filename)
+              assert data.index('CREATE INDEX index_dogs_on_cats_id ON dogs USING btree (cats_id);')
+            end
           end
 
           private
