@@ -16,7 +16,7 @@ module RGeo
               klass.connection.create_table(:spatial_test) do |t|
                 t.column 'latlon', :geometry
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               col = klass.columns.last
               assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
               assert_equal(true, col.has_spatial_constraints?)
@@ -24,7 +24,7 @@ module RGeo
               assert_equal(0, col.srid)
               assert(klass.cached_attributes.include?('latlon'))
               klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
             def test_create_simple_geography
@@ -38,7 +38,7 @@ module RGeo
               assert_equal(true, col.geographic?)
               assert_equal(4326, col.srid)
               assert(klass.cached_attributes.include?('latlon'))
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
             def test_create_point_geometry
@@ -70,7 +70,7 @@ module RGeo
                 t.column('geom2', :point, :srid => 4326)
                 t.column('name', :string)
               end
-              assert_equal(2, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(2, klass.connection.select_value(geometry_column_count_query).to_i)
               cols_ = klass.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
               assert_equal(0, cols_[-3].srid)
@@ -92,7 +92,7 @@ module RGeo
                 t.column('geom2', :point, :srid => 4326, :geographic => true)
                 t.column('name', :string)
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               cols_ = klass.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
               assert_equal(0, cols_[-3].srid)
@@ -114,7 +114,7 @@ module RGeo
               klass.connection.change_table(:spatial_test) do |t|
                 t.remove('geom2')
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               cols_ = klass.columns
               assert_equal(::RGeo::Feature::Geometry, cols_[-1].geometric_type)
               assert_equal('latlon', cols_[-1].name)
@@ -132,7 +132,7 @@ module RGeo
               klass.connection.change_table(:spatial_test) do |t|
                 t.remove('geom2')
               end
-              assert_equal(2, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(2, klass.connection.select_value(geometry_column_count_query).to_i)
               cols_ = klass.columns
               assert_equal(::RGeo::Feature::Point, cols_[-1].geometric_type)
               assert_equal('geom3', cols_[-1].name)
@@ -147,14 +147,14 @@ module RGeo
               klass.connection.create_table(:spatial_test) do |t|
                 t.geometry 'latlon'
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               col = klass.columns.last
               assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
               assert_equal(false, col.geographic?)
               assert_equal(0, col.srid)
               assert(klass.cached_attributes.include?('latlon'))
               klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
             def test_create_simple_geography_using_shortcut
@@ -167,7 +167,7 @@ module RGeo
               assert_equal(true, col.geographic?)
               assert_equal(4326, col.srid)
               assert(klass.cached_attributes.include?('latlon'))
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
             def test_create_point_geometry_using_shortcut
@@ -184,7 +184,7 @@ module RGeo
               klass.connection.create_table(:spatial_test) do |t|
                 t.column 'region', :polygon, :has_m => true, :srid => 3785
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               col = klass.columns.last
               assert_equal(::RGeo::Feature::Polygon, col.geometric_type)
               assert_equal(false, col.geographic?)
@@ -194,7 +194,7 @@ module RGeo
               assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
               assert(klass.cached_attributes.include?('region'))
               klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
             def test_create_geometry_using_limit
@@ -202,7 +202,7 @@ module RGeo
               klass.connection.create_table(:spatial_test) do |t|
                 t.spatial 'region', :limit => {:has_m => true, :srid => 3785, :type => :polygon}
               end
-              assert_equal(1, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
               col = klass.columns.last
               assert_equal(::RGeo::Feature::Polygon, col.geometric_type)
               assert_equal(false, col.geographic?)
@@ -212,10 +212,15 @@ module RGeo
               assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
               assert(klass.cached_attributes.include?('region'))
               klass.connection.drop_table(:spatial_test)
-              assert_equal(0, klass.connection.select_value("SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'").to_i)
+              assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
           end
+
+          def geometry_column_count_query
+            "SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'"
+          end
+
         end
       end
     end
