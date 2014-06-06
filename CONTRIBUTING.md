@@ -19,6 +19,8 @@ Make sure the tests pass:
 
 Run tests against both ActiveRecord 4.0 and 4.1 test gemfiles:
 
+run `rake compatibility` or run the tests manually:
+
 ```
 BUNDLE_GEMFILE=./travis/ar40.gemfile bundle
 BUNDLE_GEMFILE=./travis/ar40.gemfile rake
