@@ -15,13 +15,14 @@ module ActiveRecord  # :nodoc:
         def native_database_types
           # Overridden to add the :spatial type
           @@native_database_types ||= super.merge(
-            :spatial => {:name => 'geometry'},
-            :geography => {:name => 'geography'})
+            geography: { name: 'geography' },
+            spatial:   { name: 'geometry' },
+          )
         end
 
         def type_cast(value, column, array_member = false)
           if ::RGeo::Feature::Geometry.check_type(value)
-            ::RGeo::WKRep::WKBGenerator.new(:hex_format => true, :type_format => :ewkb, :emit_ewkb_srid => true).generate(value)
+            ::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
           else
             super
           end
@@ -115,8 +116,8 @@ module ActiveRecord  # :nodoc:
             options = {
               has_m: col.has_m?,
               has_z: col.has_z?,
-              srid: col.srid,
-              type: col.spatial_type
+              srid:  col.srid,
+              type:  col.spatial_type,
             }
             column_name = col.name.to_s
 
@@ -167,12 +168,12 @@ module ActiveRecord  # :nodoc:
             type.sub!(/m$/, '')
             has_z = dimension > 3 || dimension == 3 && !has_m
             result[name] = {
-              :name => name,
-              :type => type,
-              :dimension => dimension,
-              :srid => row[2].to_i,
-              :has_z => has_z,
-              :has_m => has_m,
+              dimension: dimension,
+              has_m:     has_m,
+              has_z:     has_z,
+              name:      name,
+              srid:      row[2].to_i,
+              type:      type,
             }
           end
           result
