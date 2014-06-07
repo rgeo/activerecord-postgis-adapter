@@ -112,12 +112,15 @@ module ActiveRecord  # :nodoc:
             table_definition = td
           end
           table_definition.non_geographic_spatial_columns.each do |col|
-            type = col.spatial_type.gsub('_', '').upcase
-            has_z = col.has_z?
-            has_m = col.has_m?
-            type = "#{type}M" if has_m && !has_z
-            dimensions_ = set_dimensions(has_m, has_z)
-            execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(col.name.to_s)}', #{col.srid}, '#{quote_string(type)}', #{dimensions_})")
+            options = {
+              has_m: col.has_m?,
+              has_z: col.has_z?,
+              srid: col.srid,
+              type: col.spatial_type
+            }
+            column_name = col.name.to_s
+
+            add_spatial_column(column_name, table_name, options)
           end
         end
 
@@ -177,7 +180,7 @@ module ActiveRecord  # :nodoc:
 
         private
 
-        def add_spatial_column(column_name, table_name, info, type, options)
+        def add_spatial_column(column_name, table_name, info = {}, type = nil, options)
           limit = options[:limit]
           options.merge!(limit) if limit.is_a?(::Hash)
           type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
