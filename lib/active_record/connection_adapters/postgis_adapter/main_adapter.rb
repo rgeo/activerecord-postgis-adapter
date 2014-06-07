@@ -120,7 +120,7 @@ module ActiveRecord  # :nodoc:
             }
             column_name = col.name.to_s
 
-            add_spatial_column(column_name, table_name, options)
+            add_spatial_column(table_name, column_name, options)
           end
         end
 
@@ -128,7 +128,7 @@ module ActiveRecord  # :nodoc:
           table_name = table_name.to_s
           column_name = column_name.to_s
           if (info = spatial_column_constructor(type.to_sym))
-            add_spatial_column(column_name, table_name, info, type, options)
+            add_spatial_column(table_name, column_name, info, type, options)
           else
             super
           end
@@ -180,7 +180,7 @@ module ActiveRecord  # :nodoc:
 
         private
 
-        def add_spatial_column(column_name, table_name, info = {}, type = nil, options)
+        def add_spatial_column(table_name, column_name, info = {}, type = nil, options)
           limit = options[:limit]
           options.merge!(limit) if limit.is_a?(::Hash)
           type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
