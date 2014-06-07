@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
-        def initialize(factory_settings, table_name, name, default, oid_type, sql_type=nil, null=true, opts=nil)
+        def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, opts = nil)
           @factory_settings = factory_settings
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography/i)
@@ -42,12 +42,12 @@ module ActiveRecord  # :nodoc:
           super(name, default, oid_type, sql_type, null)
           if spatial?
             if @srid
-              @limit = {:srid => @srid, :type => @geometric_type.type_name.underscore}
+              @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
               @limit[:has_z] = true if @has_z
               @limit[:has_m] = true if @has_m
               @limit[:geographic] = true if @geographic
             else
-              @limit = {:no_constraints => true}
+              @limit = { no_constraints: true }
             end
           end
         end
@@ -91,8 +91,12 @@ module ActiveRecord  # :nodoc:
 
         def self.convert_to_geometry(input, factory_settings, table_name, column, geographic, srid, has_z, has_m)
           if srid
-            constraints = {:geographic => geographic, :has_z_coordinate => has_z,
-              :has_m_coordinate => has_m, :srid => srid}
+            constraints = {
+              geographic:       geographic,
+              has_z_coordinate: has_z,
+              has_m_coordinate: has_m,
+              srid:             srid
+            }
           else
             constraints = nil
           end
@@ -107,9 +111,9 @@ module ActiveRecord  # :nodoc:
               factory = factory_settings.get_column_factory(table_name, column, constraints)
               marker = input[0,1]
               if marker == "\x00" || marker == "\x01" || input[0,4] =~ /[0-9a-fA-F]{4}/
-                ::RGeo::WKRep::WKBParser.new(factory, :support_ewkb => true).parse(input) rescue nil
+                ::RGeo::WKRep::WKBParser.new(factory, support_ewkb: true).parse(input) rescue nil
               else
-                ::RGeo::WKRep::WKTParser.new(factory, :support_ewkt => true).parse(input) rescue nil
+                ::RGeo::WKRep::WKTParser.new(factory, support_ewkt: true).parse(input) rescue nil
               end
             end
           else
@@ -129,7 +133,7 @@ module ActiveRecord  # :nodoc:
 
         def type_cast(value)
           return if value.nil?
-          ::RGeo::WKRep::WKBParser.new(@factory_generator, :support_ewkb => true).parse(value) rescue nil
+          ::RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value) rescue nil
         end
 
       end
