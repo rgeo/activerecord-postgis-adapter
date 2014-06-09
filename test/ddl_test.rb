@@ -225,7 +225,18 @@ module RGeo
               assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
+            def test_no_geography_sql_query
+              klass = create_ar_class
+              klass.connection.create_table(:spatial_test, force: true) do |t|
+                t.string 'name'
+              end
+              # `all` does the database query - it should not be called when klass.columns is called
+              ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter::SpatialColumnInfo.any_instance.expects(:all).never
+              refute klass.columns.first.spatial?
+            end
           end
+
+          private
 
           def geometry_column_count_query
             "SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'"
