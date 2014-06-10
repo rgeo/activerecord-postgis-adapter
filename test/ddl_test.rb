@@ -231,7 +231,7 @@ module RGeo
                 t.string 'name'
               end
               # `all` does the database query - it should not be called when klass.columns is called
-              ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter::SpatialColumnInfo.any_instance.expects(:all).never
+              ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).never
               refute klass.columns.first.spatial?
             end
           end
