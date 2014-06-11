@@ -1,3 +1,10 @@
+### 2.1.0 / 2014-06-11
+
+* Add a separate SpatialColumnInfo class to query spatial column info
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/125)
+* Update column migration method to correctly set null: false 
+  ((https://github.com/rgeo/activerecord-postgis-adapter/pull/121)
+
 ### 2.0.2 / 2014-06-06
 
 * Fix add_index for referenced columns (regression)
