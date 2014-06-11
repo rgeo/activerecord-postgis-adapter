@@ -225,7 +225,31 @@ module RGeo
               assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
             end
 
+            def test_caches_spatial_column_info
+              klass = create_ar_class
+              klass.connection.create_table(:spatial_test, force: true) do |t|
+                t.point 'latlon'
+                t.point 'other'
+              end
+              ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).once.returns({})
+              klass.columns
+              klass.columns
+            end
+
+            def test_no_query_spatial_column_info
+              klass = create_ar_class
+              klass.connection.create_table(:spatial_test, force: true) do |t|
+                t.string 'name'
+              end
+              # `all` queries column info from the database - it should not be called when klass.columns is called
+              ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).never
+              # first column is id, second is name
+              refute klass.columns[1].spatial?
+              assert_nil klass.columns[1].has_z
+            end
           end
+
+          private
 
           def geometry_column_count_query
             "SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'"

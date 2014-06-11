@@ -31,8 +31,8 @@ module ActiveRecord  # :nodoc:
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def columns(table_name, name = nil)
+          column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s))
           # Limit, precision, and scale are all handled by the superclass.
-          spatial_info_ = spatial_column_info(table_name)
           column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
             oid = column_type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
             SpatialColumn.new(@rgeo_factory_settings,
@@ -42,7 +42,7 @@ module ActiveRecord  # :nodoc:
                               oid,
                               type,
                               notnull == 'f',
-                              type =~ /geometry/i ? spatial_info_[column_name] : nil)
+                              column_info.get(column_name, type))
           end
         end
 
@@ -158,25 +158,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def spatial_column_info(table_name)
-          info = query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{quote_string(table_name.to_s)}'")
-          result = {}
-          info.each do |row|
-            name = row[0]
-            type = row[3]
-            dimension = row[1].to_i
-            has_m = !!(type =~ /m$/i)
-            type.sub!(/m$/, '')
-            has_z = dimension > 3 || dimension == 3 && !has_m
-            result[name] = {
-              dimension: dimension,
-              has_m:     has_m,
-              has_z:     has_z,
-              name:      name,
-              srid:      row[2].to_i,
-              type:      type,
-            }
-          end
-          result
+          SpatialColumnInfo.new(self, quote_string(table_name.to_s)).all
         end
 
         private
@@ -215,7 +197,6 @@ module ActiveRecord  # :nodoc:
           dimensions += 1 if has_m
           dimensions
         end
-
       end
     end
   end
