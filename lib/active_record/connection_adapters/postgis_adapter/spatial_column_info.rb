@@ -3,15 +3,13 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter
       # Do spatial sql queries for column info and memoize that info.
       class SpatialColumnInfo
-        attr_accessor :adapter, :table_name
-
         def initialize(adapter, table_name)
           @adapter = adapter
           @table_name = table_name
         end
 
         def all
-          info = adapter.query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{table_name}'")
+          info = @adapter.query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'")
           result = {}
           info.each do |row|
             name = row[0]
