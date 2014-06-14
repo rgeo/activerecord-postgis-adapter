@@ -84,7 +84,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test) do |t|
         t.column('latlon', :geometry, null: false)
       end
-      geometry_column = klass.columns.first
+      geometry_column = klass.columns[1]
 
       refute(geometry_column.null, 'Column should be null: false')
     end

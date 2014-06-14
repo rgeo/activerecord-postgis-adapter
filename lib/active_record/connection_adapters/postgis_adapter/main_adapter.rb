@@ -114,8 +114,10 @@ module ActiveRecord  # :nodoc:
           end
           table_definition.non_geographic_spatial_columns.each do |col|
             options = {
+              default: col.default,
               has_m: col.has_m?,
               has_z: col.has_z?,
+              null: col.null,
               srid:  col.srid,
               type:  col.spatial_type,
             }
@@ -180,6 +182,7 @@ module ActiveRecord  # :nodoc:
             type = "#{type}M" if has_m && !has_z
             dimensions = set_dimensions(has_m, has_z)
             execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{srid}, '#{quote_string(type)}', #{dimensions})")
+            change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
           end
         end
 
