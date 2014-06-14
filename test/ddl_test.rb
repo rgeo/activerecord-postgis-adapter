@@ -82,11 +82,14 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     def test_add_geometry_column_null_false
       klass = create_ar_class
       klass.connection.create_table(:spatial_test) do |t|
-        t.column('latlon', :geometry, null: false)
+        t.column('latlon_null', :geometry, null: false)
+        t.column('latlon', :geometry)
       end
-      geometry_column = klass.columns[1]
+      null_false_column = klass.columns[1]
+      null_true_column = klass.columns[2]
 
-      refute(geometry_column.null, 'Column should be null: false')
+      refute(null_false_column.null, 'Column should be null: false')
+      assert(null_true_column.null, 'Column should be null: true')
     end
 
     def test_add_geography_column
