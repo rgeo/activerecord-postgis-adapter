@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'minitest/pride'
 require 'rgeo/active_record/adapter_test_helper'
 
 begin
