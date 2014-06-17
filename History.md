@@ -1,3 +1,9 @@
+### 2.1.1 / 2014-06-17
+
+* Correct behavior of non-geographic null: false columns
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/127)  
+* Loosen rgeo-activerecord dependency
+
 ### 2.1.0 / 2014-06-11
 
 * Add a separate SpatialColumnInfo class to query spatial column info
