@@ -9,10 +9,9 @@ env:
 gemfile:
   - travis/ar40.gemfile
   - travis/ar41.gemfile
-allow_failures:
-  - rbx-2
 matrix:
-  exclude:
+  allow_failures:
+    - rvm: rbx-2
 before_install: ./travis/before_install.sh
 before_script: ./travis/before_script.sh
 script: bundle exec rake test
