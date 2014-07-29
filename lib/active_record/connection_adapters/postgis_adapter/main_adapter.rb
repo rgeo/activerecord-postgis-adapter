@@ -34,6 +34,12 @@ module ActiveRecord  # :nodoc:
           column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s))
           # Limit, precision, and scale are all handled by the superclass.
           column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
+            # JDBC gets true/false in Rails 4, where other platforms get
+            # 't'/'f' strings.
+            if(notnull.is_a?(String))
+              notnull = (notnull == 't')
+            end
+
             oid = column_type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
             SpatialColumn.new(@rgeo_factory_settings,
                               table_name,
@@ -41,7 +47,7 @@ module ActiveRecord  # :nodoc:
                               default,
                               oid,
                               type,
-                              notnull == 'f',
+                              !notnull,
                               column_info.get(column_name, type))
           end
         end
