@@ -1,3 +1,8 @@
+### 2.2.0 / 2014-08-11
+
+* Add JRuby support
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/102)  
+
 ### 2.1.1 / 2014-06-17
 
 * Correct behavior of non-geographic null: false columns
@@ -9,7 +14,7 @@
 * Add a separate SpatialColumnInfo class to query spatial column info
   (https://github.com/rgeo/activerecord-postgis-adapter/pull/125)
 * Update column migration method to correctly set null: false 
-  ((https://github.com/rgeo/activerecord-postgis-adapter/pull/121)
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/121)
 
 ### 2.0.2 / 2014-06-06
 
