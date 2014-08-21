@@ -1,7 +1,7 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
-      class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
+      class TableDefinition < ConnectionAdapters::PostgreSQL::TableDefinition  # :nodoc:
 
         if ActiveRecord::VERSION::STRING > '4.1'
           def initialize(types, name, temporary, options, as, base)
