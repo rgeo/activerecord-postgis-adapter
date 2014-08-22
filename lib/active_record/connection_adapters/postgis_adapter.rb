@@ -2,12 +2,9 @@
 # connection adapter into ActiveRecord.
 
 module ActiveRecord
-  # All ActiveRecord adapters go in this namespace.
-  # This adapter is installed into the PostGISAdapter submodule.
   module ConnectionAdapters
-    # The PostGIS Adapter lives in this namespace.
     module PostGISAdapter
-      # The name returned by the adapter_name method of this adapter.
+      # The name returned by #adapter_name
       ADAPTER_NAME = 'PostGIS'.freeze
     end
   end
@@ -19,25 +16,21 @@ require 'active_record'
 require 'active_record/connection_adapters/postgresql_adapter'
 require 'rgeo/active_record'
 
-case ::ActiveRecord::VERSION::MAJOR
-when 4
-  require 'active_record/connection_adapters/postgis_adapter/version.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/common_adapter_methods.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/main_adapter.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_table_definition.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/spatial_column.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/arel_tosql.rb'
-  require 'active_record/connection_adapters/postgis_adapter/shared/setup.rb'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/create_connection'
-  require 'active_record/connection_adapters/postgis_adapter/rails4/postgis_database_tasks.rb'
-else
-  raise "Unsupported ActiveRecord version #{::ActiveRecord::VERSION::STRING}"
-end
+require 'active_record/connection_adapters/postgis_adapter/version'
+require 'active_record/connection_adapters/postgis_adapter/common_adapter_methods'
+require 'active_record/connection_adapters/postgis_adapter/main_adapter'
+require 'active_record/connection_adapters/postgis_adapter/spatial_column_info'
+require 'active_record/connection_adapters/postgis_adapter/spatial_table_definition'
+require 'active_record/connection_adapters/postgis_adapter/spatial_column'
+require 'active_record/connection_adapters/postgis_adapter/arel_tosql'
+require 'active_record/connection_adapters/postgis_adapter/setup'
+require 'active_record/connection_adapters/postgis_adapter/create_connection'
+require 'active_record/connection_adapters/postgis_adapter/postgis_database_tasks'
 
 ::ActiveRecord::ConnectionAdapters::PostGISAdapter.initial_setup
 
 if defined?(::Rails::Railtie)
-  load ::File.expand_path('postgis_adapter/shared/railtie.rb', ::File.dirname(__FILE__))
+  load ::File.expand_path('postgis_adapter/railtie.rb', ::File.dirname(__FILE__))
 end
 
 # :startdoc:
