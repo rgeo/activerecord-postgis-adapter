@@ -1,8 +1,13 @@
+TABLE_DEFINITION = if ActiveRecord::VERSION::STRING >= '4.2'
+  ActiveRecord::ConnectionAdapters::PostgreSQL::TableDefinition
+else
+  ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::TableDefinition
+end
+
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
-      class TableDefinition < ConnectionAdapters::PostgreSQL::TableDefinition  # :nodoc:
-
+      class TableDefinition < TABLE_DEFINITION  # :nodoc:
         if ActiveRecord::VERSION::STRING > '4.1'
           def initialize(types, name, temporary, options, as, base)
             @base = base
