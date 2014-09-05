@@ -44,6 +44,8 @@ PostGIS 2.0+
 Gemfile:
 
 ```ruby
+gem 'rgeo'
+gem 'rgeo-activerecord'
 gem 'activerecord-postgis-adapter'
 ```
 
