@@ -62,6 +62,16 @@ module ActiveRecord  # :nodoc:
         alias_method :has_z?, :has_z
         alias_method :has_m?, :has_m
 
+      if ActiveRecord::VERSION::STRING >= '4.2'
+        def text?
+          false
+        end
+
+        def integer?
+          false
+        end
+      end
+
         def spatial?
           type == :spatial || type == :geography
         end
