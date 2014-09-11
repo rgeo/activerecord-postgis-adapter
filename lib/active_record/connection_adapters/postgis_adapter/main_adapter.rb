@@ -52,10 +52,11 @@ module ActiveRecord  # :nodoc:
             SpatialColumn.new(@rgeo_factory_settings,
                               table_name,
                               column_name,
-                              default,
+                              default_value,
                               oid,
                               type,
                               notnull == 'f',
+                              default_function,
                               column_info.get(column_name, type))
           end
         end
@@ -78,6 +79,7 @@ module ActiveRecord  # :nodoc:
                               oid,
                               type,
                               !notnull,
+                              nil,
                               column_info.get(column_name, type))
           end
         end

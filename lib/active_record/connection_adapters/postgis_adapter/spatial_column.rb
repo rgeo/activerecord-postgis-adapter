@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
-        def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, opts = nil)
+        def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, default_function = nil, opts = nil)
           @factory_settings = factory_settings
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography/i)
@@ -39,7 +39,11 @@ module ActiveRecord  # :nodoc:
             # Non-spatial column
             @geometric_type = @has_z = @has_m = @srid = nil
           end
-          super(name, default, oid_type, sql_type, null)
+          if ActiveRecord::VERSION::STRING > '4.2'
+            super(name, default, oid_type, sql_type, null, default_function)
+          else
+            super(name, default, oid_type, sql_type, null)
+          end
           if spatial?
             if @srid
               @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
