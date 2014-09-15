@@ -1,9 +1,6 @@
 require 'test_helper'
 
 class BasicTest < ActiveSupport::TestCase  # :nodoc:
-  DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
-  OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
-
   include RGeo::ActiveRecord::AdapterTestHelper
 
   define_test_methods do
@@ -28,7 +25,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     end
 
     def test_version
-      refute_nil ::ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
+      refute_nil ::ActiveRecord::ConnectionAdapters::PostGIS::VERSION
     end
 
     def test_postgis_available
