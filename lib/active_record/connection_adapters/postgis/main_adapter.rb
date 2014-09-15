@@ -1,6 +1,6 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
-    module PostGISAdapter  # :nodoc:
+    module PostGIS  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
         def initialize(*args)
           # Overridden to change the visitor
@@ -8,7 +8,7 @@ module ActiveRecord  # :nodoc:
           @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
 
-        include PostGISAdapter::CommonAdapterMethods
+        include PostGIS::CommonAdapterMethods
 
         @@native_database_types = nil
 
@@ -104,9 +104,9 @@ module ActiveRecord  # :nodoc:
         def create_table_definition(name, temporary, options, as = nil)
           # Override to create a spatial table definition
           if ActiveRecord::VERSION::STRING > '4.1'
-            PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as, self)
+            PostGIS::TableDefinition.new(native_database_types, name, temporary, options, as, self)
           else
-            PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, self)
+            PostGIS::TableDefinition.new(native_database_types, name, temporary, options, self)
           end
         end
 
@@ -180,7 +180,7 @@ module ActiveRecord  # :nodoc:
           type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
           has_z = options[:has_z]
           has_m = options[:has_m]
-          srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
+          srid = (options[:srid] || PostGIS::DEFAULT_SRID).to_i
           if options[:geographic]
             type << 'Z' if has_z
             type << 'M' if has_m

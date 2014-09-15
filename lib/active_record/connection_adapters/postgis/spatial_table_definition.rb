@@ -1,6 +1,6 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
-    module PostGISAdapter  # :nodoc:
+    module PostGIS  # :nodoc:
       class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
         if ActiveRecord::VERSION::STRING > '4.1'
@@ -57,7 +57,7 @@ module ActiveRecord  # :nodoc:
 
         def create_column_definition(name, type)
           if type == :spatial || type == :geography
-            PostGISAdapter::ColumnDefinition.new(name, type)
+            PostGIS::ColumnDefinition.new(name, type)
           else
             super
           end
@@ -83,7 +83,7 @@ module ActiveRecord  # :nodoc:
           if @srid
             @srid.to_i
           else
-            geographic? ? 4326 : PostGISAdapter::DEFAULT_SRID
+            geographic? ? 4326 : PostGIS::DEFAULT_SRID
           end
         end
 

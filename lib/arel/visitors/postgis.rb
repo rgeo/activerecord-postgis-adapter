@@ -1,16 +1,16 @@
 module Arel  # :nodoc:
   module Visitors  # :nodoc:
     # Different super-class under JRuby JDBC adapter.
-    PostGISSuperclass = if defined?(::ArJdbc::PostgreSQL::BindSubstitution)
-      ::ArJdbc::PostgreSQL::BindSubstitution
-    else
-      ::Arel::Visitors::PostgreSQL
-    end
+    PostGISSuperclass = if defined?(ArJdbc)
+                          ArJdbc::PostgreSQL::BindSubstitution
+                        else
+                          Arel::Visitors::PostgreSQL
+                        end
 
     class PostGIS < PostGISSuperclass  # :nodoc:
 
       FUNC_MAP = {
-        'st_wkttosql' => 'ST_GeomFromEWKT',
+          'st_wkttosql' => 'ST_GeomFromEWKT',
       }
 
       include ::RGeo::ActiveRecord::SpatialToSql

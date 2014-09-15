@@ -1,6 +1,6 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
-    module PostGISAdapter
+    module PostGIS
       # Do spatial sql queries for column info and memoize that info.
       class SpatialColumnInfo
         def initialize(adapter, table_name)
