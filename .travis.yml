@@ -14,5 +14,5 @@ matrix:
   allow_failures:
     - rvm: rbx-2
 before_install: ./travis/before_install.sh
-before_script: ./travis/before_script.sh
+before_script: createdb -U postgres postgis_adapter_test
 script: bundle exec rake test

@@ -125,21 +125,9 @@ module ActiveRecord  # :nodoc:
 
       # Register spatial types with the postgres OID mechanism
       # so we can recognize custom columns coming from the database.
-      class SpatialOID < PostgreSQLAdapter::OID::Type  # :nodoc:
 
-        def initialize(factory_generator)
-          @factory_generator = factory_generator
-        end
-
-        def type_cast(value)
-          return if value.nil?
-          ::RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value) rescue nil
-        end
-
-      end
-
-      PostgreSQLAdapter::OID.register_type('geometry', SpatialOID.new(nil))
-      PostgreSQLAdapter::OID.register_type('geography', SpatialOID.new(::RGeo::Geographic.method(:spherical_factory)))
+      PostgreSQLAdapter::OID.register_type('geometry', OID::Spatial.new(nil))
+      PostgreSQLAdapter::OID.register_type('geography', OID::Spatial.new(::RGeo::Geographic.method(:spherical_factory)))
 
       # This is a hack to ActiveRecord::ModelSchema. We have to "decorate" the decorate_columns
       # method to apply class-specific customizations to spatial type casting.
@@ -150,7 +138,7 @@ module ActiveRecord  # :nodoc:
           return unless columns_hash
           canonical_columns_ = self.columns_hash
           columns_hash.each do |name, col|
-            if col.is_a?(SpatialOID) && (canonical = canonical_columns_[name]) && canonical.spatial?
+            if col.is_a?(OID::Spatial) && (canonical = canonical_columns_[name]) && canonical.spatial?
               columns_hash[name] = canonical
             end
           end
@@ -159,7 +147,7 @@ module ActiveRecord  # :nodoc:
 
       end
 
-      ::ActiveRecord::Base.extend(DecorateColumnsModification)
+      ActiveRecord::Base.extend(DecorateColumnsModification)
 
     end
   end

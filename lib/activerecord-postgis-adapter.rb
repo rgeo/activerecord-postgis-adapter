@@ -1,1 +1,2 @@
-require 'active_record/connection_adapters/postgis_adapter.rb'
+require 'active_record/connection_adapters/postgis_adapter'
+

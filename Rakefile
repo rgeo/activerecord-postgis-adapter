@@ -1,6 +1,6 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
-require "appraisal"
+# require "appraisal"
 
 task default: [:test]
 

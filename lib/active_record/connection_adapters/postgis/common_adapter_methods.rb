@@ -14,7 +14,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def adapter_name
-          PostGIS::ADAPTER_NAME
+          PostGISAdapter::ADAPTER_NAME
         end
 
         def spatial_column_constructor(name)
