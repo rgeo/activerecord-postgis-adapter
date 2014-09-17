@@ -113,12 +113,7 @@ module ActiveRecord
       end
 
       def create_table_definition(name, temporary, options, as = nil)
-        # Override to create a spatial table definition
-        if ActiveRecord::VERSION::STRING > '4.1'
           PostGIS::TableDefinition.new(native_database_types, name, temporary, options, as, self)
-        else
-          PostGIS::TableDefinition.new(native_database_types, name, temporary, options, self)
-        end
       end
 
       def create_table(table_name, options = {}, &block)
