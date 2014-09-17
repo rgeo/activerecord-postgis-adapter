@@ -51,7 +51,7 @@ module ActiveRecord
             notnull = (notnull == 't')
           end
 
-          oid = column_type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
+          oid = type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
           PostGIS::SpatialColumn.new(@rgeo_factory_settings,
                                      table_name,
                                      column_name,
@@ -203,14 +203,6 @@ module ActiveRecord
           dimensions = set_dimensions(has_m, has_z)
           execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{srid}, '#{quote_string(type)}', #{dimensions})")
           change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
-        end
-      end
-
-      def column_type_map
-        if defined?(type_map) # ActiveRecord 4.1+
-          type_map
-        else # ActiveRecord 4.0.x
-          OID::TYPE_MAP
         end
       end
 

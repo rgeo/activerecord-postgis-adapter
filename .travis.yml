@@ -8,8 +8,7 @@ rvm:
 env:
   - POSTGIS=2.0
 gemfile:
-  - gemfiles/ar40.gemfile
-  - gemfiles/ar41.gemfile
+  - Gemfile
 matrix:
   allow_failures:
     - rvm: rbx-2
