@@ -3,18 +3,10 @@ module ActiveRecord  # :nodoc:
     module PostGIS  # :nodoc:
       class TableDefinition < ConnectionAdapters::PostgreSQLAdapter::TableDefinition  # :nodoc:
 
-        if ActiveRecord::VERSION::STRING > '4.1'
-          def initialize(types, name, temporary, options, as, base)
-            @base = base
-            @spatial_columns_hash = {}
-            super(types, name, temporary, options, as)
-          end
-        else
-          def initialize(types, name, temporary, options, base)
-            @base = base
-            @spatial_columns_hash = {}
-            super(types, name, temporary, options)
-          end
+        def initialize(types, name, temporary, options, as, base)
+          @base = base
+          @spatial_columns_hash = {}
+          super(types, name, temporary, options, as)
         end
 
         def column(name, type, options={})
