@@ -17,7 +17,7 @@ Make sure the tests pass:
 
 `rake`
 
-Run tests against both ActiveRecord 4.0 and 4.1 test gemfiles:
+Run tests against ActiveRecord test gemfiles:
 
 run `rake appraisal` or run the tests manually:
 
