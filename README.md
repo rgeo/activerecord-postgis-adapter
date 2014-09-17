@@ -31,12 +31,12 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 1.1+ supports ActiveRecord 4.0+
+#### Version 1.1+ supports ActiveRecord 4.2
 
 Requirements:
 
 ```
-ActiveRecord 4.0+
+ActiveRecord 4.2+
 Ruby 1.9.3+, JRuby
 PostGIS 2.0+
 ```
@@ -76,6 +76,24 @@ gem 'activerecord-postgis-adapter', '~> 0.6.6'
 Please read [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md)
 if you would like to use the adapter with an older version of PostGIS.
 
+#### PostGIS Extension
+The postgis extension is not installed automatically to your PostgreSQL database. It must be enabled in a migration with enable_extension 'postgis'. Below is a migration example:
+
+```ruby
+class EnablePostgis < ActiveRecord::Migration
+  def change
+    enable_extension 'postgis'
+  end
+end
+```
+
+#### Support for Rails 4.0 or 4.1
+If you are using Rails 4.0 or 4.1 you should use:
+
+```ruby
+gem 'activerecord-postgis-adapter', '~> 2.2.0'
+```
+
 ##### database.yml
 
 You must modify your `config/database.yml` file to use the postgis
@@ -104,14 +122,12 @@ Here are some other options that are supported:
 development:
   adapter: postgis
   encoding: unicode
-  postgis_extension: postgis      # default is postgis
   schema_search_path: public,postgis
   pool: 5
   database: my_app_development    # your database name
   username: my_app_user           # the username your app will use to connect
-  password: my_app_password       # the user's password
-  su_username: my_global_user     # a superuser for the database
-  su_password: my_global_pasword  # the superuser's password
+  password: my_app_password       # the user's password 
+
 ```
 
 ##### `rgeo` dependency
@@ -159,14 +175,6 @@ your bundle by running `bundle install`.
 
 Next, modify your `config/database.yml` file to invoke the postgis adapter, as
 described above.
-
-Once you have set up your database configs, run:
-
-```sh
-rake db:gis:setup
-```
-
-This rake task adds the PostGIS extension to your existing database.
 
 ### Creating Spatial Tables
 

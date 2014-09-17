@@ -9,24 +9,13 @@ Set up your test database:
 ```sh
 createdb postgis_adapter_test
 createuser -s postgres
-psql postgis_adapter_test
-=# CREATE EXTENSION postgis;
 ```
 
 Make sure the tests pass:
 
-`rake`
-
-Run tests against ActiveRecord test gemfiles:
-
-run `rake appraisal` or run the tests manually:
-
-```
-BUNDLE_GEMFILE=./gemfiles/ar40.gemfile bundle
-BUNDLE_GEMFILE=./gemfiles/ar40.gemfile rake
-
-BUNDLE_GEMFILE=./gemfiles/ar41.gemfile bundle
-BUNDLE_GEMFILE=./gemfiles/ar41.gemfile rake
+```ruby
+bundle
+rake
 ```
 
 Make your changes and submit a pull request.
