@@ -31,12 +31,12 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 1.1+ supports ActiveRecord 4.0+
+#### The latest version supports ActiveRecord 4.0.x and 4.1.x
 
 Requirements:
 
 ```
-ActiveRecord 4.0+
+ActiveRecord 4.0.0 - 4.1.x
 Ruby 1.9.3+, JRuby
 PostGIS 2.0+
 ```
@@ -468,8 +468,8 @@ Support is also available on the rgeo-users google group at http://groups.google
 
 ## Acknowledgments
 
-[Daniel Azuma](http://www.daniel-azuma.com) authored the PostGIS Adapter and its supporting 
-libraries (including RGeo). 
+[Daniel Azuma](http://www.daniel-azuma.com) authored the PostGIS Adapter and its supporting
+libraries (including RGeo).
 [Tee Parham](https://twitter.com/teeparham) is the current maintainer.
 
 Development is supported by:
