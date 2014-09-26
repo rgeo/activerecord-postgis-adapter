@@ -1,3 +1,7 @@
+### 2.2.2 / 2014-09-26
+
+*  Introduce support for ActiveRecord 4.2
+
 ### 2.2.1 / 2014-09-22
 
 * Update gemspec to not allow update to ActiveRecord 4.2, as it does not work.
