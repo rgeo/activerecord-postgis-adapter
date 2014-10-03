@@ -27,6 +27,12 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       refute_empty connection.select_values("SELECT * from public.spatial_ref_sys")
     end
 
+    def test_create_database_from_extension_in_separate_schema
+      configuration = TasksTest.new_database_config.merge('postgis_schema' => 'postgis')
+      ::ActiveRecord::Tasks::DatabaseTasks.create(configuration)
+      refute_empty connection.select_values("SELECT * from postgis.spatial_ref_sys")
+    end
+
     def test_empty_sql_dump
       setup_database_tasks
       ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
