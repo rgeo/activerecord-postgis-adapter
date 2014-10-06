@@ -1,4 +1,4 @@
-### 2.2.2 / 2014-09-26
+### 2.3.0 / 2014-09-26
 
 *  Introduce support for ActiveRecord 4.2
 
