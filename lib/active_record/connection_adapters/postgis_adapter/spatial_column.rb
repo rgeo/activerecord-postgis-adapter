@@ -1,6 +1,7 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
+
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
         def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, opts = nil)
@@ -150,7 +151,8 @@ module ActiveRecord  # :nodoc:
           return unless columns_hash
           canonical_columns_ = self.columns_hash
           columns_hash.each do |name, col|
-            if col.is_a?(SpatialOID) && (canonical = canonical_columns_[name]) && canonical.spatial?
+            if col.is_a?(SpatialOID) && (canonical = canonical_columns_[name]) && 
+                canonical.respond_to?(:spatial?) && canonical.spatial?
               columns_hash[name] = canonical
             end
           end
