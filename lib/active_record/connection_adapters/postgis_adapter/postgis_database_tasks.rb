@@ -16,10 +16,10 @@ module ActiveRecord  # :nodoc:
           establish_connection(configuration)
         end
 
-        # Overridden to set the database owner and call setup_gis
+        # Override to set the database owner and call setup_gis
         def create(master_established = false)
           establish_master_connection unless master_established
-          extra_configs = {'encoding' => encoding}
+          extra_configs = { 'encoding' => encoding }
           extra_configs['owner'] = username if has_su?
           connection.create_database(configuration['database'], configuration.merge(extra_configs))
           setup_gis
@@ -33,20 +33,22 @@ module ActiveRecord  # :nodoc:
 
         private
 
-        # Overridden to use su_username and su_password
+        # Override to use su_username and su_password
         def establish_master_connection
           establish_connection(configuration.merge(
-            'database' => 'postgres',
+            'database'           => 'postgres',
+            'password'           => su_password,
             'schema_search_path' => 'public',
-            'username' => su_username,
-            'password' => su_password))
+            'username'           => su_username,
+          ))
         end
 
         def establish_su_connection
           establish_connection(configuration.merge(
+            'password'           => su_password,
             'schema_search_path' => 'public',
-            'username' => su_username,
-            'password' => su_password))
+            'username'           => su_username,
+          ))
         end
 
         def username
