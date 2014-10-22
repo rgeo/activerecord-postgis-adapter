@@ -108,21 +108,23 @@ module ActiveRecord  # :nodoc:
               raise ::ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             else
-              if postgis_schema = configuration['postgis_schema']
-                schema = "WITH SCHEMA #{postgis_schema}"
-                schema_exists =
-                  connection.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_name = '#{postgis_schema}'").any?
-                if !schema_exists
+              if (postgis_schema = configuration['postgis_schema'])
+                schema_clause = "WITH SCHEMA #{postgis_schema}"
+                unless schema_exists?(postgis_schema)
                   connection.execute("CREATE SCHEMA #{postgis_schema}")
                   connection.execute("GRANT ALL ON SCHEMA #{postgis_schema} TO PUBLIC")
                 end
               else
-                schema = ''
+                schema_clause = ''
               end
 
-              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} #{schema}")
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} #{schema_clause}")
             end
           end
+        end
+
+        def schema_exists?(schema_name)
+          connection.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_name = '#{schema_name}'").any?
         end
       end
 
