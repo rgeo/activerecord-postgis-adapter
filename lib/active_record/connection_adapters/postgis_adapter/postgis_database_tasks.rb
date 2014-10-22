@@ -80,12 +80,12 @@ module ActiveRecord  # :nodoc:
 
         def extension_names
           @extension_names ||= begin
-            ext_ = configuration['postgis_extension']
-            case ext_
+            extensions = configuration['postgis_extension']
+            case extensions
             when ::String
-              ext_.split(',')
+              extensions.split(',')
             when ::Array
-              ext_
+              extensions
             else
               ['postgis']
             end
@@ -94,9 +94,9 @@ module ActiveRecord  # :nodoc:
 
         def ensure_installation_configs
           if configuration['setup'] == 'default' && !configuration['postgis_extension']
-            share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
-            control_file_ = ::File.expand_path('extension/postgis.control', share_dir_)
-            if ::File.readable?(control_file_)
+            share_dir = `pg_config --sharedir`.strip rescue '/usr/share'
+            control_file = ::File.expand_path('extension/postgis.control', share_dir)
+            if ::File.readable?(control_file)
               configuration['postgis_extension'] = 'postgis'
             end
           end
