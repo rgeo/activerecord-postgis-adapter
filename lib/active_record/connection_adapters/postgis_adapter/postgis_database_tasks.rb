@@ -8,10 +8,10 @@ module ActiveRecord  # :nodoc:
           ensure_installation_configs
         end
 
-        def setup_gis(configuration)
+        def setup_gis
           establish_su_connection
           if extension_names
-            setup_gis_from_extension(configuration)
+            setup_gis_from_extension
           end
           establish_connection(configuration)
         end
@@ -22,7 +22,7 @@ module ActiveRecord  # :nodoc:
           extra_configs = {'encoding' => encoding}
           extra_configs['owner'] = username if has_su?
           connection.create_database(configuration['database'], configuration.merge(extra_configs))
-          setup_gis(configuration)
+          setup_gis
         rescue ::ActiveRecord::StatementInvalid => error
           if /database .* already exists/ === error.message
             raise ::ActiveRecord::Tasks::DatabaseAlreadyExists
@@ -102,7 +102,7 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        def setup_gis_from_extension(configuration)
+        def setup_gis_from_extension
           extension_names.each do |extname|
             if extname == 'postgis_topology'
               raise ::ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
