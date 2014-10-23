@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
-        def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, opts = nil)
+        def initialize(factory_settings, table_name, name, default, oid_type, sql_type = nil, null = true, default_function = nil, opts = nil)
           @factory_settings = factory_settings
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography/i)
@@ -39,7 +39,11 @@ module ActiveRecord  # :nodoc:
             # Non-spatial column
             @geometric_type = @has_z = @has_m = @srid = nil
           end
-          super(name, default, oid_type, sql_type, null)
+          if ActiveRecord::VERSION::STRING > '4.2'
+            super(name, default, oid_type, sql_type, null, default_function)
+          else
+            super(name, default, oid_type, sql_type, null)
+          end
           if spatial?
             if @srid
               @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
@@ -61,6 +65,16 @@ module ActiveRecord  # :nodoc:
         alias_method :geographic?, :geographic
         alias_method :has_z?, :has_z
         alias_method :has_m?, :has_m
+
+      if ActiveRecord::VERSION::STRING >= '4.2'
+        def text?
+          false
+        end
+
+        def integer?
+          false
+        end
+      end
 
         def spatial?
           type == :spatial || type == :geography
@@ -125,6 +139,33 @@ module ActiveRecord  # :nodoc:
 
       # Register spatial types with the postgres OID mechanism
       # so we can recognize custom columns coming from the database.
+    if ActiveRecord::VERSION::STRING >= '4.2'
+      class SpatialOID < Type::Value  # :nodoc:
+
+        def initialize(factory_generator)
+          @factory_generator = factory_generator
+        end
+
+        def type
+          @factory_generator ? :geography : :geometry
+        end
+
+        def type_cast(value)
+          return if value.nil?
+          ::RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value) rescue nil
+        end
+
+      end
+
+      class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+        def initialize_type_map_with_postgis(m)
+          m.register_type 'geometry', SpatialOID.new(nil)
+          m.register_type 'geography', SpatialOID.new(::RGeo::Geographic.method(:spherical_factory))
+          initialize_type_map_without_postgis(m)
+        end
+        alias_method_chain :initialize_type_map, :postgis
+      end
+    else
       class SpatialOID < PostgreSQLAdapter::OID::Type  # :nodoc:
 
         def initialize(factory_generator)
@@ -140,6 +181,7 @@ module ActiveRecord  # :nodoc:
 
       PostgreSQLAdapter::OID.register_type('geometry', SpatialOID.new(nil))
       PostgreSQLAdapter::OID.register_type('geography', SpatialOID.new(::RGeo::Geographic.method(:spherical_factory)))
+    end
 
       # This is a hack to ActiveRecord::ModelSchema. We have to "decorate" the decorate_columns
       # method to apply class-specific customizations to spatial type casting.

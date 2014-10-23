@@ -20,6 +20,15 @@ module ActiveRecord  # :nodoc:
           )
         end
 
+      if ActiveRecord::VERSION::STRING >= '4.2'
+        def type_cast(value, column)
+          if ::RGeo::Feature::Geometry.check_type(value)
+            ::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
+          else
+            super
+          end
+        end
+      else
         def type_cast(value, column, array_member = false)
           if ::RGeo::Feature::Geometry.check_type(value)
             ::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
@@ -27,9 +36,31 @@ module ActiveRecord  # :nodoc:
             super
           end
         end
+      end
 
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
+      if ActiveRecord::VERSION::STRING > '4.2'
+        def columns(table_name)
+          column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s))
+          # Limit, precision, and scale are all handled by the superclass.
+          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
+            oid = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
+            default_value = extract_value_from_default(oid, default)
+            default_function = extract_default_function(default_value, default)
+
+            SpatialColumn.new(@rgeo_factory_settings,
+                              table_name,
+                              column_name,
+                              default_value,
+                              oid,
+                              type,
+                              notnull == 'f',
+                              default_function,
+                              column_info.get(column_name, type))
+          end
+        end
+      else
         def columns(table_name, name = nil)
           column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s))
           # Limit, precision, and scale are all handled by the superclass.
@@ -48,12 +79,61 @@ module ActiveRecord  # :nodoc:
                               oid,
                               type,
                               !notnull,
+                              nil,
                               column_info.get(column_name, type))
           end
         end
+      end
 
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
+      if ActiveRecord::VERSION::STRING > '4.2'
+        def indexes(table_name, name = nil)
+           result = query(<<-SQL, 'SCHEMA')
+             SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
+             FROM pg_class t
+             INNER JOIN pg_index d ON t.oid = d.indrelid
+             INNER JOIN pg_class i ON d.indexrelid = i.oid
+             WHERE i.relkind = 'i'
+               AND d.indisprimary = 'f'
+               AND t.relname = '#{table_name}'
+               AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = ANY (current_schemas(false)) )
+            ORDER BY i.relname
+          SQL
+
+          result.map do |row|
+            index_name = row[0]
+            unique = row[1] == 't'
+            indkey = row[2].split(" ")
+            inddef = row[3]
+            oid = row[4]
+
+            columns = Hash[query(<<-SQL, "SCHEMA")]
+            SELECT a.attnum, a.attname
+            FROM pg_attribute a
+            WHERE a.attrelid = #{oid}
+            AND a.attnum IN (#{indkey.join(",")})
+            SQL
+
+            column_names = columns.values_at(*indkey).compact
+
+            unless column_names.empty?
+              # add info on sort order for columns (only desc order is explicitly specified, asc is the default)
+              desc_order_columns = inddef.scan(/(\w+) DESC/).flatten
+              orders = desc_order_columns.any? ? Hash[desc_order_columns.map {|order_column| [order_column, :desc]}] : {}
+              where = inddef.scan(/WHERE (.+)$/).flatten[0]
+              #using = inddef.scan(/USING (.+?) /).flatten[0].to_sym
+
+              spatial = inddef =~ /using\s+gist/i &&
+                        columns.size == 1 &&
+                        %w[geometry geography].include?(columns.values.first[1])
+
+              # IndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, nil, using)
+              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, !!spatial)
+            end
+          end.compact
+        end
+      else
         def indexes(table_name, name = nil)
           result = query(<<-SQL, 'SCHEMA')
             SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
@@ -100,6 +180,7 @@ module ActiveRecord  # :nodoc:
             end
           end.compact
         end
+      end
 
         def create_table_definition(name, temporary, options, as = nil)
           # Override to create a spatial table definition
@@ -195,6 +276,7 @@ module ActiveRecord  # :nodoc:
           end
         end
 
+      if ActiveRecord::VERSION::STRING < '4.2'
         def column_type_map
           if defined?(type_map) # ActiveRecord 4.1+
             type_map
@@ -202,6 +284,7 @@ module ActiveRecord  # :nodoc:
             OID::TYPE_MAP
           end
         end
+      end
 
         def set_dimensions(has_m, has_z)
           dimensions = 2
