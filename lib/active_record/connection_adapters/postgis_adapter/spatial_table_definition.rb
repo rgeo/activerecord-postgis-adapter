@@ -61,7 +61,7 @@ module ActiveRecord  # :nodoc:
 
       end
 
-      class ColumnDefinition < ConnectionAdapters::ColumnDefinition  # :nodoc:
+      class ColumnDefinition < PostgreSQL::ColumnDefinition  # :nodoc:
 
         def spatial_type
           @spatial_type
