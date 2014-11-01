@@ -3,7 +3,7 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
         def initialize(*args)
-          # Overridden to change the visitor
+          # Override to change the visitor
           super
           @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
@@ -30,26 +30,33 @@ module ActiveRecord  # :nodoc:
 
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
-        def columns(table_name, name = nil)
-          column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s))
+        def columns(table_name)
           # Limit, precision, and scale are all handled by the superclass.
           column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
-            # JDBC gets true/false in Rails 4, where other platforms get
-            # 't'/'f' strings.
-            if(notnull.is_a?(String))
-              notnull = (notnull == 't')
-            end
-
-            oid = column_type_map.fetch(oid.to_i, fmod.to_i) { OID::Identity.new }
-            SpatialColumn.new(@rgeo_factory_settings,
-                              table_name,
-                              column_name,
-                              default,
-                              oid,
-                              type,
-                              !notnull,
-                              column_info.get(column_name, type))
+            oid = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
+            default_value = extract_value_from_default(oid, default)
+            default_function = extract_default_function(default_value, default)
+            new_column(table_name, column_name, default_value, oid, type, notnull == 'f', default_function)
           end
+        end
+
+        # override
+        def new_column(table_name, column_name, default, cast_type, sql_type = nil, null = true, default_function = nil)
+          # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
+          if null.is_a?(String)
+            null = (null == 't')
+          end
+
+          column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s)).get(column_name, sql_type)
+
+          SpatialColumn.new(@rgeo_factory_settings,
+                            table_name,
+                            column_name,
+                            default,
+                            cast_type,
+                            sql_type,
+                            !null,
+                            column_info)
         end
 
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
@@ -205,6 +212,19 @@ module ActiveRecord  # :nodoc:
           dimensions += 1 if has_m
           dimensions
         end
+
+        def initialize_type_map(m)
+          super
+
+          m.register_type 'geometry' do
+            OID::Spatial.new
+          end
+
+          m.register_type 'geography' do
+            OID::Spatial.new(factory_generator: ::RGeo::Geographic.method(:spherical_factory))
+          end
+        end
+
       end
     end
   end
