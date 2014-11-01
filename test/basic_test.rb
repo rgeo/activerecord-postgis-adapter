@@ -12,16 +12,16 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       klass = create_ar_class
       case content
       when :mercator_point
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'latlon', :point, :srid => 3785
+        klass.connection.create_table(:spatial_test) do |t|
+          t.column 'latlon', :point, :srid => 3785
         end
       when :latlon_point_geographic
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'latlon', :point, :srid => 4326, :geographic => true
+        klass.connection.create_table(:spatial_test) do |t|
+          t.column 'latlon', :point, :srid => 4326, :geographic => true
         end
       when :no_constraints
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'geo', :geometry, :no_constraints => true
+        klass.connection.create_table(:spatial_test) do |t|
+          t.column 'geo', :geometry, :no_constraints => true
         end
       end
       klass
@@ -112,35 +112,35 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       klass.class_eval do
         set_rgeo_factory_for_column(:latlon, factory)
       end
-      rec_ = klass.new
-      rec_.latlon = 'POINT(-122 47)'
-      assert_equal factory, rec_.latlon.factory
-      rec_.save!
-      assert_equal factory, rec_.latlon.factory
-      rec2_ = klass.find(rec_.id)
+      object = klass.new
+      object.latlon = 'POINT(-122 47)'
+      assert_equal factory, object.latlon.factory
+      object.save!
+      assert_equal factory, object.latlon.factory
+      rec2_ = klass.find(object.id)
       assert_equal factory, rec2_.latlon.factory
     end
 
     def test_readme_example
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
-        t_.column(:shape, :geometry)
-        t_.line_string(:path, :srid => 3785)
-        t_.point(:latlon, :geographic => true)
+      klass.connection.create_table(:spatial_test) do |t|
+        t.column(:shape, :geometry)
+        t.line_string(:path, :srid => 3785)
+        t.point(:latlon, :geographic => true)
       end
-      klass.connection.change_table(:spatial_test) do |t_|
-        t_.index(:latlon, :spatial => true)
+      klass.connection.change_table(:spatial_test) do |t|
+        t.index(:latlon, :spatial => true)
       end
       klass.class_eval do
         self.rgeo_factory_generator = ::RGeo::Geos.method(:factory)
         set_rgeo_factory_for_column(:latlon, ::RGeo::Geographic.spherical_factory)
       end
-      rec_ = klass.new
-      rec_.latlon = 'POINT(-122 47)'
-      loc_ = rec_.latlon
+      object = klass.new
+      object.latlon = 'POINT(-122 47)'
+      loc_ = object.latlon
       assert_equal 47, loc_.latitude
-      rec_.shape = loc_
-      assert_equal true, ::RGeo::Geos.is_geos?(rec_.shape)
+      object.shape = loc_
+      assert_equal true, ::RGeo::Geos.is_geos?(object.shape)
     end
 
     # no_constraints no longer supported in PostGIS 2.0

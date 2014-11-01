@@ -250,47 +250,47 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     # Ensure that null contraints info is getting captured like the
     # normal adapter.
     def test_null_constraints
-      klass_ = create_ar_class
-      klass_.connection.create_table(:spatial_test) do |t_|
+      klass = create_ar_class
+      klass.connection.create_table(:spatial_test) do |t_|
         t_.column 'nulls_allowed', :string, :null => true
         t_.column 'nulls_disallowed', :string, :null => false
       end
-      assert_equal(true, klass_.columns[-2].null)
-      assert_equal(false, klass_.columns[-1].null)
+      assert_equal(true, klass.columns[-2].null)
+      assert_equal(false, klass.columns[-1].null)
     end
 
     # Ensure that default value info is getting captured like the
     # normal adapter.
     def test_column_defaults
-      klass_ = create_ar_class
-      klass_.connection.create_table(:spatial_test) do |t_|
+      klass = create_ar_class
+      klass.connection.create_table(:spatial_test) do |t_|
         t_.column 'sample_integer_neg_default', :integer, :default => -1
       end
-      assert_equal(-1, klass_.columns.last.default)
+      assert_equal(-1, klass.columns.last.default)
     end
 
     # Ensure that column type info is getting captured like the
     # normal adapter.
     def test_column_types
-      klass_ = create_ar_class
-      klass_.connection.create_table(:spatial_test) do |t_|
+      klass = create_ar_class
+      klass.connection.create_table(:spatial_test) do |t_|
         t_.column 'sample_integer', :integer
         t_.column 'sample_string', :string
         t_.column 'latlon', :point
       end
-      assert_equal(:integer, klass_.columns[-3].type)
-      assert_equal(:string, klass_.columns[-2].type)
-      assert_equal(:spatial, klass_.columns[-1].type)
+      assert_equal(:integer, klass.columns[-3].type)
+      assert_equal(:string, klass.columns[-2].type)
+      assert_equal(:spatial, klass.columns[-1].type)
     end
 
     def test_array_columns
-      klass_ = create_ar_class
-      klass_.connection.create_table(:spatial_test) do |t_|
+      klass = create_ar_class
+      klass.connection.create_table(:spatial_test) do |t_|
         t_.column 'sample_array', :string, :array => true
         t_.column 'sample_non_array', :string
       end
-      assert_equal(true, klass_.columns[-2].array)
-      assert_equal(false, klass_.columns[-1].array)
+      assert_equal(true, klass.columns[-2].array)
+      assert_equal(false, klass.columns[-1].array)
     end
 
     private
