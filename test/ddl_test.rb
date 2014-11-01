@@ -18,7 +18,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(true, col.has_spatial_constraints?)
       assert_equal(false, col.geographic?)
       assert_equal(0, col.srid)
-      assert(klass.cached_attributes.include?('latlon'))
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
@@ -33,7 +32,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(true, col.has_spatial_constraints?)
       assert_equal(true, col.geographic?)
       assert_equal(4326, col.srid)
-      assert(klass.cached_attributes.include?('latlon'))
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
 
@@ -43,7 +41,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.column 'latlon', :point
       end
       assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
-      assert(klass.cached_attributes.include?('latlon'))
     end
 
     def test_create_geometry_with_index
@@ -161,7 +158,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(false, col.geographic?)
       assert_equal(0, col.srid)
-      assert(klass.cached_attributes.include?('latlon'))
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
@@ -175,7 +171,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(true, col.geographic?)
       assert_equal(4326, col.srid)
-      assert(klass.cached_attributes.include?('latlon'))
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
 
@@ -185,7 +180,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.point 'latlon'
       end
       assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
-      assert(klass.cached_attributes.include?('latlon'))
     end
 
     def test_create_geometry_with_options
@@ -201,7 +195,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(true, col.has_m?)
       assert_equal(3785, col.srid)
       assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
-      assert(klass.cached_attributes.include?('region'))
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
@@ -219,7 +212,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(true, col.has_m)
       assert_equal(3785, col.srid)
       assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
-      assert(klass.cached_attributes.include?('region'))
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
