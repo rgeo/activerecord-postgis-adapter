@@ -7,3 +7,7 @@ begin
 rescue LoadError
   # ignore
 end
+
+class ActiveSupport::TestCase
+  self.test_order = :random
+end
