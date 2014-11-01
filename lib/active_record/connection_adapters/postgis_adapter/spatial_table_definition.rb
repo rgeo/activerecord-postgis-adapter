@@ -31,7 +31,7 @@ module ActiveRecord  # :nodoc:
               options[:limit] = "#{spatial_type},#{options[:srid] || 4326}"
             end
             name = name.to_s
-            if primary_key_column_name == name
+            if @columns_hash[name] && @columns_hash[name].primary_key? == name
               raise ArgumentError, "you can't redefine the primary key column '#{name}'. To define a custom primary key, pass { id: false } to create_table."
             end
             column = new_column_definition(name, type, options)
