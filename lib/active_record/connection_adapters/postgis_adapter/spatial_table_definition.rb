@@ -1,7 +1,7 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
-      class TableDefinition < ConnectionAdapters::PostgreSQL::TableDefinition  # :nodoc:
+      class TableDefinition < PostgreSQL::TableDefinition  # :nodoc:
 
         def initialize(types, name, temporary, options, as, base)
           @base = base
@@ -57,6 +57,14 @@ module ActiveRecord  # :nodoc:
 
         def non_geographic_spatial_columns
           @spatial_columns_hash.values
+        end
+
+        def spatial(name, options = {})
+          column(name, :spatial, options)
+        end
+
+        def geography(name, options = {})
+          column(name, :geography, options)
         end
 
       end
