@@ -9,7 +9,7 @@ module ActiveRecord  # :nodoc:
           super(types, name, temporary, options, as)
         end
 
-        def column(name, type, options={})
+        def column(name, type = nil, options = {})
           if (info = @base.spatial_column_constructor(type.to_sym))
             type = options[:type] || info[:type] || type
             if type.to_s == 'geometry' && (options[:no_constraints] || options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
