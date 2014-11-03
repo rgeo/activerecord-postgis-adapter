@@ -3,18 +3,16 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
         def initialize(*args)
-          # Override to change the visitor
+          # Change the visitor
           super
           @visitor = ::Arel::Visitors::PostGIS.new(self)
         end
 
         include PostGISAdapter::CommonAdapterMethods
 
-        @@native_database_types = nil
-
         def native_database_types
-          # Overridden to add the :spatial type
-          @@native_database_types ||= super.merge(
+          # Add spatial types
+          super.merge(
             geography: { name: 'geography' },
             spatial:   { name: 'geometry' },
           )
