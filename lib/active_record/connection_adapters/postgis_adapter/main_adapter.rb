@@ -196,14 +196,6 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        def column_type_map
-          if defined?(type_map) # ActiveRecord 4.1+
-            type_map
-          else # ActiveRecord 4.0.x
-            OID::TYPE_MAP
-          end
-        end
-
         def set_dimensions(has_m, has_z)
           dimensions = 2
           dimensions += 1 if has_z
