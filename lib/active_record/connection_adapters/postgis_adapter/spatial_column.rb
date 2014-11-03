@@ -63,15 +63,11 @@ module ActiveRecord  # :nodoc:
         alias_method :has_m?, :has_m
 
         def spatial?
-          type == :spatial || type == :geography
+          cast_type.respond_to?(:spatial?) ? cast_type.spatial? : false
         end
 
         def has_spatial_constraints?
           !@srid.nil?
-        end
-
-        def klass
-          spatial? ? ::RGeo::Feature::Geometry : super
         end
 
         def type_cast(value)
@@ -126,14 +122,27 @@ module ActiveRecord  # :nodoc:
       module OID
         # Register spatial types with the postgres OID mechanism
         # so we can recognize custom columns coming from the database.
-        class Spatial < Type::String  # :nodoc:
+        class Spatial < Type::Value  # :nodoc:
 
           def initialize(options = {})
             @factory_generator = options[:factory_generator]
           end
 
-          def type_cast(value)
-            return if value.nil?
+          def type
+            :spatial
+          end
+
+          def klass
+            ::RGeo::Feature::Geometry
+          end
+
+          def spatial?
+            true
+          end
+
+          private
+
+          def cast_value(value)
             ::RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value) rescue nil
           end
 
