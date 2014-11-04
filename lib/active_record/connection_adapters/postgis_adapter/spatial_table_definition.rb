@@ -9,7 +9,7 @@ module ActiveRecord  # :nodoc:
           super(types, name, temporary, options, as)
         end
 
-        def column(name, type = nil, options = {})
+        def column(name, type, options = {})
           if (info = @adapter.spatial_column_constructor(type.to_sym))
             type = options[:type] || info[:type] || type
             if type.to_s == 'geometry' && (options[:no_constraints] || options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
@@ -47,14 +47,6 @@ module ActiveRecord  # :nodoc:
           self
         end
 
-        def create_column_definition(name, type)
-          if type == :spatial || type == :geography
-            PostGISAdapter::ColumnDefinition.new(name, type)
-          else
-            super
-          end
-        end
-
         def non_geographic_spatial_columns
           @spatial_columns_hash.values
         end
@@ -67,6 +59,15 @@ module ActiveRecord  # :nodoc:
           column(name, :geography, options)
         end
 
+        private
+
+        def create_column_definition(name, type)
+          if %i[spatial geography].include?(type)
+            PostGISAdapter::ColumnDefinition.new(name, type)
+          else
+            super
+          end
+        end
       end
 
       class ColumnDefinition < PostgreSQL::ColumnDefinition  # :nodoc:
