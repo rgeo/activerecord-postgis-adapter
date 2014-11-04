@@ -3,14 +3,14 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class TableDefinition < PostgreSQL::TableDefinition  # :nodoc:
 
-        def initialize(types, name, temporary, options, as, base)
-          @base = base
+        def initialize(types, name, temporary, options, as, adapter)
+          @adapter = adapter
           @spatial_columns_hash = {}
           super(types, name, temporary, options, as)
         end
 
         def column(name, type = nil, options = {})
-          if (info = @base.spatial_column_constructor(type.to_sym))
+          if (info = @adapter.spatial_column_constructor(type.to_sym))
             type = options[:type] || info[:type] || type
             if type.to_s == 'geometry' && (options[:no_constraints] || options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
               options.delete(:limit)
