@@ -9,11 +9,13 @@ module ActiveRecord  # :nodoc:
           super(types, name, temporary, options, as)
         end
 
-        def column(name, type, options = {})
+        # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
+        def new_column_definition(name, type, options)
           if (info = @adapter.spatial_column_constructor(type.to_sym))
             options[:type] ||= info[:type] || type
             type = :spatial
           end
+
           if type == :spatial
             if (limit = options.delete(:limit))
               options.merge!(limit) if limit.is_a?(::Hash)
@@ -25,11 +27,7 @@ module ActiveRecord  # :nodoc:
               spatial_type << 'M' if options[:has_m]
               options[:limit] = "#{spatial_type},#{options[:srid] || 4326}"
             end
-            name = name.to_s
-            if @columns_hash[name] && @columns_hash[name].primary_key? == name
-              raise ArgumentError, "you can't redefine the primary key column '#{name}'. To define a custom primary key, pass { id: false } to create_table."
-            end
-            column = new_column_definition(name, type, options)
+            column = super(name, type, options)
             column.set_spatial_type(options[:type])
             column.set_geographic(options[:geographic])
             column.set_srid(options[:srid])
@@ -37,9 +35,10 @@ module ActiveRecord  # :nodoc:
             column.set_has_m(options[:has_m])
             (column.geographic? ? @columns_hash : @spatial_columns_hash)[name] = column
           else
-            super(name, type, options)
+            column = super(name, type, options)
           end
-          self
+
+          column
         end
 
         def non_geographic_spatial_columns
