@@ -11,8 +11,7 @@ module ActiveRecord  # :nodoc:
 
         def column(name, type, options = {})
           if (info = @adapter.spatial_column_constructor(type.to_sym))
-            type = options[:type] || info[:type] || type
-            options[:type] = type
+            options[:type] ||= info[:type] || type
             type = :spatial
           end
           if type == :spatial
