@@ -46,8 +46,6 @@ module ActiveRecord  # :nodoc:
               @limit[:has_z] = true if @has_z
               @limit[:has_m] = true if @has_m
               @limit[:geographic] = true if @geographic
-            else
-              @limit = { no_constraints: true }
             end
           end
         end

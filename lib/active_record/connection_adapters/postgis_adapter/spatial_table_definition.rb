@@ -12,12 +12,8 @@ module ActiveRecord  # :nodoc:
         def column(name, type, options = {})
           if (info = @adapter.spatial_column_constructor(type.to_sym))
             type = options[:type] || info[:type] || type
-            if type.to_s == 'geometry' && (options[:no_constraints] || options[:limit].is_a?(::Hash) && options[:limit][:no_constraints])
-              options.delete(:limit)
-            else
-              options[:type] = type
-              type = :spatial
-            end
+            options[:type] = type
+            type = :spatial
           end
           if type == :spatial
             if (limit = options.delete(:limit))

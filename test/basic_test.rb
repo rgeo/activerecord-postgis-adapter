@@ -19,10 +19,6 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
         klass.connection.create_table(:spatial_test) do |t|
           t.column 'latlon', :point, :srid => 4326, :geographic => true
         end
-      when :no_constraints
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'geo', :geometry, :no_constraints => true
-        end
       end
       klass
     end
@@ -141,25 +137,6 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal 47, loc_.latitude
       object.shape = loc_
       assert_equal true, ::RGeo::Geos.is_geos?(object.shape)
-    end
-
-    # no_constraints no longer supported in PostGIS 2.0
-    def _test_save_and_load_no_constraints
-      klass = populate_ar_class(:no_constraints)
-      factory1_ = ::RGeo::Cartesian.preferred_factory(:srid => 3785)
-      factory2_ = ::RGeo::Cartesian.preferred_factory(:srid => 2000)
-      obj = klass.new
-      obj.geo = factory1_.point(1.0, 2.0)
-      obj.save!
-      id = obj.id
-      obj2 = klass.find(id)
-      assert_equal factory1_.point(1.0, 2.0), obj2.geo
-      assert_equal 3785, obj2.geo.srid
-      obj2.geo = factory2_.point(3.0, 4.0)
-      obj2.save!
-      obj3 = klass.find(id)
-      assert_equal factory2_.point(3.0, 4.0), obj3.geo
-      assert_equal 2000, obj3.geo.srid
     end
 
     def test_point_to_json
