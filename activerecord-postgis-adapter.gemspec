@@ -19,7 +19,8 @@ require './lib/active_record/connection_adapters/postgis_adapter/version.rb'
   spec.add_dependency 'activerecord', '~> 4.2.0.beta4'
   spec.add_dependency 'rgeo-activerecord', '~> 1.2'
 
-  spec.add_development_dependency 'rake', '~> 10.2'
-  spec.add_development_dependency 'mocha', '~> 1.0'
+  spec.add_development_dependency 'rake', '~> 10.3'
+  spec.add_development_dependency 'minitest', '~> 5.4'
+  spec.add_development_dependency 'mocha', '~> 1.1'
   spec.add_development_dependency 'appraisal', '~> 1.0'
 end
