@@ -53,6 +53,22 @@ module ActiveRecord  # :nodoc:
           column(name, :geography, options)
         end
 
+        def geometry(name, options = {})
+          column(name, :geometry, options)
+        end
+
+        def line_string(name, options = {})
+          column(name, :line_string, options)
+        end
+
+        def point(name, options = {})
+          column(name, :point, options)
+        end
+
+        def polygon(name, options = {})
+          column(name, :polygon, options)
+        end
+
         private
 
         def create_column_definition(name, type)
