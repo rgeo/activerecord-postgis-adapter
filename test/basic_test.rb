@@ -7,22 +7,6 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   include RGeo::ActiveRecord::AdapterTestHelper
 
   define_test_methods do
-
-    def populate_ar_class(content)
-      klass = create_ar_class
-      case content
-      when :mercator_point
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'latlon', :point, :srid => 3785
-        end
-      when :latlon_point_geographic
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'latlon', :point, :srid => 4326, :geographic => true
-        end
-      end
-      klass
-    end
-
     def test_version
       refute_nil ::ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
     end
@@ -108,13 +92,9 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       klass.class_eval do
         set_rgeo_factory_for_column(:latlon, factory)
       end
+      assert_equal factory, klass.rgeo_factory_for_column(:latlon)
       object = klass.new
-      object.latlon = 'POINT(-122 47)'
-      assert_equal factory, object.latlon.factory
-      object.save!
-      assert_equal factory, object.latlon.factory
-      rec2_ = klass.find(object.id)
-      assert_equal factory, rec2_.latlon.factory
+      assert_equal factory, object.class.rgeo_factory_for_column(:latlon)
     end
 
     def test_readme_example
@@ -133,9 +113,9 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       end
       object = klass.new
       object.latlon = 'POINT(-122 47)'
-      loc_ = object.latlon
-      assert_equal 47, loc_.latitude
-      object.shape = loc_
+      point = object.latlon
+      assert_equal 47, point.latitude
+      object.shape = point
       assert_equal true, ::RGeo::Geos.is_geos?(object.shape)
     end
 
@@ -154,6 +134,23 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       rec.save
       refute_nil klass.select("CURRENT_TIMESTAMP as ts").first.ts
     end
-
   end
+
+  private
+
+  def populate_ar_class(content)
+    klass = create_ar_class
+    case content
+    when :mercator_point
+      klass.connection.create_table(:spatial_test) do |t|
+        t.column 'latlon', :point, :srid => 3785
+      end
+    when :latlon_point_geographic
+      klass.connection.create_table(:spatial_test) do |t|
+        t.column 'latlon', :point, :srid => 4326, :geographic => true
+      end
+    end
+    klass
+  end
+
 end
