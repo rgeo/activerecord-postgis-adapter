@@ -161,22 +161,19 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
-        def add_index(table_name, column_name, options = {})
-          # We have to fully replace to add the gist clause.
-          options ||= {} # in case nil explicitly passed
-          gist = options.delete(:spatial)
-          index_name, index_type, index_columns, index_options, index_algorithm, index_using = add_index_options(table_name, column_name, options)
-          index_using = 'USING GIST' if gist
-          execute "CREATE #{index_type} INDEX #{index_algorithm} #{quote_column_name(index_name)} ON #{quote_table_name(table_name)} #{index_using} (#{index_columns})#{index_options}"
-        end
-
         def spatial_column_info(table_name)
           SpatialColumnInfo.new(self, quote_string(table_name.to_s)).all
         end
 
         private
+
+        # override
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_statements.rb
+        def add_index_options(table_name, column_name, options = {})
+          options ||= {}
+          options[:using] = "GIST" if options.delete(:spatial)
+          super table_name, column_name, options
+        end
 
         def add_spatial_column(table_name, column_name, type, options)
           limit = options[:limit]
