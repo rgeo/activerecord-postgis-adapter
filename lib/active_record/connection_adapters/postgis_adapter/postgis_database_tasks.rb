@@ -16,10 +16,10 @@ module ActiveRecord  # :nodoc:
           establish_connection(configuration)
         end
 
-        # Overridden to set the database owner and call setup_gis
+        # Override to set the database owner and call setup_gis
         def create(master_established = false)
           establish_master_connection unless master_established
-          extra_configs = {'encoding' => encoding}
+          extra_configs = { 'encoding' => encoding }
           extra_configs['owner'] = username if has_su?
           connection.create_database(configuration['database'], configuration.merge(extra_configs))
           setup_gis
@@ -33,20 +33,22 @@ module ActiveRecord  # :nodoc:
 
         private
 
-        # Overridden to use su_username and su_password
+        # Override to use su_username and su_password
         def establish_master_connection
           establish_connection(configuration.merge(
-            'database' => 'postgres',
+            'database'           => 'postgres',
+            'password'           => su_password,
             'schema_search_path' => 'public',
-            'username' => su_username,
-            'password' => su_password))
+            'username'           => su_username,
+          ))
         end
 
         def establish_su_connection
           establish_connection(configuration.merge(
+            'password'           => su_password,
             'schema_search_path' => 'public',
-            'username' => su_username,
-            'password' => su_password))
+            'username'           => su_username,
+          ))
         end
 
         def username
@@ -80,12 +82,12 @@ module ActiveRecord  # :nodoc:
 
         def extension_names
           @extension_names ||= begin
-            ext_ = configuration['postgis_extension']
-            case ext_
+            extensions = configuration['postgis_extension']
+            case extensions
             when ::String
-              ext_.split(',')
+              extensions.split(',')
             when ::Array
-              ext_
+              extensions
             else
               ['postgis']
             end
@@ -94,9 +96,9 @@ module ActiveRecord  # :nodoc:
 
         def ensure_installation_configs
           if configuration['setup'] == 'default' && !configuration['postgis_extension']
-            share_dir_ = `pg_config --sharedir`.strip rescue '/usr/share'
-            control_file_ = ::File.expand_path('extension/postgis.control', share_dir_)
-            if ::File.readable?(control_file_)
+            share_dir = `pg_config --sharedir`.strip rescue '/usr/share'
+            control_file = ::File.expand_path('extension/postgis.control', share_dir)
+            if ::File.readable?(control_file)
               configuration['postgis_extension'] = 'postgis'
             end
           end
@@ -108,9 +110,23 @@ module ActiveRecord  # :nodoc:
               raise ::ArgumentError, "'topology' must be in schema_search_path for postgis_topology" unless search_path.include?('topology')
               connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} SCHEMA topology")
             else
-              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname}")
+              if (postgis_schema = configuration['postgis_schema'])
+                schema_clause = "WITH SCHEMA #{postgis_schema}"
+                unless schema_exists?(postgis_schema)
+                  connection.execute("CREATE SCHEMA #{postgis_schema}")
+                  connection.execute("GRANT ALL ON SCHEMA #{postgis_schema} TO PUBLIC")
+                end
+              else
+                schema_clause = ''
+              end
+
+              connection.execute("CREATE EXTENSION IF NOT EXISTS #{extname} #{schema_clause}")
             end
           end
+        end
+
+        def schema_exists?(schema_name)
+          connection.execute("SELECT schema_name FROM information_schema.schemata WHERE schema_name = '#{schema_name}'").any?
         end
       end
 

@@ -2,10 +2,10 @@ module Arel  # :nodoc:
   module Visitors  # :nodoc:
     # Different super-class under JRuby JDBC adapter.
     PostGISSuperclass = if defined?(::ArJdbc::PostgreSQL::BindSubstitution)
-      ::ArJdbc::PostgreSQL::BindSubstitution
-    else
-      ::Arel::Visitors::PostgreSQL
-    end
+                          ::ArJdbc::PostgreSQL::BindSubstitution
+                        else
+                          ::Arel::Visitors::PostgreSQL
+                        end
 
     class PostGIS < PostGISSuperclass  # :nodoc:
 
