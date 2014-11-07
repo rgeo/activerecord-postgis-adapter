@@ -28,11 +28,11 @@ module ActiveRecord  # :nodoc:
               options[:limit] = "#{spatial_type},#{options[:srid] || 4326}"
             end
             column = super(name, type, options)
-            column.set_spatial_type(options[:type])
-            column.set_geographic(options[:geographic])
-            column.set_srid(options[:srid])
-            column.set_has_z(options[:has_z])
-            column.set_has_m(options[:has_m])
+            column.spatial_type = options[:type]
+            column.geographic = options[:geographic]
+            column.srid = options[:srid]
+            column.has_z = options[:has_z]
+            column.has_m = options[:has_m]
             (column.geographic? ? @columns_hash : @spatial_columns_hash)[name] = column
           else
             column = super(name, type, options)
@@ -70,8 +70,16 @@ module ActiveRecord  # :nodoc:
           @spatial_type
         end
 
+        def spatial_type=(value)
+          @spatial_type = value.to_s
+        end
+
         def geographic?
           @geographic
+        end
+
+        def geographic=(value)
+          @geographic = !!value
         end
 
         def srid
@@ -82,31 +90,23 @@ module ActiveRecord  # :nodoc:
           end
         end
 
+        def srid=(value)
+          @srid = value
+        end
+
         def has_z?
           @has_z
+        end
+
+        def has_z=(value)
+          @has_z = !!value
         end
 
         def has_m?
           @has_m
         end
 
-        def set_geographic(value)
-          @geographic = !!value
-        end
-
-        def set_spatial_type(value)
-          @spatial_type = value.to_s
-        end
-
-        def set_srid(value)
-          @srid = value
-        end
-
-        def set_has_z(value)
-          @has_z = !!value
-        end
-
-        def set_has_m(value)
+        def has_m=(value)
           @has_m = !!value
         end
 
