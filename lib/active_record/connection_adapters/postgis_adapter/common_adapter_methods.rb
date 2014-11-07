@@ -1,7 +1,7 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
-      SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
+      SPATIAL_COLUMN_OPTIONS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
         geography: { type: 'geometry', geographic: true }
       )
 
@@ -17,8 +17,8 @@ module ActiveRecord  # :nodoc:
           PostGISAdapter::ADAPTER_NAME
         end
 
-        def spatial_column_constructor(name)
-          PostGISAdapter::SPATIAL_COLUMN_CONSTRUCTORS[name]
+        def spatial_column_options(key)
+          PostGISAdapter::SPATIAL_COLUMN_OPTIONS[key]
         end
 
         def postgis_lib_version

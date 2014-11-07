@@ -142,7 +142,7 @@ module ActiveRecord  # :nodoc:
         def add_column(table_name, column_name, type, options = {})
           table_name = table_name.to_s
           column_name = column_name.to_s
-          if (info = spatial_column_constructor(type.to_sym))
+          if (info = spatial_column_options(type.to_sym))
             options[:info] = info
             add_spatial_column(table_name, column_name, type, options)
           else

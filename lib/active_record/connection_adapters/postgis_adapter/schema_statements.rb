@@ -6,7 +6,7 @@ module ActiveRecord
 
         def visit_AddColumn(o)
           if %i[spatial geography].include?(o.type)
-            # if (info = spatial_column_constructor(type.to_sym))
+            # if (info = spatial_column_options(type.to_sym))
             #   options[:info] = info
               sql = add_spatial_column(o)
               add_column_options! sql, column_options(o)
