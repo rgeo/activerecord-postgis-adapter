@@ -10,6 +10,10 @@ module ActiveRecord  # :nodoc:
 
         include PostGISAdapter::CommonAdapterMethods
 
+        def schema_creation
+          PostGISAdapter::SchemaCreation.new self
+        end
+
         def native_database_types
           # Add spatial types
           super.merge(
