@@ -23,13 +23,6 @@ module ActiveRecord  # :nodoc:
           )
         end
 
-        def type_cast(value, column)
-          if ::RGeo::Feature::Geometry.check_type(value)
-            ::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
-          else
-            super
-          end
-        end
 
         # FULL REPLACEMENT. RE-CHECK ON NEW VERSIONS
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
