@@ -6,42 +6,83 @@ module ActiveRecord
 
         def visit_AddColumn(o)
           if %i[spatial geography].include?(o.type)
-            # if (info = spatial_column_options(type.to_sym))
-            #   options[:info] = info
+            if (info = MainAdapter.spatial_column_options(type.to_sym))
+              options[:info] = info
               sql = add_spatial_column(o)
               add_column_options! sql, column_options(o)
-            # end
+            end
           else
             super
           end
         end
+
+        def add_spatial_column(o)
+          # info = options[:info] || {}
+          # options.merge!(o.limit) if o.limit.is_a?(::Hash)
+          type = o.type.to_s.gsub('_', '').upcase
+          # srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
+          if o.geographic?
+            type << 'Z' if o.has_z?
+            type << 'M' if o.has_m?
+            "ADD COLUMN #{quote_column_name(o.name)} GEOGRAPHY(#{o.type},#{o.srid})"
+          else
+            raise NotImplementedError
+            # type = "#{type}M" if o.has_m? && !o.has_z?
+            # dimensions = set_dimensions(has_m, has_z)
+            # execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{o.srid}, '#{quote_string(o.type)}', #{dimensions})")
+            # change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
+          end
+        end
+
       end
 
       module SchemaStatements
 
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_statements.rb
         # def create_table(table_name, options = {})
-        #   table_name = table_name.to_s
-        #   # Call super and snag the table definition
-        #   table_definition = nil
-        #   super(table_name, options) do |td|
-        #     yield(td) if block_given?
-        #     table_definition = td
-        #   end
-        #   table_definition.non_geographic_spatial_columns.each do |col|
-        #     options = {
-        #       default: col.default,
-        #       has_m: col.has_m?,
-        #       has_z: col.has_z?,
-        #       null: col.null,
-        #       srid:  col.srid,
-        #       type:  col.spatial_type,
-        #     }
-        #     column_name = col.name.to_s
-        #     type = col.spatial_type
+        #   # master
+        #   td = create_table_definition table_name, options[:temporary], options[:options], options[:as]
         #
-        #     add_spatial_column(table_name, column_name, type, options)
+        #   if options[:id] != false && !options[:as]
+        #     pk = options.fetch(:primary_key) do
+        #       Base.get_primary_key table_name.to_s.singularize
+        #     end
+        #
+        #     td.primary_key pk, options.fetch(:id, :primary_key), options
         #   end
+        #
+        #   yield td if block_given?
+        #
+        #   if options[:force] && table_exists?(table_name)
+        #     drop_table(table_name, options)
+        #   end
+        #
+        #   result = execute schema_creation.accept td
+        #   td.indexes.each_pair { |c, o| add_index(table_name, c, o) } unless supports_indexes_in_create?
+        #   result
+        #
+        #   # OLD
+        #   # table_name = table_name.to_s
+        #   # # Call super and snag the table definition
+        #   # table_definition = nil
+        #   # super(table_name, options) do |td|
+        #   #   yield(td) if block_given?
+        #   #   table_definition = td
+        #   # end
+        #   # table_definition.non_geographic_spatial_columns.each do |col|
+        #   #   options = {
+        #   #     default: col.default,
+        #   #     has_m: col.has_m?,
+        #   #     has_z: col.has_z?,
+        #   #     null: col.null,
+        #   #     srid:  col.srid,
+        #   #     type:  col.spatial_type,
+        #   #   }
+        #   #   column_name = col.name.to_s
+        #   #   type = col.spatial_type
+        #   #
+        #   #   add_spatial_column(table_name, column_name, type, options)
+        #   # end
         # end
 
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
@@ -126,7 +167,7 @@ module ActiveRecord
         # super uses an "alter table" statement.
         # we may use a PostGIS procedure instead
         def add_column(table_name, column_name, type, options = {})
-          if (info = spatial_column_options(type.to_sym))
+          if (info = MainAdapter.spatial_column_options(type.to_sym))
             options[:info] = info
             add_spatial_column table_name, column_name, type, options
           else
@@ -152,6 +193,20 @@ module ActiveRecord
           options ||= {}
           options[:using] = "GIST" if options.delete(:spatial)
           super table_name, column_name, options
+        end
+
+        # override
+        def native_database_types
+          # Add spatial types
+          super.merge(
+            geography: { name: 'geography' },
+            spatial:   { name: 'geometry' },
+          )
+        end
+
+        # override
+        def create_table_definition(name, temporary, options, as = nil)
+          PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as, self)
         end
 
         def spatial_column_info(table_name)
@@ -198,25 +253,6 @@ module ActiveRecord
             OID::Spatial.new(factory_generator: ::RGeo::Geographic.method(:spherical_factory))
           end
         end
-
-
-        # def add_spatial_column(o)
-        #   # info = options[:info] || {}
-        #   # options.merge!(o.limit) if o.limit.is_a?(::Hash)
-        #   type = o.type.to_s.gsub('_', '').upcase
-        #   # srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
-        #   if o.geographic?
-        #     type << 'Z' if o.has_z?
-        #     type << 'M' if o.has_m?
-        #     "ADD COLUMN #{quote_column_name(o.name)} GEOGRAPHY(#{o.type},#{o.srid})"
-        #   else
-        #     raise NotImplementedError
-        #     # type = "#{type}M" if o.has_m? && !o.has_z?
-        #     # dimensions = set_dimensions(has_m, has_z)
-        #     # execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{o.srid}, '#{quote_string(o.type)}', #{dimensions})")
-        #     # change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
-        #   end
-        # end
 
       end
     end

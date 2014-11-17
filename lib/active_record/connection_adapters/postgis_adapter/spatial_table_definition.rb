@@ -11,7 +11,7 @@ module ActiveRecord  # :nodoc:
 
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
         def new_column_definition(name, type, options)
-          if (info = @adapter.spatial_column_options(type.to_sym))
+          if (info = MainAdapter.spatial_column_options(type.to_sym))
             options[:type] ||= info[:type] || type
             type = :spatial
           end
