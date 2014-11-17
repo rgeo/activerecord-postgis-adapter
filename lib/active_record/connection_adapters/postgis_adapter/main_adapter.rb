@@ -9,6 +9,7 @@ module ActiveRecord  # :nodoc:
         end
 
         include PostGISAdapter::CommonAdapterMethods
+        include PostGISAdapter::SchemaStatements
 
         def schema_creation
           PostGISAdapter::SchemaCreation.new self
