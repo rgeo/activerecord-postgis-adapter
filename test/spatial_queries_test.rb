@@ -30,20 +30,20 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     def test_query_point
       klass = populate_ar_class(:mercator_point)
       obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
+      obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
-      obj2 = klass.where(:latlon => @factory.multi_point([@factory.point(1.0, 2.0)])).first
+      obj2 = klass.where(:latlon => factory.multi_point([factory.point(1.0, 2.0)])).first
       refute_nil(obj2)
       assert_equal(id, obj2.id)
-      obj3 = klass.where(:latlon => @factory.point(2.0, 2.0)).first
+      obj3 = klass.where(:latlon => factory.point(2.0, 2.0)).first
       assert_nil(obj3)
     end
 
     def test_query_point_wkt
       klass = populate_ar_class(:mercator_point)
       obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
+      obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
       obj2 = klass.where(:latlon => 'SRID=3785;POINT(1 2)').first
@@ -56,7 +56,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     def test_query_st_distance
       klass = populate_ar_class(:mercator_point)
       obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
+      obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
       obj2 = klass.where(klass.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').lt(2)).first
@@ -69,7 +69,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     def test_query_st_distance_from_constant
       klass = populate_ar_class(:mercator_point)
       obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
+      obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
       obj2 = klass.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(klass.arel_table[:latlon]).lt(2)).first
@@ -82,7 +82,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     def test_query_st_length
       klass = populate_ar_class(:path_linestring)
       obj = klass.new
-      obj.path = @factory.line(@factory.point(1.0, 2.0), @factory.point(3.0, 2.0))
+      obj.path = factory.line(factory.point(1.0, 2.0), factory.point(3.0, 2.0))
       obj.save!
       id = obj.id
       obj2 = klass.where(klass.arel_table[:path].st_length.eq(2)).first
