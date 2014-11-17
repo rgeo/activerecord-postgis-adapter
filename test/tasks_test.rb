@@ -3,7 +3,6 @@ require 'active_record/schema_dumper'
 
 class TasksTest < ActiveSupport::TestCase  # :nodoc:
   DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
-  OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database_local.yml'
 
   class << self
     def before_open_database(args)
