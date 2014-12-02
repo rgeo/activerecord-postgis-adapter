@@ -23,7 +23,5 @@ module Arel  # :nodoc:
 
     end
 
-    VISITORS['postgis'] = ::Arel::Visitors::PostGIS
-
   end
 end
