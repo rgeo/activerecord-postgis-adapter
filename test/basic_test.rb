@@ -74,21 +74,21 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_set_point_bad_wkt
     create_model(:mercator_point)
-    obj = SpatialModel.create(:latlon => 'POINT (x)')
+    obj = SpatialModel.create(latlon: 'POINT (x)')
     assert_nil obj.latlon
   end
 
   def test_set_point_wkt_wrong_type
     create_model(:mercator_point)
     assert_raises(::ActiveRecord::StatementInvalid) do
-      SpatialModel.create(:latlon => 'LINESTRING(1 2, 3 4, 5 6)')
+      SpatialModel.create(latlon: 'LINESTRING(1 2, 3 4, 5 6)')
     end
   end
 
   def _test_custom_factory
     klass = create_ar_class
-    klass.connection.create_table(:spatial_test) do |t|
-      t.point(:latlon, :srid => 4326)
+    klass.connection.create_table(:spatial_test, force: true) do |t|
+      t.point(:latlon, srid: 4326)
     end
     factory = ::RGeo::Geographic.simple_mercator_factory
     klass.class_eval do
@@ -101,13 +101,13 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def _test_readme_example
     klass = SpatialModel
-    klass.connection.create_table(:spatial_test) do |t|
+    klass.connection.create_table(:spatial_test, force: true) do |t|
       t.column(:shape, :geometry)
-      t.line_string(:path, :srid => 3785)
-      t.point(:latlon, :geographic => true)
+      t.line_string(:path, srid: 3785)
+      t.point(:latlon, geographic: true)
     end
     klass.connection.change_table(:spatial_test) do |t|
-      t.index(:latlon, :spatial => true)
+      t.index(:latlon, spatial: true)
     end
     klass.class_eval do
       self.rgeo_factory_generator = ::RGeo::Geos.method(:factory)
@@ -140,16 +140,13 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   private
 
   def create_model(type)
-    if SpatialModel.connection.tables.include?('spatial_models')
-      SpatialModel.connection.drop_table(:spatial_models)
-    end
     case type
       when :mercator_point
-        SpatialModel.connection.create_table(:spatial_models) do |t|
+        SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
           t.column 'latlon', :point, srid: 3785
         end
       when :latlon_point_geographic
-        SpatialModel.connection.create_table(:spatial_models) do |t|
+        SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
           t.column 'latlon', :point, srid: 4326, geographic: true
         end
       else

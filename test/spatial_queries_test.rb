@@ -12,16 +12,16 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
       klass = create_ar_class
       case content
       when :mercator_point
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'latlon', :point, :srid => 3785
+        klass.connection.create_table(:spatial_test, force: true) do |t|
+          t.column 'latlon', :point, srid: 3785
         end
       when :latlon_point_geographic
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'latlon', :point, :srid => 4326, :geographic => true
+        klass.connection.create_table(:spatial_test, force: true) do |t|
+          t.column 'latlon', :point, srid: 4326, geographic: true
         end
       when :path_linestring
-        klass.connection.create_table(:spatial_test) do |t|
-          t.column 'path', :line_string, :srid => 3785
+        klass.connection.create_table(:spatial_test, force: true) do |t|
+          t.column 'path', :line_string, srid: 3785
         end
       end
       klass
@@ -33,10 +33,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
       obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
-      obj2 = klass.where(:latlon => factory.multi_point([factory.point(1.0, 2.0)])).first
+      obj2 = klass.where(latlon: factory.multi_point([factory.point(1.0, 2.0)])).first
       refute_nil(obj2)
       assert_equal(id, obj2.id)
-      obj3 = klass.where(:latlon => factory.point(2.0, 2.0)).first
+      obj3 = klass.where(latlon: factory.point(2.0, 2.0)).first
       assert_nil(obj3)
     end
 
@@ -46,10 +46,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
       obj.latlon = factory.point(1.0, 2.0)
       obj.save!
       id = obj.id
-      obj2 = klass.where(:latlon => 'SRID=3785;POINT(1 2)').first
+      obj2 = klass.where(latlon: 'SRID=3785;POINT(1 2)').first
       refute_nil(obj2)
       assert_equal(id, obj2.id)
-      obj3 = klass.where(:latlon => 'SRID=3785;POINT(2 2)').first
+      obj3 = klass.where(latlon: 'SRID=3785;POINT(2 2)').first
       assert_nil(obj3)
     end
 

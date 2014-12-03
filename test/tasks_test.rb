@@ -41,7 +41,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_basic_geography_sql_dump
       setup_database_tasks
-      connection.create_table(:spatial_test) do |t|
+      connection.create_table(:spatial_test, force: true) do |t|
         t.point "latlon", geographic: true
       end
       ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
@@ -51,7 +51,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_index_sql_dump
       setup_database_tasks
-      connection.create_table(:spatial_test) do |t|
+      connection.create_table(:spatial_test, force: true) do |t|
         t.point "latlon", geographic: true
         t.string "name"
       end
@@ -75,7 +75,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_basic_geometry_schema_dump
       setup_database_tasks
-      connection.create_table(:spatial_test) do |t|
+      connection.create_table(:spatial_test, force: true) do |t|
         t.geometry 'object1'
         t.spatial "object2", limit: { srid: connection.default_srid, type: "geometry" }
       end
@@ -89,7 +89,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_basic_geography_schema_dump
       setup_database_tasks
-      connection.create_table(:spatial_test) do |t|
+      connection.create_table(:spatial_test, force: true) do |t|
         t.point "latlon1", geographic: true
         t.spatial "latlon2", limit: { srid: 4326, type: "point", geographic: true }
       end
@@ -103,7 +103,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_index_schema_dump
       setup_database_tasks
-      connection.create_table(:spatial_test) do |t|
+      connection.create_table(:spatial_test, force: true) do |t|
         t.point "latlon", geographic: true
       end
       connection.add_index :spatial_test, :latlon, spatial: true
@@ -117,7 +117,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_add_index_with_nil_options
       setup_database_tasks
-      connection.create_table(:test) do |t|
+      connection.create_table(:test, force: true) do |t|
         t.string "name"
       end
       connection.add_index :test, :name, nil
@@ -128,8 +128,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_add_index_via_references
       setup_database_tasks
-      connection.create_table(:cats)
-      connection.create_table(:dogs) do |t|
+      connection.create_table(:cats, force: true)
+      connection.create_table(:dogs, force: true) do |t|
         t.references :cats, index: true
       end
       ::ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)

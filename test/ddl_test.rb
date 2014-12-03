@@ -8,7 +8,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
   define_test_methods do
     def test_create_simple_geometry
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'latlon', :geometry
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
@@ -23,8 +23,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_simple_geography
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
-        t.column 'latlon', :geometry, :geographic => true
+      klass.connection.create_table(:spatial_test, force: true) do |t|
+        t.column 'latlon', :geometry, geographic: true
       end
       col = klass.columns.last
       assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
@@ -36,7 +36,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_point_geometry
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'latlon', :point
       end
       assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
@@ -44,22 +44,22 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_geometry_with_index
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'latlon', :geometry
       end
       klass.connection.change_table(:spatial_test) do |t|
-        t.index([:latlon], :spatial => true)
+        t.index([:latlon], spatial: true)
       end
       assert(klass.connection.indexes(:spatial_test).last.spatial)
     end
 
     def test_add_geometry_column
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column('latlon', :geometry)
       end
       klass.connection.change_table(:spatial_test) do |t|
-        t.column('geom2', :point, :srid => 4326)
+        t.column('geom2', :point, srid: 4326)
         t.column('name', :string)
       end
       assert_equal(2, klass.connection.select_value(geometry_column_count_query).to_i)
@@ -77,7 +77,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_add_geometry_column_null_false
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column('latlon_null', :geometry, null: false)
         t.column('latlon', :geometry)
       end
@@ -90,11 +90,11 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_add_geography_column
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column('latlon', :geometry)
       end
       klass.connection.change_table(:spatial_test) do |t|
-        t.column('geom2', :point, :srid => 4326, :geographic => true)
+        t.column('geom2', :point, srid: 4326, geographic: true)
         t.column('name', :string)
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
@@ -112,9 +112,9 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_drop_geometry_column
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column('latlon', :geometry)
-        t.column('geom2', :point, :srid => 4326)
+        t.column('geom2', :point, srid: 4326)
       end
       klass.connection.change_table(:spatial_test) do |t|
         t.remove('geom2')
@@ -129,10 +129,10 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_drop_geography_column
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column('latlon', :geometry)
-        t.column('geom2', :point, :srid => 4326, :geographic => true)
-        t.column('geom3', :point, :srid => 4326)
+        t.column('geom2', :point, srid: 4326, geographic: true)
+        t.column('geom3', :point, srid: 4326)
       end
       klass.connection.change_table(:spatial_test) do |t|
         t.remove('geom2')
@@ -149,7 +149,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_simple_geometry_using_shortcut
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.geometry 'latlon'
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
@@ -163,8 +163,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_simple_geography_using_shortcut
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
-        t.geometry 'latlon', :geographic => true
+      klass.connection.create_table(:spatial_test, force: true) do |t|
+        t.geometry 'latlon', geographic: true
       end
       col = klass.columns.last
       assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
@@ -175,7 +175,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_point_geometry_using_shortcut
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
+      klass.connection.create_table(:spatial_test, force: true) do |t|
         t.point 'latlon'
       end
       assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
@@ -183,8 +183,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_create_geometry_with_options
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
-        t.column 'region', :polygon, :has_m => true, :srid => 3785
+      klass.connection.create_table(:spatial_test, force: true) do |t|
+        t.column 'region', :polygon, has_m: true, srid: 3785
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
@@ -193,15 +193,15 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(false, col.has_z?)
       assert_equal(true, col.has_m?)
       assert_equal(3785, col.srid)
-      assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
+      assert_equal({has_m: true, type: 'polygon', srid: 3785}, col.limit)
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
 
     def test_create_geometry_using_limit
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
-        t.spatial 'region', :limit => {:has_m => true, :srid => 3785, :type => :polygon}
+      klass.connection.create_table(:spatial_test, force: true) do |t|
+        t.spatial 'region', limit: {has_m: true, srid: 3785, type: :polygon}
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
@@ -210,7 +210,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal(false, col.has_z)
       assert_equal(true, col.has_m)
       assert_equal(3785, col.srid)
-      assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
+      assert_equal({has_m: true, type: 'polygon', srid: 3785}, col.limit)
       klass.connection.drop_table(:spatial_test)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
     end
@@ -242,9 +242,9 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     # normal adapter.
     def test_null_constraints
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
-        t_.column 'nulls_allowed', :string, :null => true
-        t_.column 'nulls_disallowed', :string, :null => false
+      klass.connection.create_table(:spatial_test, force: true) do |t_|
+        t_.column 'nulls_allowed', :string, null: true
+        t_.column 'nulls_disallowed', :string, null: false
       end
       assert_equal(true, klass.columns[-2].null)
       assert_equal(false, klass.columns[-1].null)
@@ -254,8 +254,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     # normal adapter.
     def test_column_defaults
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
-        t_.column 'sample_integer_neg_default', :integer, :default => -1
+      klass.connection.create_table(:spatial_test, force: true) do |t_|
+        t_.column 'sample_integer_neg_default', :integer, default: -1
       end
       assert_equal(-1, klass.columns.last.default)
     end
@@ -264,7 +264,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     # normal adapter.
     def test_column_types
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
+      klass.connection.create_table(:spatial_test, force: true) do |t_|
         t_.column 'sample_integer', :integer
         t_.column 'sample_string', :string
         t_.column 'latlon', :point
@@ -276,8 +276,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     def test_array_columns
       klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
-        t_.column 'sample_array', :string, :array => true
+      klass.connection.create_table(:spatial_test, force: true) do |t_|
+        t_.column 'sample_array', :string, array: true
         t_.column 'sample_non_array', :string
       end
       assert_equal(true, klass.columns[-2].array)
