@@ -9,14 +9,21 @@ module ActiveRecord  # :nodoc:
           super(types, name, temporary, options, as)
         end
 
+        # * `:geometry` -- Any geometric type
+        # * `:point` -- Point data
+        # * `:line_string` -- LineString data
+        # * `:polygon` -- Polygon data
+        # * `:geometry_collection` -- Any collection type
+        # * `:multi_point` -- A collection of Points
+        # * `:multi_line_string` -- A collection of LineStrings
+        # * `:multi_polygon` -- A collection of Polygons
+
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
         def new_column_definition(name, type, options)
           if (info = MainAdapter.spatial_column_options(type.to_sym))
-            options[:type] ||= info[:type] || type
-            type = :spatial
-          end
+            options[:type] = info[:type] || type
+            type = options[:type]
 
-          if type == :spatial
             if (limit = options.delete(:limit))
               options.merge!(limit) if limit.is_a?(::Hash)
             end
@@ -72,7 +79,7 @@ module ActiveRecord  # :nodoc:
         private
 
         def create_column_definition(name, type)
-          if %i[spatial geography].include?(type)
+          if PostGISAdapter::MainAdapter::SPATIAL_COLUMN_OPTIONS.keys.include?(type)
             PostGISAdapter::ColumnDefinition.new(name, type)
           else
             super
