@@ -6,9 +6,8 @@ module ActiveRecord
 
         def visit_AddColumn(o)
           if %i[spatial geography].include?(o.type)
-            if (info = MainAdapter.spatial_column_options(type.to_sym))
-              options[:info] = info
-              sql = add_spatial_column(o)
+            if (options = MainAdapter.spatial_column_options(o.type.to_sym))
+              sql = add_spatial_column(o, options)
               add_column_options! sql, column_options(o)
             end
           else
@@ -16,11 +15,11 @@ module ActiveRecord
           end
         end
 
-        def add_spatial_column(o)
+        def add_spatial_column(o, options)
           # info = options[:info] || {}
           # options.merge!(o.limit) if o.limit.is_a?(::Hash)
           type = o.type.to_s.gsub('_', '').upcase
-          # srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
+          srid = (options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
           if o.geographic?
             type << 'Z' if o.has_z?
             type << 'M' if o.has_m?
@@ -220,7 +219,7 @@ module ActiveRecord
           type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
           has_z = options[:has_z]
           has_m = options[:has_m]
-          srid = (options[:srid] || PostGISAdapter::DEFAULT_SRID).to_i
+          srid = (options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
           if options[:geographic]
             type << 'Z' if has_z
             type << 'M' if has_m
