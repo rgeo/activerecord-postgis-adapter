@@ -133,18 +133,61 @@ module ActiveRecord  # :nodoc:
             true
           end
 
-          def type_cast(value)
-            if ::RGeo::Feature::Geometry.check_type(value)
-              ::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
-            else
-              super
-            end
+          # support setting an RGeo object or a WKT string
+          def type_cast_for_database(value)
+            return if value.nil?
+            geo_value = type_cast(value)
+
+            # TODO - only valid types should be allowed
+            # e.g. linestring is not valid for point column
+
+            raise "maybe should raise" unless RGeo::Feature::Geometry.check_type(geo_value)
+            RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true)
+              .generate(geo_value)
+          end
+
+          def type_cast_from_database(value)
+            cast_value value
           end
 
           private
 
+          def type_cast(value)
+            return if value.nil?
+            String === value ? parse_wkt(value) : value
+          end
+
           def cast_value(value)
-            ::RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value) rescue nil
+            return if value.nil?
+            RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value)
+          rescue RGeo::Error::ParseError
+            puts "\ncast failed!!\n\n"
+            nil
+          rescue # delete me
+            byebug
+          end
+
+          # convert WKT string into RGeo object
+          def parse_wkt(string)
+            # factory = factory_settings.get_column_factory(table_name, column, constraints)
+            factory = RGeo::ActiveRecord::RGeoFactorySettings.new
+            wkt_parser(factory, string).parse(string)
+          rescue RGeo::Error::ParseError
+            nil
+          rescue # delete me
+            byebug
+          end
+
+          def binary?(string)
+            string[0] == "\x00" || string[0] == "\x01" || string[0, 4] =~ /[0-9a-fA-F]{4}/
+          end
+
+          def wkt_parser(factory, string)
+            if binary?(string)
+              RGeo::WKRep::WKBParser.new(factory, support_ewkb: true)
+            else
+              RGeo::WKRep::WKTParser.new(factory, support_ewkt: true)
+            end
           end
 
         end
