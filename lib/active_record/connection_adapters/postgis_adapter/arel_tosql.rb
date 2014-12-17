@@ -4,7 +4,7 @@ module Arel  # :nodoc:
     PostGISSuperclass = if defined?(::ArJdbc::PostgreSQL::BindSubstitution)
                           ::ArJdbc::PostgreSQL::BindSubstitution
                         else
-                          ::Arel::Visitors::PostgreSQL
+                          PostgreSQL
                         end
 
     class PostGIS < PostGISSuperclass  # :nodoc:
@@ -13,13 +13,11 @@ module Arel  # :nodoc:
         'st_wkttosql' => 'ST_GeomFromEWKT',
       }
 
-      include ::RGeo::ActiveRecord::SpatialToSql
+      include RGeo::ActiveRecord::SpatialToSql
 
       def st_func(standard_name)
         FUNC_MAP[standard_name.downcase] || standard_name
       end
-
-      alias_method :visit_in_spatial_context, :visit
 
     end
 
