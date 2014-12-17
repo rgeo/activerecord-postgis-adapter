@@ -32,12 +32,8 @@ module ActiveRecord  # :nodoc:
               end
             end
           elsif sql_type =~ /geography|geometry|point|linestring|polygon/i
-            # Just in case there is a geometry column with no geometry_columns entry.
-            @geometric_type = ::RGeo::Feature::Geometry
-            @srid = @has_z = @has_m = nil
-          else
-            # Non-spatial column
-            @geometric_type = @has_z = @has_m = @srid = nil
+            # A geometry column with no geometry_columns entry.
+            @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(sql_type)
           end
           super(name, default, cast_type, sql_type, null)
           if spatial?
@@ -118,8 +114,7 @@ module ActiveRecord  # :nodoc:
       end
 
       module OID
-        # Register spatial types with the postgres OID mechanism
-        # so we can recognize custom columns coming from the database.
+        # Register spatial types so we can recognize custom columns coming from the database.
         class Spatial < Type::Value  # :nodoc:
 
           def initialize(options = {})
