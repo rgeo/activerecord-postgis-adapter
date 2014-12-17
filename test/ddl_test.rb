@@ -13,7 +13,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
+      assert_equal(RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(true, col.has_spatial_constraints?)
       assert_equal(false, col.geographic?)
       assert_equal(0, col.srid)
@@ -27,7 +27,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.column 'latlon', :geometry, geographic: true
       end
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
+      assert_equal(RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(true, col.has_spatial_constraints?)
       assert_equal(true, col.geographic?)
       assert_equal(4326, col.srid)
@@ -39,7 +39,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'latlon', :point
       end
-      assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
+      assert_equal(RGeo::Feature::Point, klass.columns.last.geometric_type)
     end
 
     def test_create_geometry_with_index
@@ -64,10 +64,10 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(2, klass.connection.select_value(geometry_column_count_query).to_i)
       cols_ = klass.columns
-      assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
+      assert_equal(RGeo::Feature::Geometry, cols_[-3].geometric_type)
       assert_equal(0, cols_[-3].srid)
       assert_equal(true, cols_[-3].has_spatial_constraints?)
-      assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
+      assert_equal(RGeo::Feature::Point, cols_[-2].geometric_type)
       assert_equal(4326, cols_[-2].srid)
       assert_equal(false, cols_[-2].geographic?)
       assert_equal(true, cols_[-2].has_spatial_constraints?)
@@ -99,10 +99,10 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       cols_ = klass.columns
-      assert_equal(::RGeo::Feature::Geometry, cols_[-3].geometric_type)
+      assert_equal(RGeo::Feature::Geometry, cols_[-3].geometric_type)
       assert_equal(0, cols_[-3].srid)
       assert_equal(true, cols_[-3].has_spatial_constraints?)
-      assert_equal(::RGeo::Feature::Point, cols_[-2].geometric_type)
+      assert_equal(RGeo::Feature::Point, cols_[-2].geometric_type)
       assert_equal(4326, cols_[-2].srid)
       assert_equal(true, cols_[-2].geographic?)
       assert_equal(true, cols_[-2].has_spatial_constraints?)
@@ -121,7 +121,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       cols_ = klass.columns
-      assert_equal(::RGeo::Feature::Geometry, cols_[-1].geometric_type)
+      assert_equal(RGeo::Feature::Geometry, cols_[-1].geometric_type)
       assert_equal('latlon', cols_[-1].name)
       assert_equal(0, cols_[-1].srid)
       assert_equal(false, cols_[-1].geographic?)
@@ -139,10 +139,10 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(2, klass.connection.select_value(geometry_column_count_query).to_i)
       cols_ = klass.columns
-      assert_equal(::RGeo::Feature::Point, cols_[-1].geometric_type)
+      assert_equal(RGeo::Feature::Point, cols_[-1].geometric_type)
       assert_equal('geom3', cols_[-1].name)
       assert_equal(false, cols_[-1].geographic?)
-      assert_equal(::RGeo::Feature::Geometry, cols_[-2].geometric_type)
+      assert_equal(RGeo::Feature::Geometry, cols_[-2].geometric_type)
       assert_equal('latlon', cols_[-2].name)
       assert_equal(false, cols_[-2].geographic?)
     end
@@ -154,7 +154,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
+      assert_equal(RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(false, col.geographic?)
       assert_equal(0, col.srid)
       klass.connection.drop_table(:spatial_test)
@@ -167,7 +167,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.geometry 'latlon', geographic: true
       end
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Geometry, col.geometric_type)
+      assert_equal(RGeo::Feature::Geometry, col.geometric_type)
       assert_equal(true, col.geographic?)
       assert_equal(4326, col.srid)
       assert_equal(0, klass.connection.select_value(geometry_column_count_query).to_i)
@@ -178,7 +178,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test, force: true) do |t|
         t.point 'latlon'
       end
-      assert_equal(::RGeo::Feature::Point, klass.columns.last.geometric_type)
+      assert_equal(RGeo::Feature::Point, klass.columns.last.geometric_type)
     end
 
     def test_create_geometry_with_options
@@ -188,7 +188,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Polygon, col.geometric_type)
+      assert_equal(RGeo::Feature::Polygon, col.geometric_type)
       assert_equal(false, col.geographic?)
       assert_equal(false, col.has_z?)
       assert_equal(true, col.has_m?)
@@ -205,7 +205,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal(1, klass.connection.select_value(geometry_column_count_query).to_i)
       col = klass.columns.last
-      assert_equal(::RGeo::Feature::Polygon, col.geometric_type)
+      assert_equal(RGeo::Feature::Polygon, col.geometric_type)
       assert_equal(false, col.geographic?)
       assert_equal(false, col.has_z)
       assert_equal(true, col.has_m)

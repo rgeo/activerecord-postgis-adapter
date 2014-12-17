@@ -9,13 +9,13 @@ module ActiveRecord  # :nodoc:
           @geographic = !!(sql_type =~ /geography/i)
           if opts
             # This case comes from an entry in the geometry_columns table
-            @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name(opts[:type]) || ::RGeo::Feature::Geometry
+            @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(opts[:type]) || ::RGeo::Feature::Geometry
             @srid = opts[:srid].to_i
             @has_z = !!opts[:has_z]
             @has_m = !!opts[:has_m]
           elsif @geographic
             # Geographic type information is embedded in the SQL type
-            @geometric_type = ::RGeo::Feature::Geometry
+            @geometric_type = RGeo::Feature::Geometry
             @srid = 4326
             @has_z = @has_m = false
             if sql_type =~ /geography\((.*)\)$/i
@@ -24,7 +24,7 @@ module ActiveRecord  # :nodoc:
                 if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
                   @has_z = $2.length > 0
                   @has_m = $3.length > 0
-                  @geometric_type = ::RGeo::ActiveRecord.geometric_type_from_name($1)
+                  @geometric_type = RGeo::ActiveRecord.geometric_type_from_name($1)
                 end
                 if params.last =~ /(\d+)/
                   @srid = $1.to_i
@@ -94,9 +94,9 @@ module ActiveRecord  # :nodoc:
           else
             constraints = nil
           end
-          if ::RGeo::Feature::Geometry === input
+          if RGeo::Feature::Geometry === input
             factory = factory_settings.get_column_factory(table_name, column, constraints)
-            ::RGeo::Feature.cast(input, factory) rescue nil
+            RGeo::Feature.cast(input, factory) rescue nil
           elsif input.respond_to?(:to_str)
             input = input.to_str
             if input.length == 0
@@ -105,9 +105,9 @@ module ActiveRecord  # :nodoc:
               factory = factory_settings.get_column_factory(table_name, column, constraints)
               marker = input[0,1]
               if marker == "\x00" || marker == "\x01" || input[0,4] =~ /[0-9a-fA-F]{4}/
-                ::RGeo::WKRep::WKBParser.new(factory, support_ewkb: true).parse(input) rescue nil
+                RGeo::WKRep::WKBParser.new(factory, support_ewkb: true).parse(input) rescue nil
               else
-                ::RGeo::WKRep::WKTParser.new(factory, support_ewkt: true).parse(input) rescue nil
+                RGeo::WKRep::WKTParser.new(factory, support_ewkt: true).parse(input) rescue nil
               end
             end
           else
@@ -131,7 +131,7 @@ module ActiveRecord  # :nodoc:
           end
 
           def klass
-            ::RGeo::Feature::Geometry
+            RGeo::Feature::Geometry
           end
 
           def spatial?
