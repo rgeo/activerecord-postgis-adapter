@@ -75,9 +75,6 @@ module ActiveRecord  # :nodoc:
 
         private
 
-        def simplified_type(sql_type)
-          sql_type =~ /geography|geometry|point|linestring|polygon/i ? :spatial : super
-        end
 
         def self.convert_to_geometry(input, factory_settings, table_name, column, geographic, srid, has_z, has_m)
           if srid
