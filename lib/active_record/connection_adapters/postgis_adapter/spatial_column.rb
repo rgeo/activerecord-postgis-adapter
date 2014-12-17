@@ -61,7 +61,7 @@ module ActiveRecord  # :nodoc:
         alias_method :has_m?, :has_m
 
         def spatial?
-          cast_type.respond_to?(:spatial?) ? cast_type.spatial? : false
+          cast_type.respond_to?(:spatial?) && cast_type.spatial?
         end
 
         def has_spatial_constraints?
