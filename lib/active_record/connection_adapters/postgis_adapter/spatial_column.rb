@@ -99,7 +99,7 @@ module ActiveRecord  # :nodoc:
               nil
             else
               factory = factory_settings.get_column_factory(table_name, column, constraints)
-              marker = input[0,1]
+              marker = input[0]
               if marker == "\x00" || marker == "\x01" || input[0,4] =~ /[0-9a-fA-F]{4}/
                 RGeo::WKRep::WKBParser.new(factory, support_ewkb: true).parse(input) rescue nil
               else
