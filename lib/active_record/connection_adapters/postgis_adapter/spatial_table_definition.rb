@@ -79,7 +79,7 @@ module ActiveRecord  # :nodoc:
         private
 
         def create_column_definition(name, type)
-          if PostGISAdapter::MainAdapter::SPATIAL_COLUMN_OPTIONS.keys.include?(type)
+          if PostGISAdapter::MainAdapter::SPATIAL_COLUMN_OPTIONS.keys.include?(type.to_sym)
             PostGISAdapter::ColumnDefinition.new(name, type)
           else
             super

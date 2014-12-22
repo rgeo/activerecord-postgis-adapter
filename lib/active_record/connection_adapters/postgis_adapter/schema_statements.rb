@@ -159,7 +159,7 @@ module ActiveRecord
                             default,
                             cast_type,
                             sql_type,
-                            !null,
+                            null,
                             column_info)
         end
 
