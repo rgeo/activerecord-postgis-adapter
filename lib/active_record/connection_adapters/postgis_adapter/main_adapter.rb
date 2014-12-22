@@ -114,8 +114,19 @@ module ActiveRecord  # :nodoc:
           table_name = table_name.to_s
           # Call super and snag the table definition
           table_definition = nil
+          non_geographic_spatial_indexes = {}
           super(table_name, options) do |td|
             block.call(td) if block
+            if td.non_geographic_spatial_columns.any?
+              non_geographic_spatial_indexes = td.indexes.inject({}) do |indexes, (column_names, index_options)|
+                spatial_indexes = column_names.select do |column_name|
+                  td.non_geographic_spatial_columns.select{ |col| col.name == column_name }.any?
+                end
+                indexes[column_names] = index_options if spatial_indexes.any?
+                indexes
+              end
+              non_geographic_spatial_indexes.each_key { |column_names| td.indexes.delete(column_names) }
+            end
             table_definition = td
           end
           table_definition.non_geographic_spatial_columns.each do |col|
@@ -131,6 +142,9 @@ module ActiveRecord  # :nodoc:
             type = col.spatial_type
 
             add_spatial_column(table_name, column_name, type, options)
+          end
+          non_geographic_spatial_indexes.each do |column_names, index_options|
+            add_index table_name, column_names, index_options
           end
         end
 
