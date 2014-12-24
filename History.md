@@ -1,3 +1,6 @@
+### 3.0.0 / 2014-12-24
+* Active Record 4.2 support
+
 ### 2.2.0 / 2014-08-11
 
 * Add JRuby support

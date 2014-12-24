@@ -1,17 +1,19 @@
 language: ruby
 rvm:
-  - 1.9.3
+  - 2.1
+  - 2.2
   - 2.0.0
-  - 2.1.2
+  - 1.9.3
   - jruby-19mode
   - rbx-2
-env:
-  - POSTGIS=2.0
+
 gemfile:
   - Gemfile
 matrix:
   allow_failures:
     - rvm: rbx-2
 before_install: ./travis/before_install.sh
-before_script: createdb -U postgres postgis_adapter_test
 script: bundle exec rake test
+
+addons:
+  postgresql: "9.3"

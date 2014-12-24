@@ -1,90 +1,51 @@
-require_relative 'helper'
+require_relative 'test_helper'
 
-class DDLTest < ActiveSupport::TestCase # :nodoc:
-  def test_create_simple_geometry
-    col  = get_column_definition('latlon3785')
-    assert_equal(RGeo::Feature::Point, col.geometric_type)
-    assert_not col.geographic?
-    assert_equal(3785, col.srid)
+class DDLTest < ActiveSupport::TestCase
+  def test_create_point
+    col = get_column_definition('point')
+    assert_equal(RGeo::Feature::Point, col.spatial_type)
   end
 
-  def test_create_point_geography
-    col  = get_column_definition('latlon4326')
-    assert_equal(::RGeo::Feature::Point, col.geometric_type)
+  def test_create_geographic_point
+    col  = get_column_definition('geographic_point')
+    assert_equal(RGeo::Feature::Point, col.spatial_type)
     assert(col.geographic?)
     assert_equal(4326, col.srid)
   end
-  #
-  def test_create_geometry_with_index
-    index = get_table_index('index_cities_on_latlon3785')
-    assert_kind_of RGeo::ActiveRecord::SpatialIndexDefinition, index
-  end
 
-
-
-  def test_create_simple_geometry_using_shortcut
-    col = get_column_definition('geometry_shortcut')
-    assert_equal(RGeo::Feature::Geometry, col.geometric_type)
-  end
-
-  def test_create_simple_geography_using_shortcut
-    col = get_column_definition('geography_shortcut')
-    assert_equal(RGeo::Feature::Geometry, col.geometric_type)
-    assert col.geographic?
-    assert_equal(4326, col.srid)
-  end
-  #
-  def test_create_point_geometry_using_shortcut
-    col = get_column_definition('location')
-    assert_equal(RGeo::Feature::Point, col.geometric_type)
-  end
-
-  def test_create_geometry_with_options
-    col = get_column_definition('province')
-    assert_equal(RGeo::Feature::Polygon, col.geometric_type)
-    assert_not col.geographic?
-    assert_not col.has_z
-    assert col.has_m
+  def test_create_linestring
+    col  = get_column_definition('linestring_with_srid')
+    assert_equal(RGeo::Feature::LineString, col.spatial_type)
     assert_equal(3785, col.srid)
-    #TODO REMOVE
-    assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
   end
 
-  #DEPRECATED
-  def test_create_geometry_using_limit
-    col = get_column_definition('region')
-    assert_equal(RGeo::Feature::Polygon, col.geometric_type)
-    assert_not col.geographic?
-    assert_not col.has_z
-    assert col.has_m
+  def test_create_polygonz
+    col  = get_column_definition('polygonz_with_srid')
+    assert_equal(RGeo::Feature::Polygon, col.spatial_type)
     assert_equal(3785, col.srid)
-    #TODO REMOVE
-    assert_equal({:has_m => true, :type => 'polygon', :srid => 3785}, col.limit)
+  end
+
+  def test_create_polygonzm
+    col  = get_column_definition('polygonzm_with_srid')
+    assert_equal(RGeo::Feature::Polygon, col.spatial_type)
+    assert_equal(3785, col.srid)
+  end
+
+  def test_create_geometry_without_srid
+    col  = get_column_definition('geometry_without_srid')
+    assert_equal(RGeo::Feature::Geometry, col.spatial_type)
+    assert_equal(0, col.srid)
+  end
+
+  def test_create_geometry_with_srid
+    col  = get_column_definition('geometry_with_srid')
+    assert_equal(RGeo::Feature::Geometry, col.spatial_type)
+    assert_equal(3785, col.srid)
   end
 
   private
+    def klass
+      Geometry
+    end
 
-  def klass
-    City
-  end
-
-  def connection
-    klass.connection
-  end
-
-  def columns
-    klass.columns
-  end
-
-  def indexes
-    connection.indexes(:cities)
-  end
-
-  def get_column_definition(name)
-    columns.select{|x| x.name == name}.first
-  end
-
-  def get_table_index(name)
-    indexes.select{|x| x.name == name}.first
-  end
 end

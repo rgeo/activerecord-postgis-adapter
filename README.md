@@ -31,13 +31,13 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 1.1+ supports ActiveRecord 4.2
+#### Version 3.0+ supports ActiveRecord 4.2
 
 Requirements:
 
 ```
 ActiveRecord 4.2+
-Ruby 1.9.3+, JRuby
+Ruby 1.9.3+
 PostGIS 2.0+
 ```
 
@@ -46,16 +46,6 @@ Gemfile:
 ```ruby
 gem 'activerecord-postgis-adapter'
 ```
-
-Gemfile for JRuby:
-
-```ruby
-gem 'activerecord-postgis-adapter'
-gem 'activerecord-jdbcpostgresql-adapter', '~> 1.3.9'
-gem 'ffi-geos'
-```
-
-_JRuby support for Rails 4.x was added in version 2.2.0_
 
 #### Version 0.6.x supports ActiveRecord 3.x
 
@@ -195,7 +185,7 @@ create_table :my_spatial_table do |t|
   t.geometry :shape2
   t.line_string :path, :srid => 3785
   t.point :lonlat, :geographic => true
-  t.point :lonlatheight, :geographic => true, :has_z => true
+  t.point_z :lonlatheight, :geographic => true
 end
 ```
 

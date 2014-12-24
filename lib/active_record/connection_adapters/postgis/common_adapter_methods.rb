@@ -1,51 +1,44 @@
-module ActiveRecord  # :nodoc:
-  module ConnectionAdapters  # :nodoc:
-    module PostGIS  # :nodoc:
-      SPATIAL_COLUMN_CONSTRUCTORS = ::RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
-        geography: { type: 'geometry', geographic: true }
-      )
+module ActiveRecord # :nodoc:
+  module ConnectionAdapters # :nodoc:
+    module PostGIS # :nodoc:
+      module CommonAdapterMethods # :nodoc:
+        SPATIAL_DATABASE_TYPE = {
+            st_point:                { type: :st_point, has_z: false, has_m: false},
+            st_point_z:              { type: :st_point, has_z: true, has_m: false },
+            st_point_z_m:            { type: :st_point, has_z: true, has_m: true },
+            st_polygon:              { type: :st_point, has_z: false, has_m: false },
+            st_polygon_z:            { type: :st_polygon, has_z: true, has_m: true },
+            st_polygon_z_m:          { type: :st_polygon, has_z: true, has_m: false },
+            st_geography:            { geographic: true },
+            st_geometry:             { type: :st_geometry, has_z: false, has_m: false},
+            st_geometry_z:           { type: :st_geometry, has_z: true, has_m: false },
+            st_geometry_z_m:         { type: :st_geometry, has_z: true, has_m: true },
+            st_linestring:           { type: :st_linestring, has_z: false, has_m: false},
+            st_linestring_z:         { type: :st_linestring, has_z: true, has_m: false },
+            st_linestring_m:         { type: :st_linestring, has_z: false, has_m: true },
+            st_linestring_z_m:       { type: :st_linestring, has_z: true, has_m: true },
+            st_multi_linestring:     { type: :st_multi_linestring, has_z: false, has_m: false },
+            st_multi_linestring_z:   { type: :st_multi_linestring, has_z: true, has_m: false },
+            st_multi_linestring_m:   { type: :st_multi_linestring, has_z: false, has_m: true },
+            st_multi_linestring_z_m: { type: :st_multi_linestring, has_z: true, has_m: true },
+            st_geometry_collection:  {},
+            st_multi_point:          {},
+            st_multi_polygon:        {}
+        }
 
-      # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
-      DEFAULT_SRID = 0
+        def self.spatial_column_constructor(name)
+          SPATIAL_DATABASE_TYPE[name]
+        end
 
-      module CommonAdapterMethods  # :nodoc:
         def set_rgeo_factory_settings(factory_settings)
           @rgeo_factory_settings = factory_settings
         end
 
-        def adapter_name
-          PostGISAdapter::ADAPTER_NAME
-        end
-
-        def spatial_column_constructor(name)
-          PostGIS::SPATIAL_COLUMN_CONSTRUCTORS[name]
-        end
-
         def postgis_lib_version
-          @postgis_lib_version ||= select_value("SELECT PostGIS_Lib_Version()")
-        end
-
-        def default_srid
-          DEFAULT_SRID
-        end
-
-        def srs_database_columns
-          {
-            auth_name_column: 'auth_name',
-            auth_srid_column: 'auth_srid',
-            proj4text_column: 'proj4text',
-            srtext_column:    'srtext',
-          }
-        end
-
-        def quote(value, column=nil)
-          if ::RGeo::Feature::Geometry.check_type(value)
-            "'#{::RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)}'"
-          elsif value.is_a?(::RGeo::Cartesian::BoundingBox)
-            "'#{value.min_x},#{value.min_y},#{value.max_x},#{value.max_y}'::box"
-          else
-            super
-          end
+          @postgis_lib_version ||= select_value('SELECT PostGIS_Lib_Version()')
+        rescue ActiveRecord::StatementInvalid
+          ActiveRecord::Base.logger.warn 'PostGIS extension not installed'
+          '0.0'
         end
       end
     end
