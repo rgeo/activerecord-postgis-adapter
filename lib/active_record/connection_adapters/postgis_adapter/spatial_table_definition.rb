@@ -53,7 +53,8 @@ module ActiveRecord  # :nodoc:
         end
 
         def spatial(name, options = {})
-          column(name, :spatial, options)
+          raise "You must set a type. For example: 't.spatial type: :point'" unless options[:type]
+          column(name, options[:type], options)
         end
 
         def geography(name, options = {})
@@ -79,7 +80,7 @@ module ActiveRecord  # :nodoc:
         private
 
         def create_column_definition(name, type)
-          if PostGISAdapter::MainAdapter::SPATIAL_COLUMN_OPTIONS.keys.include?(type.to_sym)
+          if MainAdapter.spatial_column_options(type.to_sym)
             PostGISAdapter::ColumnDefinition.new(name, type)
           else
             super
