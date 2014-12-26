@@ -250,18 +250,16 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal false, klass.columns[-1].null
     end
 
-    # Ensure that default value info is getting captured like the
-    # normal adapter.
+    # Ensure column default value works like the Postgres adapter.
     def test_column_defaults
       klass = create_ar_class
       klass.connection.create_table(:spatial_test, force: true) do |t|
-        t.column 'sample_integer_neg_default', :integer, default: -1
+        t.column 'sample_integer', :integer, default: -1
       end
-      assert_equal -1, klass.columns.last.default
+      assert_equal "-1", klass.columns.last.default
+      assert_equal -1, klass.new.sample_integer
     end
 
-    # Ensure that column type info is getting captured like the
-    # normal adapter.
     def test_column_types
       klass = create_ar_class
       klass.connection.create_table(:spatial_test, force: true) do |t|
@@ -271,7 +269,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       end
       assert_equal :integer, klass.columns[-3].type
       assert_equal :string, klass.columns[-2].type
-      assert_equal :spatial, klass.columns[-1].type
+      assert_equal :point, klass.columns[-1].type
     end
 
     def test_array_columns
