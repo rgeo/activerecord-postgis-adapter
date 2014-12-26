@@ -178,7 +178,7 @@ indicating the coordinate system and number of coordinates for the values you
 are storing.
 
 The activerecord-postgis-adapter extends ActiveRecord's migration syntax to
-support these spatial types. The following example creates four spatial
+support these spatial types. The following example creates five spatial
 columns in a table:
 
 ```ruby
@@ -193,9 +193,10 @@ end
 
 The first column, "shape1", is created with type "geometry". This is a general
 "base class" for spatial types; the column declares that it can contain values
-of *any* spatial type. The second column, "shape2", uses a shorthand syntax
-for the same type. Like "normal" types, you can create a column either by
-invoking `column` or invoking the name of the type directly.
+of *any* spatial type.
+
+The second column, "shape2", uses a shorthand syntax for the same type as the shape1 column.
+You can create a column either by invoking `column` or invoking the name of the type directly.
 
 The third column, "path", has a specific geometric type, `line_string`. It
 also specifies an SRID (spatial reference ID) that indicates which coordinate
