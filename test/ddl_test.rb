@@ -198,23 +198,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
     end
 
-    def test_create_geometry_using_limit
-      klass = create_ar_class
-      klass.connection.create_table(:spatial_test, force: true) do |t|
-        t.spatial 'region', limit: { has_m: true, srid: 3785, type: :polygon }
-      end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
-      col = klass.columns.last
-      assert_equal RGeo::Feature::Polygon, col.geometric_type
-      assert_equal false, col.geographic?
-      assert_equal false, col.has_z
-      assert_equal true, col.has_m
-      assert_equal 3785, col.srid
-      assert_equal({ has_m: true, type: 'polygon', srid: 3785 }, col.limit)
-      klass.connection.drop_table(:spatial_test)
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
-    end
-
     def test_caches_spatial_column_info
       klass = create_ar_class
       klass.connection.create_table(:spatial_test, force: true) do |t|

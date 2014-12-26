@@ -14,8 +14,6 @@ module ActiveRecord
         end
 
         def add_spatial_column(o, options)
-          # info = options[:info] || {}
-          # options.merge!(o.limit) if o.limit.is_a?(::Hash)
           type = geo_type(o.type)
           srid = (o.srid || options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
           if o.geographic?
@@ -194,7 +192,7 @@ module ActiveRecord
         def add_index_options(table_name, column_name, options = {})
           options ||= {}
           options[:using] = "GIST" if options.delete(:spatial)
-          super table_name, column_name, options
+          super
         end
 
         # override
