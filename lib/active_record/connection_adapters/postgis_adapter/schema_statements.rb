@@ -5,11 +5,9 @@ module ActiveRecord
         private
 
         def visit_AddColumn(o)
-          if %i[spatial geography].include?(o.type)
-            if (options = MainAdapter.spatial_column_options(o.type.to_sym))
-              sql = add_spatial_column(o, options)
-              add_column_options! sql, column_options(o)
-            end
+          if (options = MainAdapter.spatial_column_options(o.type.to_sym))
+            sql = add_spatial_column(o, options)
+            add_column_options! sql, column_options(o)
           else
             super
           end
