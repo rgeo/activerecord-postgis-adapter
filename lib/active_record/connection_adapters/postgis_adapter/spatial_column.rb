@@ -3,6 +3,12 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
+        # sql_type examples:
+        #   "Geometry(Point, 4326)"
+        #   "Geography(Point, 4326)"
+        # cast_type example classes:
+        #   OID::Spatial
+        #   OID::Integer
         def initialize(factory_settings, table_name, name, default, cast_type, sql_type = nil, null = true, opts = nil)
           @factory_settings = factory_settings
           @table_name = table_name
@@ -118,12 +124,16 @@ module ActiveRecord  # :nodoc:
             @factory_generator = options[:factory_generator]
           end
 
+          def geographic?
+            !!@factory_generator
+          end
+
           def type
-            :spatial
+            geographic? ? :geography : :geometry
           end
 
           def klass
-            RGeo::Feature::Geometry
+            geographic? ? RGeo::Feature::Geography : RGeo::Feature::Geometry
           end
 
           def spatial?
