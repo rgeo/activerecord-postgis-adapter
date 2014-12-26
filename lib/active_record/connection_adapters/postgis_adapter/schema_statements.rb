@@ -16,19 +16,24 @@ module ActiveRecord
         def add_spatial_column(o, options)
           # info = options[:info] || {}
           # options.merge!(o.limit) if o.limit.is_a?(::Hash)
-          type = o.type.to_s.gsub('_', '').upcase
-          srid = (options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
+          type = geo_type(o.type)
+          srid = (o.srid || options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
           if o.geographic?
             type << 'Z' if o.has_z?
             type << 'M' if o.has_m?
-            "ADD COLUMN #{quote_column_name(o.name)} GEOGRAPHY(#{o.type},#{o.srid})"
+            "ADD COLUMN #{ quote_column_name(o.name) } GEOGRAPHY(#{ type },#{ srid })"
           else
-            raise NotImplementedError
-            # type = "#{type}M" if o.has_m? && !o.has_z?
-            # dimensions = set_dimensions(has_m, has_z)
-            # execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{o.srid}, '#{quote_string(o.type)}', #{dimensions})")
-            # change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
+            # We no longer need to use AddGeometryColumn:
+            # http://postgis.net/docs/AddGeometryColumn.html
+
+            "ADD COLUMN #{ quote_column_name(o.name) } GEOMETRY(#{ type },#{ srid })"
           end
+        end
+
+        def geo_type(type)
+          type = type.to_s.gsub("_", "").upcase
+          return "POINT" if type == "GEOGRAPHY"
+          type
         end
 
       end
