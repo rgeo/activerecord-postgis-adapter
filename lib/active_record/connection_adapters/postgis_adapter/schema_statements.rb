@@ -164,29 +164,6 @@ module ActiveRecord
                             column_info)
         end
 
-        # super uses an "alter table" statement.
-        # we may use a PostGIS procedure instead
-        def add_column(table_name, column_name, type, options = {})
-          if (info = MainAdapter.spatial_column_options(type.to_sym))
-            options[:info] = info
-            add_spatial_column table_name, column_name, type, options
-          else
-            super
-          end
-        end
-
-        # override
-        def remove_column(table_name, column_name, type = nil, options = {})
-          table_name = table_name.to_s
-          column_name = column_name.to_s
-          spatial_info = spatial_column_info(table_name)
-          if spatial_info.include?(column_name)
-            execute("SELECT DropGeometryColumn('#{quote_string(table_name)}','#{quote_string(column_name)}')")
-          else
-            super
-          end
-        end
-
         # override
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_statements.rb
         def add_index_options(table_name, column_name, options = {})
@@ -200,7 +177,7 @@ module ActiveRecord
           # Add spatial types
           super.merge(
             geography: { name: 'geography' },
-            spatial:   { name: 'geometry' },
+            spatial:   { name: 'geometry' }, # is this needed?
           )
         end
 
@@ -211,35 +188,6 @@ module ActiveRecord
 
         def spatial_column_info(table_name)
           SpatialColumnInfo.new(self, quote_string(table_name.to_s)).all
-        end
-
-        def add_spatial_column(table_name, column_name, type, options)
-          limit = options[:limit]
-          info = options[:info] || {}
-          options.merge!(limit) if limit.is_a?(::Hash)
-          type = (options[:type] || info[:type] || type).to_s.gsub('_', '').upcase
-          has_z = options[:has_z]
-          has_m = options[:has_m]
-          srid = (options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
-          if options[:geographic]
-            type << 'Z' if has_z
-            type << 'M' if has_m
-            execute("ALTER TABLE #{quote_table_name(table_name)} ADD COLUMN #{quote_column_name(column_name)} GEOGRAPHY(#{type},#{srid})")
-            change_column_default(table_name, column_name, options[:default]) if options_include_default?(options)
-            change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
-          else
-            type = "#{type}M" if has_m && !has_z
-            dimensions = set_dimensions(has_m, has_z)
-            execute("SELECT AddGeometryColumn('#{quote_string(table_name)}', '#{quote_string(column_name)}', #{srid}, '#{quote_string(type)}', #{dimensions})")
-            change_column_null(table_name, column_name, false, options[:default]) if options[:null] == false
-          end
-        end
-
-        def set_dimensions(has_m, has_z)
-          dimensions = 2
-          dimensions += 1 if has_z
-          dimensions += 1 if has_m
-          dimensions
         end
 
         def initialize_type_map(m)
