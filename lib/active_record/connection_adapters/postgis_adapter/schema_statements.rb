@@ -152,7 +152,7 @@ module ActiveRecord
             null = (null == 't')
           end
 
-          column_info = SpatialColumnInfo.new(self, quote_string(table_name.to_s)).get(column_name, sql_type)
+          column_info = spatial_column_info(table_name).get(column_name, sql_type)
 
           SpatialColumn.new(@rgeo_factory_settings,
                             table_name,
@@ -186,8 +186,10 @@ module ActiveRecord
           PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as, self)
         end
 
+        # memoize hash of column infos for tables
         def spatial_column_info(table_name)
-          SpatialColumnInfo.new(self, quote_string(table_name.to_s)).all
+          @spatial_column_info ||= {}
+          @spatial_column_info[table_name.to_sym] ||= SpatialColumnInfo.new(self, table_name.to_s)
         end
 
         def initialize_type_map(m)
