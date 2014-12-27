@@ -11,14 +11,14 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'latlon', :geometry
       end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 1, count_geometry_columns(klass)
       col = klass.columns.last
       assert_equal RGeo::Feature::Geometry, col.geometric_type
       assert_equal true, col.has_spatial_constraints?
       assert_equal false, col.geographic?
       assert_equal 0, col.srid
       klass.connection.drop_table(:spatial_test)
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 0, count_geometry_columns(klass)
     end
 
     def test_create_simple_geography
@@ -31,7 +31,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal true, col.has_spatial_constraints?
       assert_equal true, col.geographic?
       assert_equal 4326, col.srid
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 0, count_geometry_columns(klass)
     end
 
     def test_create_point_geometry
@@ -62,7 +62,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.column('geom2', :point, srid: 4326)
         t.column('name', :string)
       end
-      assert_equal 2, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 2, count_geometry_columns(klass)
       cols_ = klass.columns
       assert_equal RGeo::Feature::Geometry, cols_[-3].geometric_type
       assert_equal 0, cols_[-3].srid
@@ -97,7 +97,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.column('geom2', :point, srid: 4326, geographic: true)
         t.column('name', :string)
       end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 1, count_geometry_columns(klass)
       cols_ = klass.columns
       assert_equal RGeo::Feature::Geometry, cols_[-3].geometric_type
       assert_equal 0, cols_[-3].srid
@@ -119,7 +119,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.change_table(:spatial_test) do |t|
         t.remove('geom2')
       end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 1, count_geometry_columns(klass)
       cols_ = klass.columns
       assert_equal RGeo::Feature::Geometry, cols_[-1].geometric_type
       assert_equal 'latlon', cols_[-1].name
@@ -137,7 +137,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.change_table(:spatial_test) do |t|
         t.remove('geom2')
       end
-      assert_equal 2, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 2, count_geometry_columns(klass)
       cols_ = klass.columns
       assert_equal RGeo::Feature::Point, cols_[-1].geometric_type
       assert_equal 'geom3', cols_[-1].name
@@ -152,13 +152,13 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test, force: true) do |t|
         t.geometry 'latlon'
       end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 1, count_geometry_columns(klass)
       col = klass.columns.last
       assert_equal RGeo::Feature::Geometry, col.geometric_type
       assert_equal false, col.geographic?
       assert_equal 0, col.srid
       klass.connection.drop_table(:spatial_test)
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 0, count_geometry_columns(klass)
     end
 
     def test_create_simple_geography_using_shortcut
@@ -170,7 +170,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal RGeo::Feature::Geometry, col.geometric_type
       assert_equal true, col.geographic?
       assert_equal 4326, col.srid
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 0, count_geometry_columns(klass)
     end
 
     def test_create_point_geometry_using_shortcut
@@ -186,7 +186,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       klass.connection.create_table(:spatial_test, force: true) do |t|
         t.column 'region', :polygon, has_m: true, srid: 3785
       end
-      assert_equal 1, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 1, count_geometry_columns(klass)
       col = klass.columns.last
       assert_equal RGeo::Feature::Polygon, col.geometric_type
       assert_equal false, col.geographic?
@@ -195,7 +195,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       assert_equal 3785, col.srid
       assert_equal({ has_m: true, type: 'polygon', srid: 3785 }, col.limit)
       klass.connection.drop_table(:spatial_test)
-      assert_equal 0, klass.connection.select_value(geometry_column_count_query).to_i
+      assert_equal 0, count_geometry_columns(klass)
     end
 
     def test_caches_spatial_column_info
@@ -267,8 +267,12 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
     private
 
-    def geometry_column_count_query
-      "SELECT COUNT(*) FROM geometry_columns WHERE f_table_name='spatial_test'"
+    def count_geometry_columns(klass)
+      klass.connection.select_value(geo_column_sql("geometry_columns", klass.table_name)).to_i
+    end
+
+    def geo_column_sql(postgis_view, table_name)
+      "SELECT COUNT(*) FROM #{ postgis_view } WHERE f_table_name='#{ table_name }'"
     end
   end
 
