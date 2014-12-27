@@ -15,7 +15,7 @@ module ActiveRecord  # :nodoc:
           @geographic = !!(sql_type =~ /geography/i)
           if opts
             # This case comes from an entry in the geometry_columns table
-            @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(opts[:type]) || ::RGeo::Feature::Geometry
+            @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(opts[:type]) || RGeo::Feature::Geometry
             @srid = opts[:srid].to_i
             @has_z = !!opts[:has_z]
             @has_m = !!opts[:has_m]
@@ -69,51 +69,6 @@ module ActiveRecord  # :nodoc:
         def has_spatial_constraints?
           !@srid.nil?
         end
-
-        def type_cast(value)
-          if spatial?
-            SpatialColumn.convert_to_geometry(value, @factory_settings, @table_name, name,
-              @geographic, @srid, @has_z, @has_m)
-          else
-            super
-          end
-        end
-
-        private
-
-
-        def self.convert_to_geometry(input, factory_settings, table_name, column, geographic, srid, has_z, has_m)
-          if srid
-            constraints = {
-              geographic:       geographic,
-              has_z_coordinate: has_z,
-              has_m_coordinate: has_m,
-              srid:             srid
-            }
-          else
-            constraints = nil
-          end
-          if RGeo::Feature::Geometry === input
-            factory = factory_settings.get_column_factory(table_name, column, constraints)
-            RGeo::Feature.cast(input, factory) rescue nil
-          elsif input.respond_to?(:to_str)
-            input = input.to_str
-            if input.length == 0
-              nil
-            else
-              factory = factory_settings.get_column_factory(table_name, column, constraints)
-              marker = input[0]
-              if marker == "\x00" || marker == "\x01" || input[0,4] =~ /[0-9a-fA-F]{4}/
-                RGeo::WKRep::WKBParser.new(factory, support_ewkb: true).parse(input) rescue nil
-              else
-                RGeo::WKRep::WKTParser.new(factory, support_ewkt: true).parse(input) rescue nil
-              end
-            end
-          else
-            nil
-          end
-        end
-
       end
 
       module OID
@@ -199,27 +154,6 @@ module ActiveRecord  # :nodoc:
 
         end
       end
-
-      # This is a hack to ActiveRecord::ModelSchema. We have to "decorate" the decorate_columns
-      # method to apply class-specific customizations to spatial type casting.
-      module DecorateColumnsModification  # :nodoc:
-
-        def decorate_columns(columns_hash)
-          columns_hash = super(columns_hash)
-          return unless columns_hash
-          canonical_columns_ = self.columns_hash
-          columns_hash.each do |name, col|
-            if col.is_a?(SpatialOID) && (canonical = canonical_columns_[name]) && canonical.spatial?
-              columns_hash[name] = canonical
-            end
-          end
-          columns_hash
-        end
-
-      end
-
-      ::ActiveRecord::Base.extend(DecorateColumnsModification)
-
     end
   end
 end
