@@ -204,7 +204,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.point 'latlon'
         t.point 'other'
       end
-      ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).once.returns({})
+      ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).once.returns({})
       klass.columns
       klass.columns
     end
@@ -215,7 +215,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
         t.string 'name'
       end
       # `all` queries column info from the database - it should not be called when klass.columns is called
-      ::ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).never
+      ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).never
       # first column is id, second is name
       refute klass.columns[1].spatial?
       assert_nil klass.columns[1].has_z
