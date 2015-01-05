@@ -3,7 +3,8 @@ module ActiveRecord  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
         SPATIAL_COLUMN_OPTIONS = RGeo::ActiveRecord::DEFAULT_SPATIAL_COLUMN_CONSTRUCTORS.merge(
-          geography: { type: 'geometry', geographic: true }
+          geography: { type: 'geometry', geographic: true },
+          geo_point: { type: 'geometry' },
         )
 
         # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html

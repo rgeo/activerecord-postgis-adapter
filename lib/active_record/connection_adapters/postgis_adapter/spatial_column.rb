@@ -37,19 +37,19 @@ module ActiveRecord  # :nodoc:
                 end
               end
             end
-          elsif sql_type =~ /geography|geometry|point|linestring|polygon/i
+          elsif sql_type =~ /geography|geometry|geo_point|linestring|polygon/i
             # A geometry column with no geometry_columns entry.
             @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(sql_type)
           end
           super(name, default, cast_type, sql_type, null)
-          if spatial?
-            if @srid
-              @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
-              @limit[:has_z] = true if @has_z
-              @limit[:has_m] = true if @has_m
-              @limit[:geographic] = true if @geographic
-            end
-          end
+          # if spatial?
+          #   if @srid
+          #     @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
+          #     @limit[:has_z] = true if @has_z
+          #     @limit[:has_m] = true if @has_m
+          #     @limit[:geographic] = true if @geographic
+          #   end
+          # end
         end
 
         attr_reader :geographic,
@@ -67,7 +67,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def has_spatial_constraints?
-          !@srid.nil?
+          !!@srid
         end
       end
 
@@ -125,8 +125,6 @@ module ActiveRecord  # :nodoc:
           rescue RGeo::Error::ParseError
             puts "\ncast failed!!\n\n"
             nil
-          rescue # delete me
-            byebug
           end
 
           # convert WKT string into RGeo object
@@ -136,8 +134,6 @@ module ActiveRecord  # :nodoc:
             wkt_parser(factory, string).parse(string)
           rescue RGeo::Error::ParseError
             nil
-          rescue # delete me
-            byebug
           end
 
           def binary?(string)

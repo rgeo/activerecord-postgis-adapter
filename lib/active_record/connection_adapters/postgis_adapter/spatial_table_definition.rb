@@ -53,7 +53,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def spatial(name, options = {})
-          raise "You must set a type. For example: 't.spatial type: :point'" unless options[:type]
+          raise "You must set a type. For example: 't.spatial type: :geo_point'" unless options[:type]
           column(name, options[:type], options)
         end
 
@@ -69,7 +69,7 @@ module ActiveRecord  # :nodoc:
           column(name, :line_string, options)
         end
 
-        def point(name, options = {})
+        def geo_point(name, options = {})
           column(name, :point, options)
         end
 

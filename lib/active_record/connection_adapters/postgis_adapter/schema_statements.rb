@@ -14,8 +14,8 @@ module ActiveRecord
         end
 
         def add_spatial_column(o, options)
-          type = geo_type(o.type)
-          srid = (o.srid || options[:srid] || PostGISAdapter::MainAdapter::DEFAULT_SRID).to_i
+          type = MainAdapter.geo_type(o.type)
+          srid = (o.srid || options[:srid] || MainAdapter::DEFAULT_SRID).to_i
           if o.geographic?
             type << 'Z' if o.has_z?
             type << 'M' if o.has_m?
@@ -30,61 +30,13 @@ module ActiveRecord
 
         def geo_type(type)
           type = type.to_s.gsub("_", "").upcase
-          return "POINT" if type == "GEOGRAPHY"
+          return "POINT" if type == "GEOGRAPHY" || type == "GEO_POINT"
           type
         end
 
       end
 
       module SchemaStatements
-
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_statements.rb
-        # def create_table(table_name, options = {})
-        #   # master
-        #   td = create_table_definition table_name, options[:temporary], options[:options], options[:as]
-        #
-        #   if options[:id] != false && !options[:as]
-        #     pk = options.fetch(:primary_key) do
-        #       Base.get_primary_key table_name.to_s.singularize
-        #     end
-        #
-        #     td.primary_key pk, options.fetch(:id, :primary_key), options
-        #   end
-        #
-        #   yield td if block_given?
-        #
-        #   if options[:force] && table_exists?(table_name)
-        #     drop_table(table_name, options)
-        #   end
-        #
-        #   result = execute schema_creation.accept td
-        #   td.indexes.each_pair { |c, o| add_index(table_name, c, o) } unless supports_indexes_in_create?
-        #   result
-        #
-        #   # OLD
-        #   # table_name = table_name.to_s
-        #   # # Call super and snag the table definition
-        #   # table_definition = nil
-        #   # super(table_name, options) do |td|
-        #   #   yield(td) if block_given?
-        #   #   table_definition = td
-        #   # end
-        #   # table_definition.non_geographic_spatial_columns.each do |col|
-        #   #   options = {
-        #   #     default: col.default,
-        #   #     has_m: col.has_m?,
-        #   #     has_z: col.has_z?,
-        #   #     null: col.null,
-        #   #     srid:  col.srid,
-        #   #     type:  col.spatial_type,
-        #   #   }
-        #   #   column_name = col.name.to_s
-        #   #   type = col.spatial_type
-        #   #
-        #   #   add_spatial_column(table_name, column_name, type, options)
-        #   # end
-        # end
-
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
         def indexes(table_name, name = nil)
           result = query(<<-SQL, 'SCHEMA')

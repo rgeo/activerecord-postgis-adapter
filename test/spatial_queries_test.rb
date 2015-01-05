@@ -13,11 +13,11 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
       case content
       when :mercator_point
         klass.connection.create_table(:spatial_test, force: true) do |t|
-          t.column 'latlon', :point, srid: 3785
+          t.column 'latlon', :geo_point, srid: 3785
         end
       when :latlon_point_geographic
         klass.connection.create_table(:spatial_test, force: true) do |t|
-          t.column 'latlon', :point, srid: 4326, geographic: true
+          t.column 'latlon', :geo_point, srid: 4326, geographic: true
         end
       when :path_linestring
         klass.connection.create_table(:spatial_test, force: true) do |t|
