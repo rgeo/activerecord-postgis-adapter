@@ -52,11 +52,11 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        attr_reader :geographic
-        attr_reader :srid
-        attr_reader :geometric_type
-        attr_reader :has_z
-        attr_reader :has_m
+        attr_reader :geographic,
+                    :geometric_type,
+                    :has_m,
+                    :has_z,
+                    :srid
 
         alias_method :geographic?, :geographic
         alias_method :has_z?, :has_z
