@@ -31,7 +31,23 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### The latest version supports ActiveRecord 4.0.x and 4.1.x
+#### Version 3.x supports ActiveRecord 4.2+
+
+Requirements:
+
+```
+ActiveRecord 4.2+
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
+
+Gemfile:
+
+```ruby
+gem 'activerecord-postgis-adapter'
+```
+
+#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
 
 Requirements:
 
@@ -185,9 +201,9 @@ columns in a table:
 create_table :my_spatial_table do |t|
   t.column :shape1, :geometry
   t.geometry :shape2
-  t.line_string :path, :srid => 3785
-  t.point :lonlat, :geographic => true
-  t.point :lonlatheight, :geographic => true, :has_z => true
+  t.line_string :path, srid: 3785
+  t.geo_point :lonlat, geographic: true
+  t.geo_point :lonlatheight, geographic: true, has_z: true
 end
 ```
 
@@ -203,7 +219,7 @@ also specifies an SRID (spatial reference ID) that indicates which coordinate
 system it expects the data to be in. The column now has a "constraint" on it;
 it will accept only LineString data, and only data whose SRID is 3785.
 
-The fourth column, "lonlat", has the `point` type, and accepts only Point
+The fourth column, "lonlat", has the `geo_point` type, and accepts only Point
 data. Furthermore, it declares the column as "geographic", which means it
 accepts longitude/latitude data, and performs calculations such as distances
 using a spheroidal domain.
@@ -216,7 +232,7 @@ The following are the data types understood by PostGIS and exposed by
 activerecord-postgis-adapter:
 
 * `:geometry` -- Any geometric type
-* `:point` -- Point data
+* `:geo_point` -- Point data
 * `:line_string` -- LineString data
 * `:polygon` -- Polygon data
 * `:geometry_collection` -- Any collection type
@@ -246,9 +262,15 @@ option to true, as follows:
 
 ```ruby
 change_table :my_spatial_table do |t|
-  t.index :lonlat, :spatial => true
+  t.index :lonlat, spatial: true
 end
 ```
+
+### Point Types with ActiveRecord 4.2+
+
+Prior to version 3, the `point` type was supported. In ActiveRecord 4.2, the Postgresql
+adapter added support for the native Postgresql `point` type, which conflicted with this
+adapter's `point` type. The PostGIS point type must now be referenced as `geo_point`.
 
 ### Configuring ActiveRecord
 
@@ -485,8 +507,6 @@ a head start on the implementation.
 
 ## License
 
-Copyright 2013 Daniel Azuma
-
-Copyright 2014 Tee Parham
+Copyright 2015 Daniel Azuma, Tee Parham
 
 https://github.com/rgeo/activerecord-postgis-adapter/blob/master/LICENSE.txt
