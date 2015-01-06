@@ -14,7 +14,7 @@ module ActiveRecord
         end
 
         def add_spatial_column(o, options)
-          type = MainAdapter.geo_type(o.type)
+          type = geo_type(o.type)
           srid = (o.srid || options[:srid] || MainAdapter::DEFAULT_SRID).to_i
           if o.geographic?
             type << 'Z' if o.has_z?
