@@ -189,9 +189,8 @@ This rake task adds the PostGIS extension to your existing database.
 To store spatial data, you must create a column with a spatial type. PostGIS
 provides a variety of spatial types, including point, linestring, polygon, and
 different kinds of collections. These types are defined in a standard produced
-by the Open Geospatial Consortium. Furthermore, you can specify options
-indicating the coordinate system and number of coordinates for the values you
-are storing.
+by the Open Geospatial Consortium. You can specify options indicating the coordinate
+system and number of coordinates for the values you are storing.
 
 The activerecord-postgis-adapter extends ActiveRecord's migration syntax to
 support these spatial types. The following example creates five spatial
@@ -234,7 +233,7 @@ activerecord-postgis-adapter:
 * `:geometry` -- Any geometric type
 * `:geo_point` -- Point data
 * `:line_string` -- LineString data
-* `:polygon` -- Polygon data
+* `:geo_polygon` -- Polygon data
 * `:geometry_collection` -- Any collection type
 * `:multi_point` -- A collection of Points
 * `:multi_line_string` -- A collection of LineStrings
@@ -266,11 +265,12 @@ change_table :my_spatial_table do |t|
 end
 ```
 
-### Point Types with ActiveRecord 4.2+
+### Point and Polygon Types with ActiveRecord 4.2+
 
-Prior to version 3, the `point` type was supported. In ActiveRecord 4.2, the Postgresql
-adapter added support for the native Postgresql `point` type, which conflicted with this
-adapter's `point` type. The PostGIS point type must now be referenced as `geo_point`.
+Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
+adapter added support for the native Postgresql `point` and `polygon` types, which conflict with this
+adapter's types of the same names. The PostGIS point type must be referenced as `geo_point`, and the
+PostGIS polygon type must be referenced as `geo_polygon`.
 
 ### Configuring ActiveRecord
 
@@ -408,49 +408,6 @@ aren't generally all that useful in real world applications. Typically, if you
 want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
-
-Unfortunately, Rails by itself doesn't provide good support for embedding
-arbitrary function calls in your where clause. You could get around this by
-writing raw SQL. But the solution we recommend is to use the "squeel" gem.
-This gem extends the ActiveRecord syntax to support more complex queries.
-
-Let's say you wanted to find all records whose lonlat fell within a particular
-polygon. In the query, you can accomplish this by calling the ST_Intersects()
-SQL function on the lonlat and the polygon. That is, you'd want to generate
-SQL that looks something like this:
-
-```
-SELECT * FROM my_spatial_table WHERE ST_Intersects(lonlat, <i>my-polygon</i>);
-```
-
-Using squeel, you can write this as follows:
-
-```ruby
-my_polygon = get_my_polygon    # Obtain the polygon as an RGeo geometry
-MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first
-```
-
-Notice the curly brackets instead of parentheses in the where clause. This is
-how to write squeel queries: squeel is actually a DSL, and you're passing a
-block to the where method instead of an argument list. Also note that Squeel
-requires ActiveRecord 3.1 or later to handle SQL function calls such as
-ST_Intersects.
-
-As another example, one common query is to find all objects displaying in a
-window. This can be done using the overlap (&&) operator with a bounding box.
-Here's an example that finds linestrings in the "path" column that intersect a
-bounding box:
-
-```ruby
-sw = get_sw_corner_in_projected_coordinates
-ne = get_ne_corner_in_projected_coordinates
-window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-MySpatialTable.where{path.op('&&', window)}.all
-```
-
-Note that bounding box queries make sense only in a projected coordinate
-system; you shouldn't try to run such a query against a lat/long (geographic)
-column.
 
 ## Background: PostGIS
 
