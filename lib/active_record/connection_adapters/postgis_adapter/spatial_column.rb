@@ -42,14 +42,14 @@ module ActiveRecord  # :nodoc:
             @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(sql_type)
           end
           super(name, default, cast_type, sql_type, null)
-          # if spatial?
-          #   if @srid
-          #     @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
-          #     @limit[:has_z] = true if @has_z
-          #     @limit[:has_m] = true if @has_m
-          #     @limit[:geographic] = true if @geographic
-          #   end
-          # end
+          if spatial?
+            if @srid
+              @limit = { srid: @srid, type: @geometric_type.type_name.underscore }
+              @limit[:has_z] = true if @has_z
+              @limit[:has_m] = true if @has_m
+              @limit[:geographic] = true if @geographic
+            end
+          end
         end
 
         attr_reader :geographic,
@@ -68,86 +68,6 @@ module ActiveRecord  # :nodoc:
 
         def has_spatial_constraints?
           !!@srid
-        end
-      end
-
-      module OID
-        # Register spatial types so we can recognize custom columns coming from the database.
-        class Spatial < Type::Value  # :nodoc:
-
-          def initialize(options = {})
-            @factory_generator = options[:factory_generator]
-          end
-
-          def geographic?
-            !!@factory_generator
-          end
-
-          def type
-            geographic? ? :geography : :geometry
-          end
-
-          def klass
-            geographic? ? RGeo::Feature::Geography : RGeo::Feature::Geometry
-          end
-
-          def spatial?
-            true
-          end
-
-          # support setting an RGeo object or a WKT string
-          def type_cast_for_database(value)
-            return if value.nil?
-            geo_value = type_cast(value)
-
-            # TODO - only valid types should be allowed
-            # e.g. linestring is not valid for point column
-            # raise "maybe should raise" unless RGeo::Feature::Geometry.check_type(geo_value)
-
-            RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true)
-              .generate(geo_value)
-          end
-
-          def type_cast_from_database(value)
-            cast_value value
-          end
-
-          private
-
-          def type_cast(value)
-            return if value.nil?
-            String === value ? parse_wkt(value) : value
-          end
-
-          def cast_value(value)
-            return if value.nil?
-            RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value)
-          rescue RGeo::Error::ParseError
-            puts "\ncast failed!!\n\n"
-            nil
-          end
-
-          # convert WKT string into RGeo object
-          def parse_wkt(string)
-            # factory = factory_settings.get_column_factory(table_name, column, constraints)
-            factory = RGeo::ActiveRecord::RGeoFactorySettings.new
-            wkt_parser(factory, string).parse(string)
-          rescue RGeo::Error::ParseError
-            nil
-          end
-
-          def binary?(string)
-            string[0] == "\x00" || string[0] == "\x01" || string[0, 4] =~ /[0-9a-fA-F]{4}/
-          end
-
-          def wkt_parser(factory, string)
-            if binary?(string)
-              RGeo::WKRep::WKBParser.new(factory, support_ewkb: true)
-            else
-              RGeo::WKRep::WKTParser.new(factory, support_ewkt: true)
-            end
-          end
-
         end
       end
     end

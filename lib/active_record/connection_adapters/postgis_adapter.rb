@@ -24,6 +24,7 @@ require 'active_record/connection_adapters/postgis_adapter/spatial_table_definit
 require 'active_record/connection_adapters/postgis_adapter/spatial_column'
 require 'active_record/connection_adapters/postgis_adapter/arel_tosql'
 require 'active_record/connection_adapters/postgis_adapter/setup'
+require 'active_record/connection_adapters/postgis_adapter/oid/spatial'
 require 'active_record/connection_adapters/postgis_adapter/create_connection'
 require 'active_record/connection_adapters/postgis_adapter/postgis_database_tasks'
 
