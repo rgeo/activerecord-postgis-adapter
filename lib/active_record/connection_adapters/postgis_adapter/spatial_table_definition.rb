@@ -9,33 +9,22 @@ module ActiveRecord  # :nodoc:
           super(types, name, temporary, options, as)
         end
 
-        # * `:geometry` -- Any geometric type
-        # * `:point` -- Point data
-        # * `:line_string` -- LineString data
-        # * `:polygon` -- Polygon data
-        # * `:geometry_collection` -- Any collection type
-        # * `:multi_point` -- A collection of Points
-        # * `:multi_line_string` -- A collection of LineStrings
-        # * `:multi_polygon` -- A collection of Polygons
-
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
         def new_column_definition(name, type, options)
           if (info = MainAdapter.spatial_column_options(type.to_sym))
-            options[:type] = info[:type] || type
-            type = options[:type]
+            geo_type = ColumnDefinition.geo_type(options[:type] || type || info[:type])
+            base_type = info[:type] || (options[:geographic] ? :geography : :geometry)
+
+            # puts name.dup << " - " << type.to_s << " - " << options.to_s << " :: " << geo_type.to_s << " - " << base_type.to_s
 
             if (limit = options.delete(:limit))
               options.merge!(limit) if limit.is_a?(::Hash)
             end
             if options[:geographic]
-              type = :geography
-              spatial_type = (options[:type] || 'geometry').to_s.upcase.gsub('_', '')
-              spatial_type << 'Z' if options[:has_z]
-              spatial_type << 'M' if options[:has_m]
-              options[:limit] = "#{spatial_type},#{options[:srid] || 4326}"
+              options[:limit] = ColumnDefinition.options_to_limit(geo_type, options)
             end
-            column = super(name, type, options)
-            column.spatial_type = options[:type]
+            column = super(name, base_type, options)
+            column.spatial_type = geo_type
             column.geographic = options[:geographic]
             column.srid = options[:srid]
             column.has_z = options[:has_z]
@@ -65,16 +54,32 @@ module ActiveRecord  # :nodoc:
           column(name, :geometry, options)
         end
 
+        def geo_point(name, options = {})
+          column(name, :geo_point, options)
+        end
+
+        def geo_polygon(name, options = {})
+          column(name, :geo_polygon, options)
+        end
+
+        def geometry_collection(name, options = {})
+          column(name, :geometry_collection, options)
+        end
+
         def line_string(name, options = {})
           column(name, :line_string, options)
         end
 
-        def geo_point(name, options = {})
-          column(name, :point, options)
+        def multi_line_string(name, options = {})
+          column(name, :multi_line_string, options)
         end
 
-        def polygon(name, options = {})
-          column(name, :polygon, options)
+        def multi_point(name, options = {})
+          column(name, :multi_point, options)
+        end
+
+        def multi_polygon(name, options = {})
+          column(name, :multi_polygon, options)
         end
 
         private
@@ -88,7 +93,35 @@ module ActiveRecord  # :nodoc:
         end
       end
 
-      class ColumnDefinition < PostgreSQL::ColumnDefinition  # :nodoc:
+      class ColumnDefinition < PostgreSQL::ColumnDefinition
+        # needs to accept the spatial type? or figure out from limit ?
+
+        def self.options_to_limit(type, options = {})
+          spatial_type = geo_type(type)
+          spatial_type << "Z" if options[:has_z]
+          spatial_type << "M" if options[:has_m]
+          spatial_type << ",#{ options[:srid] || 4326 }"
+          spatial_type
+        end
+
+        # limit is how column options are passed to #type_to_sql
+        # returns: "Point,4326"
+        def limit
+          "".tap do |value|
+            value << self.class.geo_type(spatial_type)
+            value << "Z" if has_z?
+            value << "M" if has_m?
+            value << ",#{ srid }"
+          end
+        end
+
+        def self.geo_type(type)
+          type ||= "GEOMETRY"
+          g_type = type.to_s.gsub("_", "").upcase
+          return "POINT" if g_type == "GEOPOINT"
+          return "POLYGON" if g_type == "GEOPOLYGON"
+          g_type
+        end
 
         def spatial_type
           @spatial_type
@@ -110,7 +143,7 @@ module ActiveRecord  # :nodoc:
           if @srid
             @srid.to_i
           else
-            geographic? ? 4326 : PostGISAdapter::DEFAULT_SRID
+            geographic? ? 4326 : PostGISAdapter::MainAdapter::DEFAULT_SRID
           end
         end
 
@@ -133,7 +166,6 @@ module ActiveRecord  # :nodoc:
         def has_m=(value)
           @has_m = !!value
         end
-
       end
 
     end

@@ -1,40 +1,8 @@
 module ActiveRecord
   module ConnectionAdapters
     module PostGISAdapter
-      class SchemaCreation < PostgreSQL::SchemaCreation
-        private
-
-        def visit_AddColumn(o)
-          if (options = MainAdapter.spatial_column_options(o.type.to_sym))
-            sql = add_spatial_column(o, options)
-            add_column_options! sql, column_options(o)
-          else
-            super
-          end
-        end
-
-        def add_spatial_column(o, options)
-          type = geo_type(o.type)
-          srid = (o.srid || options[:srid] || MainAdapter::DEFAULT_SRID).to_i
-          if o.geographic?
-            type << 'Z' if o.has_z?
-            type << 'M' if o.has_m?
-            "ADD COLUMN #{ quote_column_name(o.name) } GEOGRAPHY(#{ type },#{ srid })"
-          else
-            # We no longer need to use AddGeometryColumn:
-            # http://postgis.net/docs/AddGeometryColumn.html
-
-            "ADD COLUMN #{ quote_column_name(o.name) } GEOMETRY(#{ type },#{ srid })"
-          end
-        end
-
-        def geo_type(type)
-          type = type.to_s.gsub("_", "").upcase
-          return "POINT" if type == "GEOGRAPHY" || type == "GEO_POINT"
-          type
-        end
-
-      end
+      # note: type_to_sql receives type, which is not enough to detect the sql type:
+      # :geo_point => geometry(Point, 4326) OR geography(Point, 4326)
 
       module SchemaStatements
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb
@@ -80,7 +48,7 @@ module ActiveRecord
                         %w[geometry geography].include?(columns.values.first[1])
 
               # IndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, nil, using)
-              ::RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, !!spatial)
+              RGeo::ActiveRecord::SpatialIndexDefinition.new(table_name, index_name, unique, column_names, [], orders, where, !!spatial)
             end
           end.compact
         end
@@ -125,11 +93,26 @@ module ActiveRecord
         end
 
         # override
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L533
+        # returns "geometry(Point, 4326)" or "geography(Point, 4326)"
+        def type_to_sql(type, limit = nil, precision = nil, scale = nil)
+          case type
+          when :geometry, :geography, :spatial, :geo_point
+            "#{ type.to_s }(#{ limit })"
+          else
+            super
+          end
+        end
+
+        # override
         def native_database_types
           # Add spatial types
           super.merge(
             geography: { name: 'geography' },
-            spatial:   { name: 'geometry' }, # is this needed?
+            spatial:   { name: 'geometry' },
+            geo_point: "geo_point",
+            geo_polygon: "geo_polygon",
+            line_string: "line_string",
           )
         end
 
@@ -144,16 +127,25 @@ module ActiveRecord
           @spatial_column_info[table_name.to_sym] ||= SpatialColumnInfo.new(self, table_name.to_s)
         end
 
-        def initialize_type_map(m)
+        def initialize_type_map(map)
           super
 
-          m.register_type 'geometry' do
-            OID::Spatial.new
-          end
-
-          m.register_type 'geography' do
-            OID::Spatial.new(factory_generator: ::RGeo::Geographic.method(:spherical_factory))
-          end
+          %w(
+            geometry
+            geography
+            geo_point
+            geo_polygon
+            line_string
+            geometry_collection
+            multi_point
+            multi_polygon
+            multi_line_string
+            )
+            .each do |geo_type|
+              map.register_type(geo_type) do |_, _, sql_type|
+                OID::Spatial.new(sql_type)
+              end
+            end
         end
 
       end

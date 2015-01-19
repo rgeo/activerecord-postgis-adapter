@@ -1,6 +1,27 @@
 require 'test_helper'
 
 class DDLTest < ActiveSupport::TestCase  # :nodoc:
+  def test_spatial_column_options
+    %i(
+      geography
+      geometry
+      geo_point
+      geo_polygon
+      line_string
+      geometry_collection
+      multi_point
+      multi_line_string
+      multi_polygon
+      ).each do |type|
+      assert ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.spatial_column_options(type), type
+    end
+  end
+
+  def test_type_to_sql
+    adapter = SpatialModel.connection
+    assert_equal "geometry(point,4326)", adapter.type_to_sql(:geometry, "point,4326")
+  end
+
   def test_create_simple_geometry
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column 'latlon', :geometry
@@ -52,7 +73,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column('latlon', :geometry)
     end
     klass.connection.change_table(:spatial_models) do |t|
-      t.column('geom2', :point, srid: 4326)
+      t.column('geom2', :geo_point, srid: 4326)
       t.column('name', :string)
     end
     klass.reset_column_information
@@ -87,7 +108,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column('latlon', :geometry)
     end
     klass.connection.change_table(:spatial_models) do |t|
-      t.column('geom2', :point, srid: 4326, geographic: true)
+      t.column('geom2', :geo_point, srid: 4326, geographic: true)
       t.column('name', :string)
     end
     klass.reset_column_information
@@ -177,7 +198,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_create_geometry_with_options
     klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.column 'region', :polygon, has_m: true, srid: 3785
+      t.column 'region', :geo_polygon, has_m: true, srid: 3785
     end
     klass.reset_column_information
     assert_equal 1, count_geometry_columns
@@ -187,7 +208,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal false, col.has_z?
     assert_equal true, col.has_m?
     assert_equal 3785, col.srid
-    assert_equal({ has_m: true, type: 'polygon', srid: 3785 }, col.limit)
+    assert_equal({ has_m: true, type: 'geo_polygon', srid: 3785 }, col.limit)
     klass.connection.drop_table(:spatial_models)
     assert_equal 0, count_geometry_columns
   end
@@ -246,7 +267,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     klass.reset_column_information
     assert_equal :integer, klass.columns[-3].type
     assert_equal :string, klass.columns[-2].type
-    assert_equal :geo_point, klass.columns[-1].type
+    assert_equal :geometry, klass.columns[-1].type
   end
 
   def test_array_columns
