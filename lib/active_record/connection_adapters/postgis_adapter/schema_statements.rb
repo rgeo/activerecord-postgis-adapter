@@ -108,11 +108,16 @@ module ActiveRecord
         def native_database_types
           # Add spatial types
           super.merge(
-            geography: { name: 'geography' },
-            spatial:   { name: 'geometry' },
-            geo_point: "geo_point",
-            geo_polygon: "geo_polygon",
-            line_string: "line_string",
+            geo_point:           "geo_point",
+            geo_polygon:         "geo_polygon",
+            geography:           "geography",
+            geometry:            "geometry",
+            geometry_collection: "geometry_collection",
+            line_string:         "line_string",
+            multi_line_string:   "multi_line_string",
+            multi_point:         "multi_point",
+            multi_polygon:       "multi_polygon",
+            spatial:             "geometry",
           )
         end
 
@@ -131,15 +136,15 @@ module ActiveRecord
           super
 
           %w(
-            geometry
-            geography
             geo_point
             geo_polygon
-            line_string
+            geography
+            geometry
             geometry_collection
+            line_string
+            multi_line_string
             multi_point
             multi_polygon
-            multi_line_string
             )
             .each do |geo_type|
               map.register_type(geo_type) do |_, _, sql_type|
