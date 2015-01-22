@@ -26,9 +26,9 @@ module ActiveRecord  # :nodoc:
 
         include PostGISAdapter::SchemaStatements
 
-        def schema_creation
-          PostGISAdapter::SchemaCreation.new self
-        end
+        # def schema_creation
+        #   PostGISAdapter::SchemaCreation.new self
+        # end
 
         def set_rgeo_factory_settings(factory_settings)
           @rgeo_factory_settings = factory_settings
