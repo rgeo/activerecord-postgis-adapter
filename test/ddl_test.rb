@@ -208,20 +208,9 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal false, col.has_z?
     assert_equal true, col.has_m?
     assert_equal 3785, col.srid
-    assert_equal({ has_m: true, type: 'geo_polygon', srid: 3785 }, col.limit)
+    assert_equal({ has_m: true, type: 'polygon', srid: 3785 }, col.limit)
     klass.connection.drop_table(:spatial_models)
     assert_equal 0, count_geometry_columns
-  end
-
-  def test_caches_spatial_column_info
-    klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.geo_point 'latlon'
-      t.geo_point 'other'
-    end
-    klass.reset_column_information
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialColumnInfo.any_instance.expects(:all).once.returns({})
-    klass.columns
-    klass.columns
   end
 
   def test_no_query_spatial_column_info
