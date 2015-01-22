@@ -10,8 +10,41 @@ module ActiveRecord
           #   "geometry(Polygon,4326) NOT NULL"
           #   "geometry(Geography,4326)"
           def initialize(sql_type)
-            @sql_type = sql_type
+            @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
             @factory_generator = RGeo::Geographic.method(:spherical_factory) if sql_type =~ /geography/
+          end
+
+          # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
+          #
+          # returns [geo_type, srid, has_z, has_m]
+          #   geo_type: geography, geometry, point, line_string, polygon, ...
+          #   srid:     1234
+          #   has_z:    false
+          #   has_m:    false
+          def self.parse_sql_type(sql_type)
+            geo_type, srid, has_z, has_m = nil, 0, false, false
+
+            if (sql_type =~ /[geography,geography]\((.*)\)$/i)
+              # geometry(Point,4326)
+              params = $1.split(',')
+              if params.size > 1
+                if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
+                  has_z = $2.length > 0
+                  has_m = $3.length > 0
+                  geo_type = $1
+                end
+                if params.last =~ /(\d+)/
+                  srid = $1.to_i
+                end
+              else
+                # geometry(Point)
+                geo_type = params[0]
+              end
+            else
+              # geometry
+              geo_type = sql_type
+            end
+            [geo_type, srid, has_z, has_m]
           end
 
           def factory_generator

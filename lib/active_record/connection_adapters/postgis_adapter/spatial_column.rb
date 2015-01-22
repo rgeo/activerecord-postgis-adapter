@@ -4,8 +4,8 @@ module ActiveRecord  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
 
         # sql_type examples:
-        #   "Geometry(Point, 4326)"
-        #   "Geography(Point, 4326)"
+        #   "Geometry(Point,4326)"
+        #   "Geography(Point,4326)"
         # cast_type example classes:
         #   OID::Spatial
         #   OID::Integer
@@ -66,34 +66,9 @@ module ActiveRecord  # :nodoc:
           @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(name) || RGeo::Feature::Geometry
         end
 
-        # "geometry(PolygonM,1234)" => "PolygonM"
-        # "geography" => "geography"
-        def geo_type_from_sql_type(sql_type)
-          geo_type = sql_type.split(/[\(,]/)[1] || sql_type
-          RGeo::ActiveRecord.geometric_type_from_name(geo_type)
-        end
-
         def build_from_sql_type(sql_type)
-          if (sql_type =~ /[geography,geography]\((.*)\)$/i)
-            # geometry(Point,4326)
-            params = $1.split(',')
-            if params.size > 1
-              if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
-                @has_z = $2.length > 0
-                @has_m = $3.length > 0
-                set_geometric_type_from_name($1)
-              end
-              if params.last =~ /(\d+)/
-                @srid = $1.to_i
-              end
-            else
-              # geometry(Point)
-              set_geometric_type_from_name(params[0])
-            end
-          else
-            # geometry
-            set_geometric_type_from_name(sql_type)
-          end
+          geo_type, @srid, @has_z, @has_m = OID::Spatial.parse_sql_type(sql_type)
+          set_geometric_type_from_name(geo_type)
         end
       end
     end
