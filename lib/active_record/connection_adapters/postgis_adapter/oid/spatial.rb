@@ -43,10 +43,6 @@ module ActiveRecord
               .generate(geo_value)
           end
 
-          def type_cast_from_database(value)
-            cast_value value
-          end
-
           private
 
           def type_cast(value)
