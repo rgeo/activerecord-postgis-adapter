@@ -88,7 +88,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   def _test_custom_factory
     klass = create_ar_class
     klass.connection.create_table(:spatial_test, force: true) do |t|
-      t.geo_point(:latlon, srid: 4326)
+      t.st_point(:latlon, srid: 4326)
     end
     factory = RGeo::Geographic.simple_mercator_factory
     klass.class_eval do
@@ -104,7 +104,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     klass.connection.create_table(:spatial_test, force: true) do |t|
       t.column(:shape, :geometry)
       t.line_string(:path, srid: 3785)
-      t.geo_point(:latlon, geographic: true)
+      t.st_point(:latlon, geographic: true)
     end
     klass.connection.change_table(:spatial_test) do |t|
       t.index(:latlon, spatial: true)
@@ -143,11 +143,11 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     case type
       when :mercator_point
         SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-          t.column 'latlon', :geo_point, srid: 3785
+          t.column 'latlon', :st_point, srid: 3785
         end
       when :latlon_point_geographic
         SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-          t.column 'latlon', :geo_point, srid: 4326, geographic: true
+          t.column 'latlon', :st_point, srid: 4326, geographic: true
         end
       else
         raise "Unknown test type: #{type}"

@@ -20,7 +20,7 @@ class NestedClassTest < ActiveSupport::TestCase  # :nodoc:
         establish_connection(DATABASE_CONFIG)
       end
       Foo::Bar.connection.create_table(:foo_bars, force: true) do |t|
-        t.column 'latlon', :geo_point, srid: 3785
+        t.column 'latlon', :st_point, srid: 3785
       end
       Foo::Bar.all
       Foo::Bar.connection.drop_table(:foo_bars)

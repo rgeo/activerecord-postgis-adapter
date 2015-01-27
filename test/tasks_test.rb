@@ -42,7 +42,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     def test_basic_geography_sql_dump
       setup_database_tasks
       connection.create_table(:spatial_test, force: true) do |t|
-        t.geo_point "latlon", geographic: true
+        t.st_point "latlon", geographic: true
       end
       ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
       data = File.read(tmp_sql_filename)
@@ -52,7 +52,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     def test_index_sql_dump
       setup_database_tasks
       connection.create_table(:spatial_test, force: true) do |t|
-        t.geo_point "latlon", geographic: true
+        t.st_point "latlon", geographic: true
         t.string "name"
       end
       connection.add_index :spatial_test, :latlon, spatial: true
@@ -90,7 +90,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     def test_basic_geography_schema_dump
       setup_database_tasks
       connection.create_table(:spatial_test, force: true) do |t|
-        t.geo_point "latlon1", geographic: true
+        t.st_point "latlon1", geographic: true
         t.spatial "latlon2", srid: 4326, type: "point", geographic: true
       end
       File.open(tmp_sql_filename, "w:utf-8") do |file|
@@ -104,7 +104,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     def test_index_schema_dump
       setup_database_tasks
       connection.create_table(:spatial_test, force: true) do |t|
-        t.geo_point "latlon", geographic: true
+        t.st_point "latlon", geographic: true
       end
       connection.add_index :spatial_test, :latlon, spatial: true
       File.open(tmp_sql_filename, "w:utf-8") do |file|

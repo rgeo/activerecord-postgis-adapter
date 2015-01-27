@@ -97,7 +97,7 @@ module ActiveRecord
         # returns "geometry(Point, 4326)" or "geography(Point, 4326)"
         def type_to_sql(type, limit = nil, precision = nil, scale = nil)
           case type
-          when :geometry, :geography, :spatial, :geo_point
+          when :geometry, :geography, :spatial, :st_point
             "#{ type.to_s }(#{ limit })"
           else
             super
@@ -108,8 +108,6 @@ module ActiveRecord
         def native_database_types
           # Add spatial types
           super.merge(
-            geo_point:           "geo_point",
-            geo_polygon:         "geo_polygon",
             geography:           "geography",
             geometry:            "geometry",
             geometry_collection: "geometry_collection",
@@ -118,6 +116,8 @@ module ActiveRecord
             multi_point:         "multi_point",
             multi_polygon:       "multi_polygon",
             spatial:             "geometry",
+            st_point:            "st_point",
+            st_polygon:          "st_polygon",
           )
         end
 
@@ -136,8 +136,6 @@ module ActiveRecord
           super
 
           %w(
-            geo_point
-            geo_polygon
             geography
             geometry
             geometry_collection
@@ -145,6 +143,8 @@ module ActiveRecord
             multi_line_string
             multi_point
             multi_polygon
+            st_point
+            st_polygon
             )
             .each do |geo_type|
               map.register_type(geo_type) do |_, _, sql_type|

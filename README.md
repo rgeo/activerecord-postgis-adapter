@@ -201,8 +201,8 @@ create_table :my_spatial_table do |t|
   t.column :shape1, :geometry
   t.geometry :shape2
   t.line_string :path, srid: 3785
-  t.geo_point :lonlat, geographic: true
-  t.geo_point :lonlatheight, geographic: true, has_z: true
+  t.st_point :lonlat, geographic: true
+  t.st_point :lonlatheight, geographic: true, has_z: true
 end
 ```
 
@@ -218,7 +218,7 @@ also specifies an SRID (spatial reference ID) that indicates which coordinate
 system it expects the data to be in. The column now has a "constraint" on it;
 it will accept only LineString data, and only data whose SRID is 3785.
 
-The fourth column, "lonlat", has the `geo_point` type, and accepts only Point
+The fourth column, "lonlat", has the `st_point` type, and accepts only Point
 data. Furthermore, it declares the column as "geographic", which means it
 accepts longitude/latitude data, and performs calculations such as distances
 using a spheroidal domain.
@@ -231,9 +231,9 @@ The following are the data types understood by PostGIS and exposed by
 activerecord-postgis-adapter:
 
 * `:geometry` -- Any geometric type
-* `:geo_point` -- Point data
+* `:st_point` -- Point data
 * `:line_string` -- LineString data
-* `:geo_polygon` -- Polygon data
+* `:st_polygon` -- Polygon data
 * `:geometry_collection` -- Any collection type
 * `:multi_point` -- A collection of Points
 * `:multi_line_string` -- A collection of LineStrings
@@ -269,8 +269,8 @@ end
 
 Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
 adapter added support for the native Postgresql `point` and `polygon` types, which conflict with this
-adapter's types of the same names. The PostGIS point type must be referenced as `geo_point`, and the
-PostGIS polygon type must be referenced as `geo_polygon`.
+adapter's types of the same names. The PostGIS point type must be referenced as `st_point`, and the
+PostGIS polygon type must be referenced as `st_polygon`.
 
 ### Configuring ActiveRecord
 

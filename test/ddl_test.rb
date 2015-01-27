@@ -5,13 +5,13 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     %i(
       geography
       geometry
-      geo_point
-      geo_polygon
-      line_string
       geometry_collection
-      multi_point
+      line_string
       multi_line_string
+      multi_point
       multi_polygon
+      st_point
+      st_polygon
       ).each do |type|
       assert ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.spatial_column_options(type), type
     end
@@ -52,7 +52,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_create_point_geometry
     klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.column 'latlon', :geo_point
+      t.column 'latlon', :st_point
     end
     klass.reset_column_information
     assert_equal RGeo::Feature::Point, klass.columns.last.geometric_type
@@ -73,7 +73,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column('latlon', :geometry)
     end
     klass.connection.change_table(:spatial_models) do |t|
-      t.column('geom2', :geo_point, srid: 4326)
+      t.column('geom2', :st_point, srid: 4326)
       t.column('name', :string)
     end
     klass.reset_column_information
@@ -108,7 +108,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column('latlon', :geometry)
     end
     klass.connection.change_table(:spatial_models) do |t|
-      t.column('geom2', :geo_point, srid: 4326, geographic: true)
+      t.column('geom2', :st_point, srid: 4326, geographic: true)
       t.column('name', :string)
     end
     klass.reset_column_information
@@ -128,7 +128,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
   def test_drop_geometry_column
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column('latlon', :geometry)
-      t.column('geom2', :geo_point, srid: 4326)
+      t.column('geom2', :st_point, srid: 4326)
     end
     klass.connection.change_table(:spatial_models) do |t|
       t.remove('geom2')
@@ -145,8 +145,8 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
   def test_drop_geography_column
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column('latlon', :geometry)
-      t.column('geom2', :geo_point, srid: 4326, geographic: true)
-      t.column('geom3', :geo_point, srid: 4326)
+      t.column('geom2', :st_point, srid: 4326, geographic: true)
+      t.column('geom3', :st_point, srid: 4326)
     end
     klass.connection.change_table(:spatial_models) do |t|
       t.remove('geom2')
@@ -190,7 +190,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_create_point_geometry_using_shortcut
     klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.geo_point 'latlon'
+      t.st_point 'latlon'
     end
     klass.reset_column_information
     assert_equal RGeo::Feature::Point, klass.columns.last.geometric_type
@@ -198,7 +198,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_create_geometry_with_options
     klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.column 'region', :geo_polygon, has_m: true, srid: 3785
+      t.column 'region', :st_polygon, has_m: true, srid: 3785
     end
     klass.reset_column_information
     assert_equal 1, count_geometry_columns
@@ -251,7 +251,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column 'sample_integer', :integer
       t.column 'sample_string', :string
-      t.column 'latlon', :geo_point
+      t.column 'latlon', :st_point
     end
     klass.reset_column_information
     assert_equal :integer, klass.columns[-3].type

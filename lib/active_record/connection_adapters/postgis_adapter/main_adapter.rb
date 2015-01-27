@@ -4,8 +4,6 @@ module ActiveRecord  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
         SPATIAL_COLUMN_OPTIONS =
           {
-            geo_point:           {},
-            geo_polygon:         {},
             geography:           { geographic: true },
             geometry:            {},
             geometry_collection: {},
@@ -14,6 +12,8 @@ module ActiveRecord  # :nodoc:
             multi_point:         {},
             multi_polygon:       {},
             spatial:             {},
+            st_point:            {},
+            st_polygon:          {},
           }
 
         # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html

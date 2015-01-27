@@ -42,7 +42,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def spatial(name, options = {})
-          raise "You must set a type. For example: 't.spatial type: :geo_point'" unless options[:type]
+          raise "You must set a type. For example: 't.spatial type: :st_point'" unless options[:type]
           column(name, options[:type], options)
         end
 
@@ -52,14 +52,6 @@ module ActiveRecord  # :nodoc:
 
         def geometry(name, options = {})
           column(name, :geometry, options)
-        end
-
-        def geo_point(name, options = {})
-          column(name, :geo_point, options)
-        end
-
-        def geo_polygon(name, options = {})
-          column(name, :geo_polygon, options)
         end
 
         def geometry_collection(name, options = {})
@@ -80,6 +72,14 @@ module ActiveRecord  # :nodoc:
 
         def multi_polygon(name, options = {})
           column(name, :multi_polygon, options)
+        end
+
+        def st_point(name, options = {})
+          column(name, :st_point, options)
+        end
+
+        def st_polygon(name, options = {})
+          column(name, :st_polygon, options)
         end
 
         private
@@ -118,8 +118,8 @@ module ActiveRecord  # :nodoc:
         def self.geo_type(type)
           type ||= "GEOMETRY"
           g_type = type.to_s.gsub("_", "").upcase
-          return "POINT" if g_type == "GEOPOINT"
-          return "POLYGON" if g_type == "GEOPOLYGON"
+          return "POINT" if g_type == "STPOINT"
+          return "POLYGON" if g_type == "STPOLYGON"
           g_type
         end
 
