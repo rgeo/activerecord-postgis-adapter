@@ -83,8 +83,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert(data.index("t.spatial \"object1\", :srid=>#{connection.default_srid}, :type=>\"geometry\""))
-      assert(data.index("t.spatial \"object2\", :srid=>#{connection.default_srid}, :type=>\"geometry\""))
+      assert(data.index("t.geometry \"object1\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\""))
+      assert(data.index("t.geometry \"object2\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\""))
     end
 
     def test_basic_geography_schema_dump
@@ -97,8 +97,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert(data.index('t.spatial "latlon1", :srid=>4326, :type=>"point", :geographic=>true'))
-      assert(data.index('t.spatial "latlon2", :srid=>4326, :type=>"point", :geographic=>true'))
+      assert(data.index('t.geography "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
+      assert(data.index('t.point     "latlon2"'))
     end
 
     def test_index_schema_dump
@@ -111,8 +111,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert data.index('t.spatial "latlon", :srid=>4326, :type=>"point", :geographic=>true')
-      assert data.index('add_index "spatial_test", ["latlon"], :name => "index_spatial_test_on_latlon", :spatial => true')
+      assert data.index('t.geography "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}')
+      assert data.index('add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", spatial: true')
     end
 
     def test_add_index_with_nil_options

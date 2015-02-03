@@ -20,7 +20,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_set_and_get_point
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.new
     assert_nil obj.latlon
     obj.latlon = factory.point(1.0, 2.0)
@@ -29,7 +29,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_set_and_get_point_from_wkt
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.new
     assert_nil obj.latlon
     obj.latlon = 'POINT(1 2)'
@@ -38,7 +38,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_save_and_load_point
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.new
     obj.latlon = factory.point(1.0, 2.0)
     obj.save!
@@ -46,23 +46,21 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     obj2 = SpatialModel.find(id)
     assert_equal factory.point(1.0, 2.0), obj2.latlon
     assert_equal 3785, obj2.latlon.srid
-    assert_equal true, RGeo::Geos.is_geos?(obj2.latlon)
   end
 
   def test_save_and_load_geographic_point
-    create_model(:latlon_point_geographic)
+    create_model
     obj = SpatialModel.new
-    obj.latlon = factory.point(1.0, 2.0)
+    obj.latlon_geo = geographic_factory.point(1.0, 2.0)
     obj.save!
     id = obj.id
     obj2 = SpatialModel.find(id)
-    assert_equal geographic_factory.point(1.0, 2.0), obj2.latlon
-    assert_equal 4326, obj2.latlon.srid
-    assert_equal false,RGeo::Geos.is_geos?(obj2.latlon)
+    assert_equal geographic_factory.point(1.0, 2.0), obj2.latlon_geo
+    assert_equal 4326, obj2.latlon_geo.srid
   end
 
   def test_save_and_load_point_from_wkt
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.new
     obj.latlon = 'POINT(1 2)'
     obj.save!
@@ -73,13 +71,13 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_set_point_bad_wkt
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.create(latlon: 'POINT (x)')
     assert_nil obj.latlon
   end
 
   def test_set_point_wkt_wrong_type
-    create_model(:mercator_point)
+    create_model
     assert_raises(ActiveRecord::StatementInvalid) do
       SpatialModel.create(latlon: 'LINESTRING(1 2, 3 4, 5 6)')
     end
@@ -122,7 +120,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_point_to_json
-    create_model(:mercator_point)
+    create_model
     obj = SpatialModel.new
     assert_match(/"latlon":null/, obj.to_json)
     obj.latlon = factory.point(1.0, 2.0)
@@ -130,7 +128,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_custom_column
-    create_model(:mercator_point)
+    create_model
     rec = SpatialModel.new
     rec.latlon = 'POINT(0 0)'
     rec.save
@@ -139,19 +137,11 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   private
 
-  def create_model(type)
-    case type
-      when :mercator_point
-        SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-          t.column 'latlon', :st_point, srid: 3785
-        end
-      when :latlon_point_geographic
-        SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-          t.column 'latlon', :st_point, srid: 4326, geographic: true
-        end
-      else
-        raise "Unknown test type: #{type}"
-      end
+  def create_model
+    SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
+      t.column 'latlon', :st_point, srid: 3785
+      t.column 'latlon_geo', :st_point, srid: 4326, geographic: true
+    end
   end
 end
 

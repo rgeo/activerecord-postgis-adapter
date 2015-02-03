@@ -9,9 +9,9 @@ module ActiveRecord
           #   "geography(Point,4326)"
           #   "geometry(Polygon,4326) NOT NULL"
           #   "geometry(Geography,4326)"
-          def initialize(sql_type)
+          def initialize(oid, sql_type)
             @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
-            @factory_generator = RGeo::Geographic.method(:spherical_factory) if sql_type =~ /geography/
+            @factory_generator = RGeo::Geographic.spherical_factory(srid: 4326) if oid =~ /geography/
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
@@ -94,7 +94,7 @@ module ActiveRecord
           # convert WKT string into RGeo object
           def parse_wkt(string)
             # factory = factory_settings.get_column_factory(table_name, column, constraints)
-            factory = RGeo::ActiveRecord::RGeoFactorySettings.new
+            factory = @factory_generator || RGeo::ActiveRecord::RGeoFactorySettings.new
             wkt_parser(factory, string).parse(string)
           rescue RGeo::Error::ParseError
             nil
@@ -106,9 +106,9 @@ module ActiveRecord
 
           def wkt_parser(factory, string)
             if binary?(string)
-              RGeo::WKRep::WKBParser.new(factory, support_ewkb: true)
+              RGeo::WKRep::WKBParser.new(factory, support_ewkb: true, default_srid: @srid)
             else
-              RGeo::WKRep::WKTParser.new(factory, support_ewkt: true)
+              RGeo::WKRep::WKTParser.new(factory, support_ewkt: true, default_srid: @srid)
             end
           end
 
