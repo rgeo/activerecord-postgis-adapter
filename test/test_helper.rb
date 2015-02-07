@@ -10,7 +10,7 @@ rescue LoadError
 end
 
 class ActiveSupport::TestCase
-  self.test_order = :random
+  self.test_order = :sorted
 
   DATABASE_CONFIG_PATH = File.dirname(__FILE__) << '/database.yml'
 
