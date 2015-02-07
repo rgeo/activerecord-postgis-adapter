@@ -115,8 +115,7 @@ module ActiveRecord  # :nodoc:
           end
         end
 
-        def self.geo_type(type)
-          type ||= "GEOMETRY"
+        def self.geo_type(type = "GEOMETRY")
           g_type = type.to_s.gsub("_", "").upcase
           return "POINT" if g_type == "STPOINT"
           return "POLYGON" if g_type == "STPOLYGON"
