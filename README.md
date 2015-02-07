@@ -255,13 +255,15 @@ Following are the options understood by the adapter:
   Default is false.
 
 
-The adapter also extends the ActiveRecord migration syntax for creating
-spatial indexes. To create a PostGIS spatial index, simply set the :spatial
-option to true, as follows:
+To create a PostGIS spatial index, add `using: :gist` to your index:
 
 ```ruby
-change_table :my_spatial_table do |t|
-  t.index :lonlat, spatial: true
+add_index :my_table, :lonlat, using: :gist
+
+# or
+
+change_table :my_table do |t|
+  t.index :lonlat, using: :gist
 end
 ```
 

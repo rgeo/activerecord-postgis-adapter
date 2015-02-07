@@ -55,7 +55,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         t.st_point "latlon", geographic: true
         t.string "name"
       end
-      connection.add_index :spatial_test, :latlon, spatial: true
+      connection.add_index :spatial_test, :latlon, using: :gist
       connection.add_index :spatial_test, :name, using: :btree
       ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
       data = File.read(tmp_sql_filename)
@@ -91,14 +91,14 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       setup_database_tasks
       connection.create_table(:spatial_test, force: true) do |t|
         t.st_point "latlon1", geographic: true
-        t.spatial "latlon2", srid: 4326, type: "point", geographic: true
+        t.spatial "latlon2", srid: 4326, type: "st_point", geographic: true
       end
       File.open(tmp_sql_filename, "w:utf-8") do |file|
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert(data.index('t.geography "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}'))
-      assert(data.index('t.point     "latlon2"'))
+      assert(data.index('t.geography "latlon1", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}'))
+      assert(data.index('t.st_point     "latlon2"'))
     end
 
     def test_index_schema_dump
@@ -106,21 +106,21 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       connection.create_table(:spatial_test, force: true) do |t|
         t.st_point "latlon", geographic: true
       end
-      connection.add_index :spatial_test, :latlon, spatial: true
+      connection.add_index :spatial_test, :latlon, using: :gist
       File.open(tmp_sql_filename, "w:utf-8") do |file|
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert data.index('t.geography "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}')
-      assert data.index('add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", spatial: true')
+      assert data.index('t.geography "latlon", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}')
+      assert data.index('add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", using: "gist"')
     end
 
-    def test_add_index_with_nil_options
+    def test_add_index_with_no_options
       setup_database_tasks
       connection.create_table(:test, force: true) do |t|
         t.string "name"
       end
-      connection.add_index :test, :name, nil
+      connection.add_index :test, :name
       ActiveRecord::Tasks::DatabaseTasks.structure_dump(TasksTest.new_database_config, tmp_sql_filename)
       data = File.read(tmp_sql_filename)
       assert data.index('CREATE INDEX index_test_on_name ON test USING btree (name);')

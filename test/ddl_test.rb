@@ -63,9 +63,9 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'latlon', :geometry
     end
     klass.connection.change_table(:spatial_models) do |t|
-      t.index([:latlon], spatial: true)
+      t.index([:latlon], using: :gist)
     end
-    assert klass.connection.indexes(:spatial_models).last.spatial
+    assert_equal :gist, klass.connection.indexes(:spatial_models).last.using
   end
 
   def test_add_geometry_column
