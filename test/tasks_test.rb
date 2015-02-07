@@ -2,7 +2,7 @@ require 'test_helper'
 require 'active_record/schema_dumper'
 
 class TasksTest < ActiveSupport::TestCase  # :nodoc:
-  DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) + '/database.yml'
+  DATABASE_CONFIG_PATH = ::File.dirname(__FILE__) << '/database.yml'
 
   class << self
     def before_open_database(args)
@@ -83,8 +83,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert(data.index("t.geometry \"object1\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\""))
-      assert(data.index("t.geometry \"object2\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\""))
+      assert data.index("t.geometry \"object1\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\"")
+      assert data.index("t.geometry \"object2\", limit: {:srid=>#{connection.default_srid}, :type=>\"geometry\"")
     end
 
     def test_basic_geography_schema_dump
@@ -97,8 +97,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert(data.index('t.geography "latlon1", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}'))
-      assert(data.index('t.st_point     "latlon2"'))
+      assert data.index(%(t.geography "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}))
+      assert data.index(%(t.geography "latlon2", limit: {:srid=>4326, :type=>"point", :geographic=>true}))
     end
 
     def test_index_schema_dump
@@ -111,8 +111,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
         ActiveRecord::SchemaDumper.dump(connection, file)
       end
       data = File.read(tmp_sql_filename)
-      assert data.index('t.geography "latlon", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}')
-      assert data.index('add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", using: "gist"')
+      assert data.index(%(t.geography "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}))
+      assert data.index(%(add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", using: :gist))
     end
 
     def test_add_index_with_no_options
