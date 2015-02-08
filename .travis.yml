@@ -6,14 +6,15 @@ rvm:
   - 1.9.3
   - jruby-19mode
   - rbx-2
-env:
-  - POSTGIS=2.0
 gemfile:
   - gemfiles/ar42.gemfile
 matrix:
   allow_failures:
     - rvm: rbx-2
     - rvm: jruby-19mode
-before_install: ./travis/before_install.sh
-before_script: ./travis/before_script.sh
+addons:
+  postgresql: "9.3"
+before_script:
+  - psql -U postgres -c "create database postgis_adapter_test"
+  - psql -U postgres -d postgis_adapter_test -c "create extension postgis"
 script: bundle exec rake test
