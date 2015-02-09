@@ -2,17 +2,17 @@ require 'test_helper'
 
 class DDLTest < ActiveSupport::TestCase  # :nodoc:
   def test_spatial_column_options
-    %i(
-      geography
-      geometry
-      geometry_collection
-      line_string
-      multi_line_string
-      multi_point
-      multi_polygon
-      st_point
-      st_polygon
-      ).each do |type|
+    [
+      :geography,
+      :geometry,
+      :geometry_collection,
+      :line_string,
+      :multi_line_string,
+      :multi_point,
+      :multi_polygon,
+      :st_point,
+      :st_polygon,
+    ].each do |type|
       assert ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.spatial_column_options(type), type
     end
   end
