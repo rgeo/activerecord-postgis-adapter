@@ -65,6 +65,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     klass.connection.change_table(:spatial_models) do |t|
       t.index([:latlon], using: :gist)
     end
+    klass.reset_column_information
     assert_equal :gist, klass.connection.indexes(:spatial_models).last.using
   end
 

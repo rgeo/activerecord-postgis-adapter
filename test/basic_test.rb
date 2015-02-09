@@ -146,6 +146,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'latlon', :st_point, srid: 3785
       t.column 'latlon_geo', :st_point, srid: 4326, geographic: true
     end
+    SpatialModel.reset_column_information
   end
 end
 

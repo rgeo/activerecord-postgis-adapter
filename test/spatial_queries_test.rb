@@ -73,6 +73,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'latlon', :st_point, srid: 3785
       t.column 'path', :line_string, srid: 3785
     end
+    SpatialModel.reset_column_information
   end
 
 end
