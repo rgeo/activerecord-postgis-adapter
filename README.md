@@ -223,18 +223,14 @@ activerecord-postgis-adapter:
 
 Following are the options understood by the adapter:
 
-* `:geographic` -- If set to true, create a PostGIS geography column for
+* `:geographic || :precision` -- If set to true, create a PostGIS geography column for
   longitude/latitude data over a spheroidal domain; otherwise create a
   geometry column in a flat coordinate system. Default is false. Also
   implies :srid set to 4326.
-* `:srid` -- Set a SRID constraint for the column. Default is 4326 for a
+* `:srid || :limit` -- Set a SRID constraint for the column. Default is 4326 for a
   geography column, or -1 for a geometry column. Note that PostGIS currently
   (as of version 2.0) requires geography columns to have SRID 4326, so this
   constraint is of limited use for geography columns.
-* `:has_z` -- Specify that objects in this column include a Z coordinate.
-  Default is false.
-* `:has_m` -- Specify that objects in this column include an M coordinate.
-  Default is false.
 
 
 The adapter also extends the ActiveRecord migration syntax for creating
