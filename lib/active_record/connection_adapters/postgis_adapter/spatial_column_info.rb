@@ -30,9 +30,9 @@ module ActiveRecord  # :nodoc:
           result
         end
 
-        # will not query the database for non-spatial columns/tables
+        # do not query the database for non-spatial columns/tables
         def get(column_name, type)
-          return nil unless type =~ /geometry/i
+          return unless MainAdapter.spatial_column_options(type.to_sym)
           @spatial_column_info ||= all
           @spatial_column_info[column_name]
         end

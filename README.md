@@ -31,9 +31,21 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 3.x will support ActiveRecord 4.2
+#### Version 3.x supports ActiveRecord 4.2+
 
-Work to support ActiveRecord 4.2 is underway here: https://github.com/rgeo/activerecord-postgis-adapter/pull/145
+Requirements:
+
+```
+ActiveRecord 4.2+
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
+
+Gemfile:
+
+```ruby
+gem 'activerecord-postgis-adapter'
+```
 
 #### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
 
@@ -177,36 +189,36 @@ This rake task adds the PostGIS extension to your existing database.
 To store spatial data, you must create a column with a spatial type. PostGIS
 provides a variety of spatial types, including point, linestring, polygon, and
 different kinds of collections. These types are defined in a standard produced
-by the Open Geospatial Consortium. Furthermore, you can specify options
-indicating the coordinate system and number of coordinates for the values you
-are storing.
+by the Open Geospatial Consortium. You can specify options indicating the coordinate
+system and number of coordinates for the values you are storing.
 
 The activerecord-postgis-adapter extends ActiveRecord's migration syntax to
-support these spatial types. The following example creates four spatial
+support these spatial types. The following example creates five spatial
 columns in a table:
 
 ```ruby
 create_table :my_spatial_table do |t|
   t.column :shape1, :geometry
   t.geometry :shape2
-  t.line_string :path, :srid => 3785
-  t.point :lonlat, :geographic => true
-  t.point :lonlatheight, :geographic => true, :has_z => true
+  t.line_string :path, srid: 3785
+  t.st_point :lonlat, geographic: true
+  t.st_point :lonlatheight, geographic: true, has_z: true
 end
 ```
 
 The first column, "shape1", is created with type "geometry". This is a general
 "base class" for spatial types; the column declares that it can contain values
-of *any* spatial type. The second column, "shape2", uses a shorthand syntax
-for the same type. Like "normal" types, you can create a column either by
-invoking `column` or invoking the name of the type directly.
+of *any* spatial type.
+
+The second column, "shape2", uses a shorthand syntax for the same type as the shape1 column.
+You can create a column either by invoking `column` or invoking the name of the type directly.
 
 The third column, "path", has a specific geometric type, `line_string`. It
 also specifies an SRID (spatial reference ID) that indicates which coordinate
 system it expects the data to be in. The column now has a "constraint" on it;
 it will accept only LineString data, and only data whose SRID is 3785.
 
-The fourth column, "lonlat", has the `point` type, and accepts only Point
+The fourth column, "lonlat", has the `st_point` type, and accepts only Point
 data. Furthermore, it declares the column as "geographic", which means it
 accepts longitude/latitude data, and performs calculations such as distances
 using a spheroidal domain.
@@ -219,9 +231,9 @@ The following are the data types understood by PostGIS and exposed by
 activerecord-postgis-adapter:
 
 * `:geometry` -- Any geometric type
-* `:point` -- Point data
+* `:st_point` -- Point data
 * `:line_string` -- LineString data
-* `:polygon` -- Polygon data
+* `:st_polygon` -- Polygon data
 * `:geometry_collection` -- Any collection type
 * `:multi_point` -- A collection of Points
 * `:multi_line_string` -- A collection of LineStrings
@@ -243,15 +255,24 @@ Following are the options understood by the adapter:
   Default is false.
 
 
-The adapter also extends the ActiveRecord migration syntax for creating
-spatial indexes. To create a PostGIS spatial index, simply set the :spatial
-option to true, as follows:
+To create a PostGIS spatial index, add `using: :gist` to your index:
 
 ```ruby
-change_table :my_spatial_table do |t|
-  t.index :lonlat, :spatial => true
+add_index :my_table, :lonlat, using: :gist
+
+# or
+
+change_table :my_table do |t|
+  t.index :lonlat, using: :gist
 end
 ```
+
+### Point and Polygon Types with ActiveRecord 4.2+
+
+Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
+adapter added support for the native Postgresql `point` and `polygon` types, which conflict with this
+adapter's types of the same names. The PostGIS point type must be referenced as `st_point`, and the
+PostGIS polygon type must be referenced as `st_polygon`.
 
 ### Configuring ActiveRecord
 
@@ -390,49 +411,6 @@ want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
 
-Unfortunately, Rails by itself doesn't provide good support for embedding
-arbitrary function calls in your where clause. You could get around this by
-writing raw SQL. But the solution we recommend is to use the "squeel" gem.
-This gem extends the ActiveRecord syntax to support more complex queries.
-
-Let's say you wanted to find all records whose lonlat fell within a particular
-polygon. In the query, you can accomplish this by calling the ST_Intersects()
-SQL function on the lonlat and the polygon. That is, you'd want to generate
-SQL that looks something like this:
-
-```
-SELECT * FROM my_spatial_table WHERE ST_Intersects(lonlat, <i>my-polygon</i>);
-```
-
-Using squeel, you can write this as follows:
-
-```ruby
-my_polygon = get_my_polygon    # Obtain the polygon as an RGeo geometry
-MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first
-```
-
-Notice the curly brackets instead of parentheses in the where clause. This is
-how to write squeel queries: squeel is actually a DSL, and you're passing a
-block to the where method instead of an argument list. Also note that Squeel
-requires ActiveRecord 3.1 or later to handle SQL function calls such as
-ST_Intersects.
-
-As another example, one common query is to find all objects displaying in a
-window. This can be done using the overlap (&&) operator with a bounding box.
-Here's an example that finds linestrings in the "path" column that intersect a
-bounding box:
-
-```ruby
-sw = get_sw_corner_in_projected_coordinates
-ne = get_ne_corner_in_projected_coordinates
-window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-MySpatialTable.where{path.op('&&', window)}.all
-```
-
-Note that bounding box queries make sense only in a projected coordinate
-system; you shouldn't try to run such a query against a lat/long (geographic)
-column.
-
 ## Background: PostGIS
 
 A spatial database is one that includes a set of data types, functions,
@@ -488,8 +466,6 @@ a head start on the implementation.
 
 ## License
 
-Copyright 2013 Daniel Azuma
-
-Copyright 2014 Tee Parham
+Copyright 2015 Daniel Azuma, Tee Parham
 
 https://github.com/rgeo/activerecord-postgis-adapter/blob/master/LICENSE.txt

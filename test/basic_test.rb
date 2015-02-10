@@ -1,182 +1,152 @@
 require 'test_helper'
 
 class BasicTest < ActiveSupport::TestCase  # :nodoc:
-  DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database.yml'
-  OVERRIDE_DATABASE_CONFIG_PATH = ::File.dirname(__FILE__)+'/database_local.yml'
 
-  include RGeo::ActiveRecord::AdapterTestHelper
+  def test_version
+    refute_nil ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
+  end
 
-  define_test_methods do
+  def test_postgis_available
+    assert_equal 'PostGIS', SpatialModel.connection.adapter_name
+    assert SpatialModel.connection.postgis_lib_version.start_with? '2.'
+  end
 
-    def populate_ar_class(content)
-      klass = create_ar_class
-      case content
-      when :mercator_point
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'latlon', :point, :srid => 3785
-        end
-      when :latlon_point_geographic
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'latlon', :point, :srid => 4326, :geographic => true
-        end
-      when :no_constraints
-        klass.connection.create_table(:spatial_test) do |t_|
-          t_.column 'geo', :geometry, :no_constraints => true
-        end
-      end
-      klass
+  def test_arel_visitor
+    visitor = Arel::Visitors::PostGIS.new(SpatialModel.connection)
+    node = RGeo::ActiveRecord::SpatialConstantNode.new('POINT (1.0 2.0)')
+    collector = Arel::Collectors::PlainString.new
+    visitor.accept(node, collector)
+    assert_equal "ST_GeomFromEWKT('POINT (1.0 2.0)')", collector.value
+  end
+
+  def test_set_and_get_point
+    create_model
+    obj = SpatialModel.new
+    assert_nil obj.latlon
+    obj.latlon = factory.point(1.0, 2.0)
+    assert_equal factory.point(1.0, 2.0), obj.latlon
+    assert_equal 3785, obj.latlon.srid
+  end
+
+  def test_set_and_get_point_from_wkt
+    create_model
+    obj = SpatialModel.new
+    assert_nil obj.latlon
+    obj.latlon = 'POINT(1 2)'
+    assert_equal factory.point(1.0, 2.0), obj.latlon
+    assert_equal 3785, obj.latlon.srid
+  end
+
+  def test_save_and_load_point
+    create_model
+    obj = SpatialModel.new
+    obj.latlon = factory.point(1.0, 2.0)
+    obj.save!
+    id = obj.id
+    obj2 = SpatialModel.find(id)
+    assert_equal factory.point(1.0, 2.0), obj2.latlon
+    assert_equal 3785, obj2.latlon.srid
+    # assert_equal true, RGeo::Geos.is_geos?(obj2.latlon)
+  end
+
+  def test_save_and_load_geographic_point
+    create_model
+    obj = SpatialModel.new
+    obj.latlon_geo = geographic_factory.point(1.0, 2.0)
+    obj.save!
+    id = obj.id
+    obj2 = SpatialModel.find(id)
+    assert_equal geographic_factory.point(1.0, 2.0), obj2.latlon_geo
+    assert_equal 4326, obj2.latlon_geo.srid
+    # assert_equal false, RGeo::Geos.is_geos?(obj2.latlon_geo)
+  end
+
+  def test_save_and_load_point_from_wkt
+    create_model
+    obj = SpatialModel.new
+    obj.latlon = 'POINT(1 2)'
+    obj.save!
+    id = obj.id
+    obj2 = SpatialModel.find(id)
+    assert_equal factory.point(1.0, 2.0), obj2.latlon
+    assert_equal 3785, obj2.latlon.srid
+  end
+
+  def test_set_point_bad_wkt
+    create_model
+    obj = SpatialModel.create(latlon: 'POINT (x)')
+    assert_nil obj.latlon
+  end
+
+  def test_set_point_wkt_wrong_type
+    create_model
+    assert_raises(ActiveRecord::StatementInvalid) do
+      SpatialModel.create(latlon: 'LINESTRING(1 2, 3 4, 5 6)')
     end
+  end
 
-    def test_version
-      refute_nil ::ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
+  def test_custom_factory
+    klass = SpatialModel
+    klass.connection.create_table(:spatial_test, force: true) do |t|
+      t.st_point(:latlon, srid: 4326)
     end
-
-    def test_postgis_available
-      connection = create_ar_class.connection
-      assert_equal 'PostGIS', connection.adapter_name
-      refute_nil connection.postgis_lib_version
+    factory = RGeo::Geographic.simple_mercator_factory
+    klass.class_eval do
+      set_rgeo_factory_for_column(:latlon, factory)
     end
+    assert_equal factory, klass.rgeo_factory_for_column(:latlon)
+    object = klass.new
+    assert_equal factory, object.class.rgeo_factory_for_column(:latlon)
+  end
 
-    def test_set_and_get_point
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.new
-      assert_nil obj.latlon
-      obj.latlon = @factory.point(1.0, 2.0)
-      assert_equal @factory.point(1.0, 2.0), obj.latlon
-      assert_equal 3785, obj.latlon.srid
+  def test_readme_example
+    klass = SpatialModel
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.column(:shape, :geometry)
+      t.line_string(:path, srid: 3785)
+      t.st_point(:latlon, geographic: true)
     end
-
-    def test_set_and_get_point_from_wkt
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.new
-      assert_nil obj.latlon
-      obj.latlon = 'POINT(1 2)'
-      assert_equal @factory.point(1.0, 2.0), obj.latlon
-      assert_equal 3785, obj.latlon.srid
+    klass.reset_column_information
+    assert_includes klass.columns.map(&:name), "shape"
+    klass.connection.change_table(:spatial_models) do |t|
+      t.index(:latlon, using: :gist)
     end
-
-    def test_save_and_load_point
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
-      obj.save!
-      id = obj.id
-      obj2 = klass.find(id)
-      assert_equal @factory.point(1.0, 2.0), obj2.latlon
-      assert_equal 3785, obj2.latlon.srid
-      assert_equal true, ::RGeo::Geos.is_geos?(obj2.latlon)
+    klass.class_eval do
+      self.rgeo_factory_generator = RGeo::Geos.method(:factory)
+      set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
     end
+    object = klass.new
+    object.latlon = 'POINT(-122 47)'
+    point = object.latlon
+    assert_equal 47, point.latitude
+    object.shape = point
+    # assert_equal true, RGeo::Geos.is_geos?(object.shape)
+  end
 
-    def test_save_and_load_geographic_point
-      klass = populate_ar_class(:latlon_point_geographic)
-      obj = klass.new
-      obj.latlon = @factory.point(1.0, 2.0)
-      obj.save!
-      id = obj.id
-      obj2 = klass.find(id)
-      assert_equal @geographic_factory.point(1.0, 2.0), obj2.latlon
-      assert_equal 4326, obj2.latlon.srid
-      assert_equal false, ::RGeo::Geos.is_geos?(obj2.latlon)
+  def test_point_to_json
+    create_model
+    obj = SpatialModel.new
+    assert_match(/"latlon":null/, obj.to_json)
+    obj.latlon = factory.point(1.0, 2.0)
+    assert_match(/"latlon":"POINT\s\(1\.0\s2\.0\)"/, obj.to_json)
+  end
+
+  def test_custom_column
+    create_model
+    rec = SpatialModel.new
+    rec.latlon = 'POINT(0 0)'
+    rec.save
+    refute_nil SpatialModel.select("CURRENT_TIMESTAMP as ts").first.ts
+  end
+
+  private
+
+  def create_model
+    SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
+      t.column 'latlon', :st_point, srid: 3785
+      t.column 'latlon_geo', :st_point, srid: 4326, geographic: true
     end
-
-    def test_save_and_load_point_from_wkt
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.new
-      obj.latlon = 'POINT(1 2)'
-      obj.save!
-      id = obj.id
-      obj2 = klass.find(id)
-      assert_equal @factory.point(1.0, 2.0), obj2.latlon
-      assert_equal 3785, obj2.latlon.srid
-    end
-
-    def test_set_point_bad_wkt
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.create(:latlon => 'POINT (x)')
-      assert_nil obj.latlon
-    end
-
-    def test_set_point_wkt_wrong_type
-      klass = populate_ar_class(:mercator_point)
-      assert_raises(::ActiveRecord::StatementInvalid) do
-        klass.create(:latlon => 'LINESTRING(1 2, 3 4, 5 6)')
-      end
-    end
-
-    def test_custom_factory
-      klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t|
-        t.point(:latlon, :srid => 4326)
-      end
-      factory = ::RGeo::Geographic.simple_mercator_factory
-      klass.class_eval do
-        set_rgeo_factory_for_column(:latlon, factory)
-      end
-      rec_ = klass.new
-      rec_.latlon = 'POINT(-122 47)'
-      assert_equal factory, rec_.latlon.factory
-      rec_.save!
-      assert_equal factory, rec_.latlon.factory
-      rec2_ = klass.find(rec_.id)
-      assert_equal factory, rec2_.latlon.factory
-    end
-
-    def test_readme_example
-      klass = create_ar_class
-      klass.connection.create_table(:spatial_test) do |t_|
-        t_.column(:shape, :geometry)
-        t_.line_string(:path, :srid => 3785)
-        t_.point(:latlon, :geographic => true)
-      end
-      klass.connection.change_table(:spatial_test) do |t_|
-        t_.index(:latlon, :spatial => true)
-      end
-      klass.class_eval do
-        self.rgeo_factory_generator = ::RGeo::Geos.method(:factory)
-        set_rgeo_factory_for_column(:latlon, ::RGeo::Geographic.spherical_factory)
-      end
-      rec_ = klass.new
-      rec_.latlon = 'POINT(-122 47)'
-      loc_ = rec_.latlon
-      assert_equal 47, loc_.latitude
-      rec_.shape = loc_
-      assert_equal true, ::RGeo::Geos.is_geos?(rec_.shape)
-    end
-
-    # no_constraints no longer supported in PostGIS 2.0
-    def _test_save_and_load_no_constraints
-      klass = populate_ar_class(:no_constraints)
-      factory1_ = ::RGeo::Cartesian.preferred_factory(:srid => 3785)
-      factory2_ = ::RGeo::Cartesian.preferred_factory(:srid => 2000)
-      obj = klass.new
-      obj.geo = factory1_.point(1.0, 2.0)
-      obj.save!
-      id = obj.id
-      obj2 = klass.find(id)
-      assert_equal factory1_.point(1.0, 2.0), obj2.geo
-      assert_equal 3785, obj2.geo.srid
-      obj2.geo = factory2_.point(3.0, 4.0)
-      obj2.save!
-      obj3 = klass.find(id)
-      assert_equal factory2_.point(3.0, 4.0), obj3.geo
-      assert_equal 2000, obj3.geo.srid
-    end
-
-    def test_point_to_json
-      klass = populate_ar_class(:mercator_point)
-      obj = klass.new
-      assert_match(/"latlon":null/, obj.to_json)
-      obj.latlon = @factory.point(1.0, 2.0)
-      assert_match(/"latlon":"POINT\s\(1\.0\s2\.0\)"/, obj.to_json)
-    end
-
-    def test_custom_column
-      klass = populate_ar_class(:mercator_point)
-      rec = klass.new
-      rec.latlon = 'POINT(0 0)'
-      rec.save
-      refute_nil klass.select("CURRENT_TIMESTAMP as ts").first.ts
-    end
-
+    SpatialModel.reset_column_information
   end
 end
+
