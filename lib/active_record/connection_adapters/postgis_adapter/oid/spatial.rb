@@ -100,12 +100,12 @@ module ActiveRecord
             nil
           end
 
-          def binary?(string)
+          def binary_string?(string)
             string[0] == "\x00" || string[0] == "\x01" || string[0, 4] =~ /[0-9a-fA-F]{4}/
           end
 
           def wkt_parser(factory, string)
-            if binary?(string)
+            if binary_string?(string)
               RGeo::WKRep::WKBParser.new(factory, support_ewkb: true, default_srid: @srid)
             else
               RGeo::WKRep::WKTParser.new(factory, support_ewkt: true, default_srid: @srid)
