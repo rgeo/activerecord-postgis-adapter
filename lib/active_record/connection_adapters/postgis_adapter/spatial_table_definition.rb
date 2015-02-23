@@ -12,14 +12,15 @@ module ActiveRecord  # :nodoc:
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
         def new_column_definition(name, type, options)
           if (info = MainAdapter.spatial_column_options(type.to_sym))
+            if (limit = options.delete(:limit))
+              options.merge!(limit) if limit.is_a?(::Hash)
+            end
+
             geo_type = ColumnDefinition.geo_type(options[:type] || type || info[:type])
             base_type = info[:type] || (options[:geographic] ? :geography : :geometry)
 
             # puts name.dup << " - " << type.to_s << " - " << options.to_s << " :: " << geo_type.to_s << " - " << base_type.to_s
 
-            if (limit = options.delete(:limit))
-              options.merge!(limit) if limit.is_a?(::Hash)
-            end
             if options[:geographic]
               options[:limit] = ColumnDefinition.options_to_limit(geo_type, options)
             end
