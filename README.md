@@ -33,7 +33,7 @@ The adapter requires PostgreSQL 9.0+.
 
 #### Version 3.x supports ActiveRecord 4.2+
 
-_It is currently in beta & has known bugs. JRuby is not supported due to AR-JDBC not supporing 4.2 yet._
+_It is currently in beta & has known bugs. See Issues. JRuby is not supported due to AR-JDBC not supporting 4.2 yet._
 
 Requirements:
 
@@ -46,7 +46,7 @@ PostGIS 2.0+
 Gemfile:
 
 ```ruby
-gem 'activerecord-postgis-adapter', '3.0.0.beta1'
+gem 'activerecord-postgis-adapter', '3.0.0.beta2'
 ```
 
 #### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
