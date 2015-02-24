@@ -270,6 +270,15 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal false, klass.columns[-1].array
   end
 
+  def test_non_spatial_column_limits
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.string :foo, limit: 123
+    end
+    klass.reset_column_information
+    col = klass.columns.last
+    assert_equal 123, col.limit
+  end
+
   private
 
   def klass
