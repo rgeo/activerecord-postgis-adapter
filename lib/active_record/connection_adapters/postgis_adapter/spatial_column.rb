@@ -44,12 +44,19 @@ module ActiveRecord  # :nodoc:
                     :geometric_type,
                     :has_m,
                     :has_z,
-                    :limit, # override
                     :srid
 
         alias :geographic? :geographic
         alias :has_z? :has_z
         alias :has_m? :has_m
+
+        def limit
+          if spatial?
+            @limit
+          else
+            super
+          end
+        end
 
         def spatial?
           cast_type.respond_to?(:spatial?) && cast_type.spatial?
