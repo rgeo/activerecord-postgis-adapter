@@ -51,6 +51,8 @@ gem 'activerecord-postgis-adapter', '3.0.0.beta2'
 
 #### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
 
+_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
+
 Requirements:
 
 ```
@@ -76,6 +78,8 @@ gem 'ffi-geos'
 _JRuby support for Rails 4.x was added in version 2.2.0_
 
 #### Version 0.6.x supports ActiveRecord 3.x
+
+_If you are using version 0.6.x, you should read [the version 0.6.x / 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
 
 Requirements:
 
