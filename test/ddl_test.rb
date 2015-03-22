@@ -197,7 +197,17 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal RGeo::Feature::Point, klass.columns.last.geometric_type
   end
 
-  def test_create_geometry_with_options
+  def test_create_geometry_using_shortcut_with_srid
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.geometry 'latlon', srid: 4326
+    end
+    klass.reset_column_information
+    col = klass.columns.last
+    assert_equal RGeo::Feature::Geometry, col.geometric_type
+    assert_equal({ srid: 4326, type: 'geometry' }, col.limit)
+  end
+
+  def test_create_polygon_with_options
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column 'region', :st_polygon, has_m: true, srid: 3785
     end
