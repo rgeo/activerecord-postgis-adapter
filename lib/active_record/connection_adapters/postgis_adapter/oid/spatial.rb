@@ -87,7 +87,6 @@ module ActiveRecord
             return if value.nil?
             RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value)
           rescue RGeo::Error::ParseError
-            puts "\ncast failed!!\n\n"
             nil
           end
 
