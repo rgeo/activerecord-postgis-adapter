@@ -6,4 +6,4 @@ gemspec
 gem 'pg', '~> 0.17', platform: :ruby
 gem 'activerecord-jdbcpostgresql-adapter', '~> 1.3.9', platform: :jruby
 gem 'ffi-geos', platform: :jruby
-gem 'byebug', platform: :ruby_21
+gem 'byebug', platform: :ruby_22
