@@ -14,8 +14,8 @@ module ActiveRecord
           registry[key(attrs)] = factory
         end
 
-        def default
-          @default || RGeo::ActiveRecord::RGeoFactorySettings.new
+        def default(geo_type = "")
+          @default || default_for_type(geo_type)
         end
 
         def default=(factory)
@@ -23,10 +23,25 @@ module ActiveRecord
         end
 
         def factory(attrs)
-          registry[key(attrs)] || default
+          registry[key(attrs)] || default(attrs)
         end
 
         private
+
+        def default_for_type(attrs)
+          if attrs[:geo_type] =~ /geography/
+            RGeo::Geographic.spherical_factory(to_factory_attrs(attrs))
+          else
+            RGeo::ActiveRecord::RGeoFactorySettings.new
+          end
+        end
+
+        def to_factory_attrs(attrs)
+          attrs.slice(:srid).merge(
+            has_m_coordinate: attrs[:has_m],
+            has_z_coordinate: attrs[:has_z],
+          )
+        end
 
         def key(attrs)
           {
