@@ -100,6 +100,9 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_readme_example
+    RGeo::ActiveRecord::SpatialFactoryStore.instance.register(
+      RGeo::Geographic.spherical_factory, geo_type: "point", sql_type: "geography")
+
     klass = SpatialModel
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column(:shape, :geometry)
@@ -113,8 +116,8 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     end
     klass.class_eval do
       self.rgeo_factory_generator = RGeo::Geos.method(:factory)
-      set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
     end
+
     object = klass.new
     object.latlon = 'POINT(-122 47)'
     point = object.latlon
@@ -148,5 +151,8 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     end
     SpatialModel.reset_column_information
   end
-end
 
+  def spatial_factory_store
+    RGeo::ActiveRecord::SpatialFactoryStore.instance
+  end
+end

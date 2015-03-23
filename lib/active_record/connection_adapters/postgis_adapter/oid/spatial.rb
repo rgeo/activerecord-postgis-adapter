@@ -10,13 +10,8 @@ module ActiveRecord
           #   "geometry(Polygon,4326) NOT NULL"
           #   "geometry(Geography,4326)"
           def initialize(oid, sql_type)
+            @sql_type = sql_type
             @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
-            if oid =~ /geography/
-              factory_opts = {srid: (@srid || 4326)}
-              factory_opts[:has_z_coordinate] = @has_z
-              factory_opts[:has_m_coordinate] = @has_m
-              @factory_generator = RGeo::Geographic.spherical_factory(factory_opts)
-            end
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
@@ -52,12 +47,19 @@ module ActiveRecord
             [geo_type, srid, has_z, has_m]
           end
 
-          def factory_generator
-            @factory_generator
+          def spatial_factory
+            @spatial_factory ||=
+              RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
+                geo_type: @geo_type,
+                has_m:    @has_m,
+                has_z:    @has_z,
+                sql_type: @sql_type,
+                srid:     @srid,
+              )
           end
 
           def geographic?
-            !!factory_generator
+            @sql_type =~ /geography/
           end
 
           def spatial?
@@ -90,16 +92,14 @@ module ActiveRecord
 
           def cast_value(value)
             return if value.nil?
-            RGeo::WKRep::WKBParser.new(@factory_generator, support_ewkb: true).parse(value)
+            RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true).parse(value)
           rescue RGeo::Error::ParseError
             nil
           end
 
           # convert WKT string into RGeo object
           def parse_wkt(string)
-            # factory = factory_settings.get_column_factory(table_name, column, constraints)
-            factory = @factory_generator || RGeo::ActiveRecord::RGeoFactorySettings.new
-            wkt_parser(factory, string).parse(string)
+            wkt_parser(string).parse(string)
           rescue RGeo::Error::ParseError
             nil
           end
@@ -108,14 +108,13 @@ module ActiveRecord
             string[0] == "\x00" || string[0] == "\x01" || string[0, 4] =~ /[0-9a-fA-F]{4}/
           end
 
-          def wkt_parser(factory, string)
+          def wkt_parser(string)
             if binary_string?(string)
-              RGeo::WKRep::WKBParser.new(factory, support_ewkb: true, default_srid: @srid)
+              RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true, default_srid: @srid)
             else
-              RGeo::WKRep::WKTParser.new(factory, support_ewkt: true, default_srid: @srid)
+              RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
             end
           end
-
         end
       end
     end
