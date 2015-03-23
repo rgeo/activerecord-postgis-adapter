@@ -1,18 +1,23 @@
 require "test_helper"
 
 class SpatialFactoryStoreTest < ActiveSupport::TestCase
-  def test_everything
-    # it's a singleton, so random test runs won't work :(
-
-    # default
+  def test_default
+    store.clear
     assert RGeo::ActiveRecord::RGeoFactorySettings === store.default
+  end
 
-    # set default
+  def test_set_default
+    store.clear
     default_factory = Object.new
     store.default = default_factory
     assert_equal default_factory, store.default
+  end
 
-    # register
+  def test_register
+    store.clear
+    default_factory = Object.new
+    store.default = default_factory
+
     point_factory = Object.new
     store.register point_factory, geo_type: "point", srid: 4326
     assert_equal point_factory, store.factory(geo_type: "point", srid: 4326)

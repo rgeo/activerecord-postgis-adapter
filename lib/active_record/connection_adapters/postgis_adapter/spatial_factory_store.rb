@@ -26,6 +26,10 @@ module ActiveRecord
           registry[key(attrs)] || default(attrs)
         end
 
+        def clear
+          @registry = {}
+        end
+
         private
 
         def default_for_type(attrs)
