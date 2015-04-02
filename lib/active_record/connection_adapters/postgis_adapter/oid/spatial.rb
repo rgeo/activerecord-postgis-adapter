@@ -10,8 +10,18 @@ module ActiveRecord
           #   "geometry(Polygon,4326) NOT NULL"
           #   "geometry(Geography,4326)"
           def initialize(oid, sql_type)
+            puts "INITIALIZING: #{oid} #{sql_type}"
             @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
-            @factory_generator = RGeo::Geographic.spherical_factory(srid: 4326) if oid =~ /geography/
+            puts " ==> : @geo_type:[#{@geo_type}] @srid:[#{@srid}] @has_z:[#{@has_z}]  @has_m:[#{@has_m}]"
+            if oid =~ /geography/
+              @factory_generator = ::RGeo::Geographic.spherical_factory(srid: @srid || 4326, 
+                                                                      has_z_coordinate: @has_z, 
+                                                                      has_m_coordinate: @has_m)
+            else 
+              @factory_generator = ::RGeo::Cartesian.preferred_factory_generator()
+            end
+              @factory_generator
+            # byebug
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
@@ -52,7 +62,7 @@ module ActiveRecord
           end
 
           def geographic?
-            !!factory_generator
+            factory_generator.class
           end
 
           def spatial?
@@ -93,7 +103,7 @@ module ActiveRecord
           # convert WKT string into RGeo object
           def parse_wkt(string)
             # factory = factory_settings.get_column_factory(table_name, column, constraints)
-            factory = @factory_generator || RGeo::ActiveRecord::RGeoFactorySettings.new
+            factory = @factory_generator 
             wkt_parser(factory, string).parse(string)
           rescue RGeo::Error::ParseError
             nil
