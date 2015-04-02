@@ -10,9 +10,9 @@ module ActiveRecord
           #   "geometry(Polygon,4326) NOT NULL"
           #   "geometry(Geography,4326)"
           def initialize(oid, sql_type)
-            puts "INITIALIZING: #{oid} #{sql_type}"
+            #puts "INITIALIZING: oid:[#{oid}] sql_type:[#{sql_type}]"
             @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
-            puts " ==> : @geo_type:[#{@geo_type}] @srid:[#{@srid}] @has_z:[#{@has_z}]  @has_m:[#{@has_m}]"
+            #puts " ==> : @geo_type:[#{@geo_type}] @srid:[#{@srid}] @has_z:[#{@has_z}]  @has_m:[#{@has_m}]"
             if oid =~ /geography/
               @factory_generator = ::RGeo::Geographic.spherical_factory(srid: @srid || 4326, 
                                                                       has_z_coordinate: @has_z, 
@@ -20,8 +20,6 @@ module ActiveRecord
             else 
               @factory_generator = ::RGeo::Cartesian.preferred_factory_generator()
             end
-              @factory_generator
-            # byebug
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
@@ -62,7 +60,7 @@ module ActiveRecord
           end
 
           def geographic?
-            factory_generator.class
+            factory_generator.class == ::RGeo::Geographic
           end
 
           def spatial?
