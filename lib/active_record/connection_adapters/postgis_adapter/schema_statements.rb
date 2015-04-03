@@ -30,6 +30,7 @@ module ActiveRecord
                             cast_type,
                             sql_type,
                             null,
+                            default_function,
                             column_info)
         end
 

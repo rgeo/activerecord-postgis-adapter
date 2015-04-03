@@ -9,7 +9,7 @@ module ActiveRecord  # :nodoc:
         # cast_type example classes:
         #   OID::Spatial
         #   OID::Integer
-        def initialize(factory_settings, table_name, name, default, cast_type, sql_type = nil, null = true, opts = nil)
+        def initialize(factory_settings, table_name, name, default, cast_type, sql_type = nil, null = true, default_function = nil, opts = nil)
           @factory_settings = factory_settings
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography\(/i)
@@ -29,7 +29,7 @@ module ActiveRecord  # :nodoc:
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type)
           end
-          super(name, default, cast_type, sql_type, null)
+          super(name, default, cast_type, sql_type, null, default_function)
           if spatial?
             if @srid
               @limit = { srid: @srid, type: geometric_type.type_name.underscore }
