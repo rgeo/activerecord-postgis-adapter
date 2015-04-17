@@ -1,3 +1,8 @@
+### 2.2.2 / 2015-04-17
+
+* Enable postgis_schema option for database creation
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/140)
+
 ### 2.2.1 / 2014-09-22
 
 * Update gemspec to not allow update to ActiveRecord 4.2, as it does not work.
