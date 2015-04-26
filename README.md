@@ -46,7 +46,7 @@ PostGIS 2.0+
 Gemfile:
 
 ```ruby
-gem 'activerecord-postgis-adapter', '3.0.0.beta3'
+gem 'activerecord-postgis-adapter', '3.0.0.beta4'
 ```
 
 #### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
