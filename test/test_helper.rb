@@ -27,4 +27,7 @@ class ActiveSupport::TestCase
     RGeo::Geographic.spherical_factory(srid: 4326)
   end
 
+  def spatial_factory_store
+    RGeo::ActiveRecord::SpatialFactoryStore.instance
+  end
 end
