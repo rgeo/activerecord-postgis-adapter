@@ -1,15 +1,6 @@
 # The activerecord-postgis-adapter gem installs the *postgis*
 # connection adapter into ActiveRecord.
 
-module ActiveRecord
-  module ConnectionAdapters
-    module PostGISAdapter
-      # The name returned by #adapter_name
-      ADAPTER_NAME = 'PostGIS'.freeze
-    end
-  end
-end
-
 # :stopdoc:
 
 require 'active_record/connection_adapters/postgresql_adapter'

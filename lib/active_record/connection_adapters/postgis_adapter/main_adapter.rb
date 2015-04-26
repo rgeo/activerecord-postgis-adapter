@@ -35,7 +35,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def adapter_name
-          ADAPTER_NAME
+          "PostGIS".freeze
         end
 
         def self.spatial_column_options(key)
