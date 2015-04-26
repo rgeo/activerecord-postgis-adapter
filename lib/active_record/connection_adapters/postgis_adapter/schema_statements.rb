@@ -23,8 +23,7 @@ module ActiveRecord
 
           column_info = spatial_column_info(table_name).get(column_name, sql_type)
 
-          SpatialColumn.new(@rgeo_factory_settings,
-                            table_name,
+          SpatialColumn.new(table_name,
                             column_name,
                             default,
                             cast_type,
