@@ -117,9 +117,6 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     klass.connection.change_table(:spatial_models) do |t|
       t.index(:latlon, using: :gist)
     end
-    klass.class_eval do
-      self.rgeo_factory_generator = RGeo::Geos.method(:factory)
-    end
 
     object = klass.new
     object.latlon = 'POINT(-122 47)'

@@ -9,8 +9,7 @@ module ActiveRecord  # :nodoc:
         # cast_type example classes:
         #   OID::Spatial
         #   OID::Integer
-        def initialize(factory_settings, table_name, name, default, cast_type, sql_type = nil, null = true, default_function = nil, opts = nil)
-          @factory_settings = factory_settings
+        def initialize(table_name, name, default, cast_type, sql_type = nil, null = true, default_function = nil, opts = nil)
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography\(/i)
           if opts
