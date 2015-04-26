@@ -11,7 +11,12 @@ module ActiveRecord
           #   "geometry(Geography,4326)"
           def initialize(oid, sql_type)
             @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
-            @factory_generator = RGeo::Geographic.spherical_factory(srid: 4326) if oid =~ /geography/
+            if oid =~ /geography/
+              factory_opts = {srid: (@srid || 4326)}
+              factory_opts[:has_z_coordinate] = @has_z
+              factory_opts[:has_m_coordinate] = @has_m
+              @factory_generator = RGeo::Geographic.spherical_factory(factory_opts)
+            end
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
