@@ -41,6 +41,6 @@ class SpatialFactoryStoreTest < ActiveSupport::TestCase
   private
 
   def store
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialFactoryStore.instance
+    spatial_factory_store
   end
 end
