@@ -35,6 +35,7 @@ class SpatialFactoryStoreTest < ActiveSupport::TestCase
     assert_equal z_point_factory, store.factory(geo_type: "point", has_z: true)
 
     assert_equal default_factory, store.factory(geo_type: "linestring")
+    store.clear
   end
 
   private

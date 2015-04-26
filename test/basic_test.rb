@@ -100,7 +100,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def test_readme_example
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialFactoryStore.instance.register(
+    spatial_factory_store.register(
       RGeo::Geographic.spherical_factory, geo_type: "point", sql_type: "geography")
 
     klass = SpatialModel
@@ -124,6 +124,8 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal 47, point.latitude
     object.shape = point
     # assert_equal true, RGeo::Geos.is_geos?(object.shape)
+
+    spatial_factory_store.clear
   end
 
   def test_point_to_json
@@ -150,5 +152,9 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'latlon_geo', :st_point, srid: 4326, geographic: true
     end
     SpatialModel.reset_column_information
+  end
+
+  def spatial_factory_store
+    ActiveRecord::ConnectionAdapters::PostGISAdapter::SpatialFactoryStore.instance
   end
 end
