@@ -8,13 +8,12 @@ module Arel  # :nodoc:
                         end
 
     class PostGIS < PostGISSuperclass  # :nodoc:
+      include RGeo::ActiveRecord::SpatialToSql
 
       FUNC_MAP = {
         'st_wkttosql' => 'ST_GeomFromEWKT',
       }
-
-      include RGeo::ActiveRecord::SpatialToSql
-
+      
       def st_func(standard_name)
         FUNC_MAP[standard_name.downcase] || standard_name
       end
