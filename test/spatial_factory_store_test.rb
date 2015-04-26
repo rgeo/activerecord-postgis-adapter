@@ -11,6 +11,7 @@ class SpatialFactoryStoreTest < ActiveSupport::TestCase
     default_factory = Object.new
     store.default = default_factory
     assert_equal default_factory, store.default
+    store.default = nil
   end
 
   def test_register
