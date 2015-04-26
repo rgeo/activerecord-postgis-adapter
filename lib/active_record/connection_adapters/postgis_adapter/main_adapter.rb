@@ -2,6 +2,8 @@ module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGISAdapter  # :nodoc:
       class MainAdapter < PostgreSQLAdapter  # :nodoc:
+        include PostGISAdapter::SchemaStatements
+
         SPATIAL_COLUMN_OPTIONS =
           {
             geography:           { geographic: true },
@@ -23,8 +25,6 @@ module ActiveRecord  # :nodoc:
           super
           @visitor = Arel::Visitors::PostGIS.new(self)
         end
-
-        include PostGISAdapter::SchemaStatements
 
         # def schema_creation
         #   PostGISAdapter::SchemaCreation.new self
