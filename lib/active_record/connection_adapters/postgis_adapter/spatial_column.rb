@@ -61,11 +61,6 @@ module ActiveRecord  # :nodoc:
           cast_type.respond_to?(:spatial?) && cast_type.spatial?
         end
 
-        # TODO: delete - unused?
-        def has_spatial_constraints?
-          !!@srid
-        end
-
         private
 
         def set_geometric_type_from_name(name)

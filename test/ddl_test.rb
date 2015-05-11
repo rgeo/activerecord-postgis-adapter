@@ -30,7 +30,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal 1, count_geometry_columns
     col = klass.columns.last
     assert_equal RGeo::Feature::Geometry, col.geometric_type
-    assert_equal true, col.has_spatial_constraints?
+    assert_equal true, col.spatial?
     assert_equal false, col.geographic?
     assert_equal 0, col.srid
     klass.connection.drop_table(:spatial_models)
@@ -44,7 +44,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     klass.reset_column_information
     col = klass.columns.last
     assert_equal RGeo::Feature::Geometry, col.geometric_type
-    assert_equal true, col.has_spatial_constraints?
+    assert_equal true, col.spatial?
     assert_equal true, col.geographic?
     assert_equal 4326, col.srid
     assert_equal 0, count_geometry_columns
@@ -82,13 +82,13 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     columns = klass.columns
     assert_equal RGeo::Feature::Geometry, columns[-3].geometric_type
     assert_equal 0, columns[-3].srid
-    assert_equal true, columns[-3].has_spatial_constraints?
+    assert_equal true, columns[-3].spatial?
     assert_equal RGeo::Feature::Point, columns[-2].geometric_type
     assert_equal 4326, columns[-2].srid
     assert_equal false, columns[-2].geographic?
-    assert_equal true, columns[-2].has_spatial_constraints?
+    assert_equal true, columns[-2].spatial?
     assert_nil columns[-1].geometric_type
-    assert_equal false, columns[-1].has_spatial_constraints?
+    assert_equal false, columns[-1].spatial?
   end
 
   def test_add_geometry_column_null_false
@@ -117,13 +117,13 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     cols_ = klass.columns
     assert_equal RGeo::Feature::Geometry, cols_[-3].geometric_type
     assert_equal 0, cols_[-3].srid
-    assert_equal true, cols_[-3].has_spatial_constraints?
+    assert_equal true, cols_[-3].spatial?
     assert_equal RGeo::Feature::Point, cols_[-2].geometric_type
     assert_equal 4326, cols_[-2].srid
     assert_equal true, cols_[-2].geographic?
-    assert_equal true, cols_[-2].has_spatial_constraints?
+    assert_equal true, cols_[-2].spatial?
     assert_nil cols_[-1].geometric_type
-    assert_equal false, cols_[-1].has_spatial_constraints?
+    assert_equal false, cols_[-1].spatial?
   end
 
   def test_drop_geometry_column
