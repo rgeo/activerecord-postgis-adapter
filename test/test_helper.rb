@@ -1,7 +1,8 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require 'mocha/mini_test'
-require 'rgeo/active_record/adapter_test_helper'
+require 'active_record'
+require 'activerecord-postgis-adapter'
 
 begin
   require 'byebug'
@@ -26,4 +27,7 @@ class ActiveSupport::TestCase
     RGeo::Geographic.spherical_factory(srid: 4326)
   end
 
+  def spatial_factory_store
+    RGeo::ActiveRecord::SpatialFactoryStore.instance
+  end
 end

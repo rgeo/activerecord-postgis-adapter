@@ -30,10 +30,6 @@ module ActiveRecord  # :nodoc:
         #   PostGISAdapter::SchemaCreation.new self
         # end
 
-        def set_rgeo_factory_settings(factory_settings)
-          @rgeo_factory_settings = factory_settings
-        end
-
         def adapter_name
           "PostGIS".freeze
         end

@@ -87,19 +87,25 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_custom_factory
     klass = SpatialModel
-    klass.connection.create_table(:spatial_test, force: true) do |t|
-      t.st_point(:latlon, srid: 4326)
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.st_polygon(:area, srid: 4326)
     end
-    factory = RGeo::Geographic.simple_mercator_factory
-    klass.class_eval do
-      set_rgeo_factory_for_column(:latlon, factory)
-    end
-    assert_equal factory, klass.rgeo_factory_for_column(:latlon)
+    klass.reset_column_information
+    custom_factory = RGeo::Geographic.spherical_factory(buffer_resolution: 8, srid: 4326)
+    spatial_factory_store.register(custom_factory, geo_type: "polygon", srid: 4326)
     object = klass.new
-    assert_equal factory, object.class.rgeo_factory_for_column(:latlon)
+    area = custom_factory.point(1, 2).buffer(3)
+    object.area = area
+    object.save!
+    object.reload
+    assert_equal area.to_s, object.area.to_s
+    spatial_factory_store.clear
   end
 
   def test_readme_example
+    spatial_factory_store.register(
+      RGeo::Geographic.spherical_factory, geo_type: "point", sql_type: "geography")
+
     klass = SpatialModel
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.column(:shape, :geometry)
@@ -111,16 +117,15 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     klass.connection.change_table(:spatial_models) do |t|
       t.index(:latlon, using: :gist)
     end
-    klass.class_eval do
-      self.rgeo_factory_generator = RGeo::Geos.method(:factory)
-      set_rgeo_factory_for_column(:latlon, RGeo::Geographic.spherical_factory)
-    end
+
     object = klass.new
     object.latlon = 'POINT(-122 47)'
     point = object.latlon
     assert_equal 47, point.latitude
     object.shape = point
     # assert_equal true, RGeo::Geos.is_geos?(object.shape)
+
+    spatial_factory_store.clear
   end
 
   def test_point_to_json
@@ -148,5 +153,8 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     end
     SpatialModel.reset_column_information
   end
-end
 
+  def spatial_factory_store
+    RGeo::ActiveRecord::SpatialFactoryStore.instance
+  end
+end

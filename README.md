@@ -288,50 +288,27 @@ database has an integer type, ActiveRecord automatically casts the data to a
 Ruby Integer. In the same way, the activerecord-postgis-adapter automatically
 casts spatial data to a corresponding RGeo data type.
 
-However, RGeo offers more "flexibility" in its type system than can be
+RGeo offers more flexibility in its type system than can be
 interpreted solely from analyzing the database column. For example, you can
 configure RGeo objects to exhibit certain behaviors related to their
 serialization, validation, coordinate system, or computation. These settings
-are embodied in the RGeo "factory" associated with the object.
+are embodied in the RGeo factory associated with the object.
 
-Therefore, you can configure the adapter to use a particular factory (i.e. a
-particular combination of settings) for data associated with each column in
-the database. This is done by calling class methods on the ActiveRecord class
-associated with that database table. Specifically, you can call
-`set_rgeo_factory_for_column` to set the factory that ActiveRecord uses for a
-particular column.
-
-You can also provide a "factory generator" function which takes information
-from the database column and returns a suitable factory. Set the factory
-generator by setting the `rgeo_factory_generator` class attribute of your
-ActiveRecord class. The generator should be a callable object that takes a
-hash that could include the following keys:
-
-*   `:srid` -- the SRID of the database column
-*   `:has_z_coordinate` -- true if the database column has a Z coordinate
-*   `:has_m_coordinate` -- true if the database column has a M coordinate
-*   `:geographic` -- true if the database column is geographic instead of
-    geometric
-
+You can configure the adapter to use a particular factory (i.e. a
+particular combination of settings) for data associated with each type in
+the database.
 
 Here are some examples, given the spatial table defined above:
 
 ```ruby
-class MySpatialTable < ActiveRecord::Base
-
+RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
   # By default, use the GEOS implementation for spatial columns.
-  self.rgeo_factory_generator = RGeo::Geos.factory_generator
+  config.default = RGeo::Geos.factory_generator
 
-  # But use a geographic implementation for the :lonlat column.
-  set_rgeo_factory_for_column(:lonlat, RGeo::Geographic.spherical_factory(:srid => 4326))
-
+  # But use a geographic implementation for point columns.
+  config.register(RGeo::Geographic.spherical_factory(srid: 4326), geo_type: "point")
 end
 ```
-
-The `rgeo_factory_generator` attribute and `set_rgeo_factory_for_column`
-method are actually implemented (and documented) in the "rgeo-activerecord"
-gem, which is a dependency of the activerecord-postgis-adapter.
-
 
 ## Working With Spatial Data
 
