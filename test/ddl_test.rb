@@ -109,21 +109,30 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column('latlon', :geometry)
     end
     klass.connection.change_table(:spatial_models) do |t|
+      t.st_point('geom3', srid: 4326, geographic: true)
       t.column('geom2', :st_point, srid: 4326, geographic: true)
       t.column('name', :string)
     end
     klass.reset_column_information
     assert_equal 1, count_geometry_columns
-    cols_ = klass.columns
-    assert_equal RGeo::Feature::Geometry, cols_[-3].geometric_type
-    assert_equal 0, cols_[-3].srid
-    assert_equal true, cols_[-3].spatial?
-    assert_equal RGeo::Feature::Point, cols_[-2].geometric_type
-    assert_equal 4326, cols_[-2].srid
-    assert_equal true, cols_[-2].geographic?
-    assert_equal true, cols_[-2].spatial?
-    assert_nil cols_[-1].geometric_type
-    assert_equal false, cols_[-1].spatial?
+    cols = klass.columns
+    # latlon
+    assert_equal RGeo::Feature::Geometry, cols[-4].geometric_type
+    assert_equal 0, cols[-4].srid
+    assert_equal true, cols[-4].spatial?
+    # geom3
+    assert_equal RGeo::Feature::Point, cols[-3].geometric_type
+    assert_equal 4326, cols[-3].srid
+    assert_equal true, cols[-3].geographic?
+    assert_equal true, cols[-3].spatial?
+    # geom2
+    assert_equal RGeo::Feature::Point, cols[-2].geometric_type
+    assert_equal 4326, cols[-2].srid
+    assert_equal true, cols[-2].geographic?
+    assert_equal true, cols[-2].spatial?
+    # name
+    assert_nil cols[-1].geometric_type
+    assert_equal false, cols[-1].spatial?
   end
 
   def test_drop_geometry_column
@@ -136,11 +145,11 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     end
     klass.reset_column_information
     assert_equal 1, count_geometry_columns
-    cols_ = klass.columns
-    assert_equal RGeo::Feature::Geometry, cols_[-1].geometric_type
-    assert_equal 'latlon', cols_[-1].name
-    assert_equal 0, cols_[-1].srid
-    assert_equal false, cols_[-1].geographic?
+    cols = klass.columns
+    assert_equal RGeo::Feature::Geometry, cols[-1].geometric_type
+    assert_equal 'latlon', cols[-1].name
+    assert_equal 0, cols[-1].srid
+    assert_equal false, cols[-1].geographic?
   end
 
   def test_drop_geography_column
