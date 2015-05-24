@@ -10,7 +10,7 @@ module ActiveRecord  # :nodoc:
     if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
 
       def postgis_connection(config)
-        config[:adapter_class] = ::ActiveRecord::ConnectionAdapters::PostGISAdapter
+        config[:adapter_class] = ConnectionAdapters::PostGISAdapter
         postgresql_connection(config)
       end
 
