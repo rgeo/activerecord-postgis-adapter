@@ -4,11 +4,6 @@ module ActiveRecord  # :nodoc:
       class TableDefinition < PostgreSQL::TableDefinition  # :nodoc:
         include ColumnMethods
 
-        def initialize(types, name, temporary, options, as, adapter)
-          @adapter = adapter
-          super(types, name, temporary, options, as)
-        end
-
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb
         def new_column_definition(name, type, options)
           if (info = MainAdapter.spatial_column_options(type.to_sym))
