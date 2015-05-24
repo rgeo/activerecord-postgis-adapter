@@ -1,4 +1,4 @@
-if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
+if RUBY_ENGINE == 'jruby'
   require 'active_record/connection_adapters/jdbcpostgresql_adapter'
 else
   require 'pg'
@@ -7,7 +7,7 @@ end
 module ActiveRecord  # :nodoc:
   module ConnectionHandling  # :nodoc:
 
-    if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
+    if RUBY_ENGINE == 'jruby'
 
       def postgis_connection(config)
         config[:adapter_class] = ConnectionAdapters::PostGISAdapter
