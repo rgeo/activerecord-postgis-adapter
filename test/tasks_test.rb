@@ -145,13 +145,13 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     FileUtils.rm_f(tmp_sql_filename)
     FileUtils.mkdir_p(::File.dirname(tmp_sql_filename))
     drop_db_if_exists
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks.new(NEW_CONNECTION).create
+    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(NEW_CONNECTION).create
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
   end
 
   def drop_db_if_exists
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::PostGISDatabaseTasks.new(NEW_CONNECTION).drop
+    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(NEW_CONNECTION).drop
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
   end

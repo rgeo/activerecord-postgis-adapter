@@ -1,6 +1,6 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
-    module PostGISAdapter  # :nodoc:
+    module PostGIS  # :nodoc:
       class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
 
         def initialize(config)

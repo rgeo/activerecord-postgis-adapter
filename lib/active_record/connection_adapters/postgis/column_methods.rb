@@ -1,6 +1,6 @@
 module ActiveRecord
   module ConnectionAdapters
-    module PostGISAdapter
+    module PostGIS
       module ColumnMethods
         def spatial(name, options = {})
           raise "You must set a type. For example: 't.spatial type: :st_point'" unless options[:type]

@@ -1,6 +1,6 @@
 module ActiveRecord
   module ConnectionAdapters
-    module PostGISAdapter
+    module PostGIS
       module OID
         class Spatial < Type::Value
           # sql_type is a string that comes from the database definition

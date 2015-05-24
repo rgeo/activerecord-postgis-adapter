@@ -1,6 +1,6 @@
 module ActiveRecord
   module ConnectionAdapters
-    module PostGISAdapter
+    module PostGIS
       module SchemaStatements
         # override
         # pass table_name to #new_column
@@ -74,7 +74,7 @@ module ActiveRecord
 
         # override
         def create_table_definition(name, temporary, options, as = nil)
-          PostGISAdapter::TableDefinition.new(native_database_types, name, temporary, options, as)
+          PostGIS::TableDefinition.new(native_database_types, name, temporary, options, as)
         end
 
         # memoize hash of column infos for tables

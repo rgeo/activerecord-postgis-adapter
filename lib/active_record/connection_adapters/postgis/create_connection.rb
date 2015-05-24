@@ -10,7 +10,7 @@ module ActiveRecord  # :nodoc:
     if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
 
       def postgis_connection(config)
-        config[:adapter_class] = ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter
+        config[:adapter_class] = ::ActiveRecord::ConnectionAdapters::PostGISAdapter
         postgresql_connection(config)
       end
 
@@ -35,7 +35,7 @@ module ActiveRecord  # :nodoc:
 
         # The postgres drivers don't allow the creation of an unconnected PGconn object,
         # so just pass a nil connection object for the time being.
-        ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, conn_params, config)
+        ConnectionAdapters::PostGISAdapter.new(nil, logger, conn_params, config)
       end
 
     end

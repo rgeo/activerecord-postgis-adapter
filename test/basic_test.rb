@@ -3,7 +3,7 @@ require 'test_helper'
 class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_version
-    refute_nil ActiveRecord::ConnectionAdapters::PostGISAdapter::VERSION
+    refute_nil ActiveRecord::ConnectionAdapters::PostGIS::VERSION
   end
 
   def test_postgis_available

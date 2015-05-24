@@ -21,6 +21,6 @@ class TypeTest < ActiveSupport::TestCase
   private
 
   def spatial
-    ActiveRecord::ConnectionAdapters::PostGISAdapter::OID::Spatial
+    ActiveRecord::ConnectionAdapters::PostGIS::OID::Spatial
   end
 end

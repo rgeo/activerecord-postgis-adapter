@@ -1,12 +1,12 @@
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
-    module PostGISAdapter  # :nodoc:
+    module PostGIS  # :nodoc:
       class TableDefinition < PostgreSQL::TableDefinition  # :nodoc:
         include ColumnMethods
 
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb
         def new_column_definition(name, type, options)
-          if (info = MainAdapter.spatial_column_options(type.to_sym))
+          if (info = PostGISAdapter.spatial_column_options(type.to_sym))
             if (limit = options.delete(:limit))
               options.merge!(limit) if limit.is_a?(::Hash)
             end
@@ -35,8 +35,8 @@ module ActiveRecord  # :nodoc:
         private
 
         def create_column_definition(name, type)
-          if MainAdapter.spatial_column_options(type.to_sym)
-            PostGISAdapter::ColumnDefinition.new(name, type)
+          if PostGISAdapter.spatial_column_options(type.to_sym)
+            PostGIS::ColumnDefinition.new(name, type)
           else
             super
           end
@@ -92,7 +92,7 @@ module ActiveRecord  # :nodoc:
           if @srid
             @srid.to_i
           else
-            geographic? ? 4326 : PostGISAdapter::MainAdapter::DEFAULT_SRID
+            geographic? ? 4326 : PostGISAdapter::DEFAULT_SRID
           end
         end
 
