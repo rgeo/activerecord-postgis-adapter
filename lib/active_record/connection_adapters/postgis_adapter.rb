@@ -52,10 +52,6 @@ module ActiveRecord
         @visitor = Arel::Visitors::PostGIS.new(self)
       end
 
-      # def schema_creation
-      #   PostGISAdapter::SchemaCreation.new self
-      # end
-
       def adapter_name
         "PostGIS".freeze
       end
