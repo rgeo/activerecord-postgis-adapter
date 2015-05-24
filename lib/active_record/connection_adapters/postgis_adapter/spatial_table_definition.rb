@@ -6,11 +6,10 @@ module ActiveRecord  # :nodoc:
 
         def initialize(types, name, temporary, options, as, adapter)
           @adapter = adapter
-          @spatial_columns_hash = {}
           super(types, name, temporary, options, as)
         end
 
-        # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb#L320
+        # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb
         def new_column_definition(name, type, options)
           if (info = MainAdapter.spatial_column_options(type.to_sym))
             if (limit = options.delete(:limit))
@@ -31,16 +30,11 @@ module ActiveRecord  # :nodoc:
             column.srid = options[:srid]
             column.has_z = options[:has_z]
             column.has_m = options[:has_m]
-            (column.geographic? ? @columns_hash : @spatial_columns_hash)[name] = column
           else
             column = super(name, type, options)
           end
 
           column
-        end
-
-        def non_geographic_spatial_columns
-          @spatial_columns_hash.values
         end
 
         private
