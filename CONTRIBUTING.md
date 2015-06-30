@@ -13,6 +13,12 @@ psql postgis_adapter_test
 =# CREATE EXTENSION postgis;
 ```
 
+Install dependencies:
+
+```sh
+bundle install
+```
+
 Make sure the tests pass:
 
 `rake`
