@@ -10,8 +10,8 @@ module ActiveRecord
             oid = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
             default_value = extract_value_from_default(oid, default)
             default_function = extract_default_function(default_value, default)
-            null = notnull == 'f' if notnull.is_a?(String) # JDBC gets true/false
-            new_column(table_name, column_name, default_value, oid, type, null, default_function)
+            notnull = notnull == 't' if notnull.is_a?(String) # JDBC gets true/false
+            new_column(table_name, column_name, default_value, oid, type, !notnull, default_function)
           end
         end
 
