@@ -6,35 +6,39 @@ module ActiveRecord
         # pass table_name to #new_column
         def columns(table_name)
           # Limit, precision, and scale are all handled by the superclass.
-          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod|
-            oid = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
-            default_value = extract_value_from_default(oid, default)
+          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod, collation|
+            oid = oid.to_i
+            fmod = fmod.to_i
+            type_metadata = fetch_type_metadata(column_name, type, oid, fmod)
+            cast_type = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
+            default_value = extract_value_from_default(default)
             default_function = extract_default_function(default_value, default)
-            new_column(table_name, column_name, default_value, oid, type, notnull == 'f', default_function)
+            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull, default_function, collation)
           end
         end
 
         # override
-        def new_column(table_name, column_name, default, cast_type, sql_type = nil, null = true, default_function = nil)
+        def new_column(table_name, column_name, default, cast_type, sql_type_metadata =  nil, null = true, default_function = nil, collation = nil)
           # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
           if null.is_a?(String)
             null = (null == 't')
           end
 
-          column_info = spatial_column_info(table_name).get(column_name, sql_type)
+          column_info = spatial_column_info(table_name).get(column_name, sql_type_metadata.sql_type)
 
-          SpatialColumn.new(table_name,
-                            column_name,
+          SpatialColumn.new(column_name,
                             default,
-                            cast_type,
-                            sql_type,
+                            sql_type_metadata,
                             null,
                             default_function,
+                            collation,
+                            cast_type,
                             column_info)
+
         end
 
         # override
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L533
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L504
         #
         # returns Postgresql sql type string
         # examples:
@@ -46,7 +50,7 @@ module ActiveRecord
         #
         # type_to_sql(:geography, "Point,4326")
         # => "geography(Point,4326)"
-        def type_to_sql(type, limit = nil, precision = nil, scale = nil)
+        def type_to_sql(type, limit = nil, precision = nil, scale = nil, array = nil)
           case type
           when :geometry, :geography
             "#{ type.to_s }(#{ limit })"
@@ -70,10 +74,11 @@ module ActiveRecord
             st_point:            "st_point",
             st_polygon:          "st_polygon",
           )
+
         end
 
         # override
-        def create_table_definition(name, temporary, options, as = nil)
+        def create_table_definition(name, temporary = false, options = nil, as = nil)
           PostGIS::TableDefinition.new(native_database_types, name, temporary, options, as)
         end
 

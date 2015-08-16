@@ -18,10 +18,10 @@ Gem::Specification.new do |spec|
   spec.test_files = Dir["test/**/*"]
   spec.platform = Gem::Platform::RUBY
 
-  spec.required_ruby_version = ">= 1.9.3"
+  spec.required_ruby_version = ">= 2.2.2"
 
-  spec.add_dependency "activerecord", "~> 4.2"
-  spec.add_dependency "rgeo-activerecord", "~> 4.0"
+  # spec.add_dependency "activerecord", "~> 5.0"
+  # spec.add_dependency "rgeo-activerecord", "~> 4.0"
 
   spec.add_development_dependency "rake", "~> 10.3"
   spec.add_development_dependency "minitest", "~> 5.4"
