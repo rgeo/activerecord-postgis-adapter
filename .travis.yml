@@ -1,17 +1,14 @@
 language: ruby
 rvm:
-  - 2.2
-  - 2.1
-  - 2.0.0
-  - 1.9.3
-  - jruby-19mode
+  - 2.2.2
+  - jruby
   - rbx-2
 gemfile:
-  - gemfiles/ar42.gemfile
+  - gemfiles/ar50.gemfile
 matrix:
   allow_failures:
     - rvm: rbx-2
-    - rvm: jruby-19mode
+    - rvm: jruby
 addons:
   postgresql: "9.3"
 before_script:
