@@ -298,7 +298,7 @@ You can configure the adapter to use a particular factory (i.e. a
 particular combination of settings) for data associated with each type in
 the database.
 
-Here are some examples, given the spatial table defined above:
+Here is an example:
 
 ```ruby
 RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
@@ -309,6 +309,8 @@ RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
   config.register(RGeo::Geographic.spherical_factory(srid: 4326), geo_type: "point")
 end
 ```
+
+For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README] (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
 
 ## Working With Spatial Data
 
