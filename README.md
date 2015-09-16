@@ -298,7 +298,7 @@ You can configure the adapter to use a particular factory (i.e. a
 particular combination of settings) for data associated with each type in
 the database.
 
-Here is an example:
+Here's an example using a Geos default factory:
 
 ```ruby
 RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
@@ -309,6 +309,10 @@ RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
   config.register(RGeo::Geographic.spherical_factory(srid: 4326), geo_type: "point")
 end
 ```
+
+The default spatial factory for geographic columns is `RGeo::Geographic.spherical_factory`.
+The default spatial factory for cartesian columns is `RGeo::Cartesian.preferred_factory`.
+You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
 
 For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README] (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
 
