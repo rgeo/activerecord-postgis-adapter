@@ -33,7 +33,7 @@ The adapter requires PostgreSQL 9.0+.
 
 #### Version 3.x supports ActiveRecord 4.2+
 
-_JRuby is not supported due to AR-JDBC not supporting 4.2 yet._
+_JRuby is not yet supported. AR-JDBC now supports 4.2, so JRuby support will be added soon._
 
 Requirements:
 
