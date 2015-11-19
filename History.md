@@ -1,3 +1,16 @@
+### 3.1.0 / 2015-05-25
+
+* Add JRuby support (#199)
+
+### 3.0.0 / 2015-05-25
+
+* Support & require ActivelRecord 4.2 (#145)
+* Require rgeo-activerecord 4.0 (#180, 089d2dedd9b)
+* Rename adapter module from PostGISAdapter to PostGIS (c2fa909bb)
+* Breaking change: remove #set_rgeo_factory_settings
+* Breaking change: remove #rgeo_factory_for_column
+* Breaking change: remove #has_spatial_constraints?
+
 ### 2.2.1 / 2014-09-22
 
 * Update gemspec to not allow update to ActiveRecord 4.2, as it does not work.
@@ -5,12 +18,12 @@
 ### 2.2.0 / 2014-08-11
 
 * Add JRuby support
-  (https://github.com/rgeo/activerecord-postgis-adapter/pull/102)  
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/102)
 
 ### 2.1.1 / 2014-06-17
 
 * Correct behavior of non-geographic null: false columns
-  (https://github.com/rgeo/activerecord-postgis-adapter/pull/127)  
+  (https://github.com/rgeo/activerecord-postgis-adapter/pull/127)
 * Loosen rgeo-activerecord dependency
 
 ### 2.1.0 / 2014-06-11
