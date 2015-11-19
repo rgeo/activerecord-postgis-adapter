@@ -5,14 +5,14 @@ rvm:
   - 2.1
   - 2.0.0
   - 1.9.3
-  - jruby-19mode
+  - jruby-1.7
+  - jruby-9.0.4.0
   - rbx-2
 gemfile:
   - gemfiles/ar42.gemfile
 matrix:
   allow_failures:
     - rvm: rbx-2
-    - rvm: jruby-19mode
 addons:
   postgresql: "9.3"
 before_script:
