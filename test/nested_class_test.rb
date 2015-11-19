@@ -15,7 +15,7 @@ class NestedClassTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'latlon', :st_point, srid: 3785
     end
     assert_empty Foo::Bar.all
-    assert_equal 1, Foo::Bar.connection.drop_table(:foo_bars).result_status
+    Foo::Bar.connection.drop_table(:foo_bars)
   end
 
 end
