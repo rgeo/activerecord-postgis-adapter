@@ -11,7 +11,6 @@ gemfile:
 matrix:
   allow_failures:
     - rvm: rbx-2
-    - rvm: jruby-19mode
 addons:
   postgresql: "9.3"
 before_script:
