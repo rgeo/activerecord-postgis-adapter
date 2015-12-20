@@ -1,13 +1,12 @@
-if RUBY_ENGINE == 'jruby'
-  require 'active_record/connection_adapters/jdbcpostgresql_adapter'
+if RUBY_ENGINE == "jruby"
+  require "active_record/connection_adapters/jdbcpostgresql_adapter"
 else
-  require 'pg'
+  require "pg"
 end
 
 module ActiveRecord  # :nodoc:
   module ConnectionHandling  # :nodoc:
-
-    if RUBY_ENGINE == 'jruby'
+    if RUBY_ENGINE == "jruby"
 
       def postgis_connection(config)
         config[:adapter_class] = ConnectionAdapters::PostGISAdapter
@@ -39,6 +38,5 @@ module ActiveRecord  # :nodoc:
       end
 
     end
-
   end
 end

@@ -16,7 +16,7 @@ module ActiveRecord  # :nodoc:
             type = row[3]
             dimension = row[1].to_i
             has_m = !!(type =~ /m$/i)
-            type.sub!(/m$/, '')
+            type.sub!(/m$/, "")
             has_z = dimension > 3 || dimension == 3 && !has_m
             result[name] = {
               dimension: dimension,

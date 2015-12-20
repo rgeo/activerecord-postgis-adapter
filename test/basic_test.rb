@@ -1,19 +1,18 @@
-require 'test_helper'
+require "test_helper"
 
 class BasicTest < ActiveSupport::TestCase  # :nodoc:
-
   def test_version
     refute_nil ActiveRecord::ConnectionAdapters::PostGIS::VERSION
   end
 
   def test_postgis_available
-    assert_equal 'PostGIS', SpatialModel.connection.adapter_name
-    assert SpatialModel.connection.postgis_lib_version.start_with? '2.'
+    assert_equal "PostGIS", SpatialModel.connection.adapter_name
+    assert SpatialModel.connection.postgis_lib_version.start_with? "2."
   end
 
   def test_arel_visitor
     visitor = Arel::Visitors::PostGIS.new(SpatialModel.connection)
-    node = RGeo::ActiveRecord::SpatialConstantNode.new('POINT (1.0 2.0)')
+    node = RGeo::ActiveRecord::SpatialConstantNode.new("POINT (1.0 2.0)")
     collector = Arel::Collectors::PlainString.new
     visitor.accept(node, collector)
     assert_equal "ST_GeomFromEWKT('POINT (1.0 2.0)')", collector.value
@@ -32,7 +31,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     create_model
     obj = SpatialModel.new
     assert_nil obj.latlon
-    obj.latlon = 'POINT(1 2)'
+    obj.latlon = "POINT(1 2)"
     assert_equal factory.point(1.0, 2.0), obj.latlon
     assert_equal 3785, obj.latlon.srid
   end
@@ -64,7 +63,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   def test_save_and_load_point_from_wkt
     create_model
     obj = SpatialModel.new
-    obj.latlon = 'POINT(1 2)'
+    obj.latlon = "POINT(1 2)"
     obj.save!
     id = obj.id
     obj2 = SpatialModel.find(id)
@@ -74,14 +73,14 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_set_point_bad_wkt
     create_model
-    obj = SpatialModel.create(latlon: 'POINT (x)')
+    obj = SpatialModel.create(latlon: "POINT (x)")
     assert_nil obj.latlon
   end
 
   def test_set_point_wkt_wrong_type
     create_model
     assert_raises(ActiveRecord::StatementInvalid) do
-      SpatialModel.create(latlon: 'LINESTRING(1 2, 3 4, 5 6)')
+      SpatialModel.create(latlon: "LINESTRING(1 2, 3 4, 5 6)")
     end
   end
 
@@ -119,7 +118,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     end
 
     object = klass.new
-    object.latlon = 'POINT(-122 47)'
+    object.latlon = "POINT(-122 47)"
     point = object.latlon
     assert_equal 47, point.latitude
     object.shape = point
@@ -139,7 +138,7 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   def test_custom_column
     create_model
     rec = SpatialModel.new
-    rec.latlon = 'POINT(0 0)'
+    rec.latlon = "POINT(0 0)"
     rec.save
     refute_nil SpatialModel.select("CURRENT_TIMESTAMP as ts").first.ts
   end
@@ -148,8 +147,8 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
 
   def create_model
     SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-      t.column 'latlon', :st_point, srid: 3785
-      t.column 'latlon_geo', :st_point, srid: 4326, geographic: true
+      t.column "latlon", :st_point, srid: 3785
+      t.column "latlon_geo", :st_point, srid: 4326, geographic: true
     end
     SpatialModel.reset_column_information
   end

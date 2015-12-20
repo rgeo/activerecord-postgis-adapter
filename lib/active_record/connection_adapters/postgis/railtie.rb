@@ -1,5 +1,5 @@
-require 'rails/railtie'
-require 'active_record/connection_adapters/postgis_adapter'
+require "rails/railtie"
+require "active_record/connection_adapters/postgis_adapter"
 
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:

@@ -2,7 +2,6 @@ module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGIS  # :nodoc:
       class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
-
         # sql_type examples:
         #   "Geometry(Point,4326)"
         #   "Geography(Point,4326)"
