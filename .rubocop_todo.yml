@@ -169,12 +169,6 @@ Style/IfUnlessModifier:
     - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis/schema_statements.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/IndentArray:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/schema_statements.rb'
-
 # Offense count: 2
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/MethodName:

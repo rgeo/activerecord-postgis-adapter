@@ -96,12 +96,11 @@ module ActiveRecord
             multi_polygon
             st_point
             st_polygon
-            )
-            .each do |geo_type|
-              map.register_type(geo_type) do |oid, _, sql_type|
-                OID::Spatial.new(oid, sql_type)
-              end
+          ).each do |geo_type|
+            map.register_type(geo_type) do |oid, _, sql_type|
+              OID::Spatial.new(oid, sql_type)
             end
+          end
         end
       end
     end
