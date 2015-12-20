@@ -154,12 +154,6 @@ Style/GuardClause:
     - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, UseHashRocketsWithSymbolValues.
-Style/HashSyntax:
-  Enabled: false
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: MaxLineLength.
