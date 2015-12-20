@@ -319,5 +319,4 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
   def geo_column_sql(postgis_view, table_name)
     "SELECT COUNT(*) FROM #{ postgis_view } WHERE f_table_name='#{ table_name }'"
   end
-
 end

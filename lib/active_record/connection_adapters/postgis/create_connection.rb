@@ -6,7 +6,6 @@ end
 
 module ActiveRecord  # :nodoc:
   module ConnectionHandling  # :nodoc:
-
     if RUBY_ENGINE == 'jruby'
 
       def postgis_connection(config)
@@ -39,6 +38,5 @@ module ActiveRecord  # :nodoc:
       end
 
     end
-
   end
 end

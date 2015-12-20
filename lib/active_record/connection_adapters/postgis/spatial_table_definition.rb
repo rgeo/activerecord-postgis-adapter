@@ -116,7 +116,6 @@ module ActiveRecord  # :nodoc:
           @has_m = !!value
         end
       end
-
     end
   end
 end

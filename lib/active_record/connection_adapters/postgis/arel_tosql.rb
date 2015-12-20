@@ -25,8 +25,6 @@ module Arel  # :nodoc:
       def visit_RGeo_ActiveRecord_SpatialNamedFunction(node, collector)
         aggregate(st_func(node.name), node, collector)
       end
-
     end
-
   end
 end

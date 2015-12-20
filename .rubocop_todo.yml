@@ -113,33 +113,6 @@ Style/EmptyLinesAroundBlockBody:
   Exclude:
     - 'tmp/tmp.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/arel_tosql.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
-    - 'lib/active_record/connection_adapters/postgis/spatial_column.rb'
-    - 'test/basic_test.rb'
-    - 'test/ddl_test.rb'
-    - 'test/nested_class_test.rb'
-    - 'test/setup_test.rb'
-    - 'test/spatial_queries_test.rb'
-    - 'test/tasks_test.rb'
-
-# Offense count: 8
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundModuleBody:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/arel_tosql.rb'
-    - 'lib/active_record/connection_adapters/postgis/create_connection.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
-    - 'lib/active_record/connection_adapters/postgis/schema_statements.rb'
-    - 'lib/active_record/connection_adapters/postgis/setup.rb'
-    - 'lib/active_record/connection_adapters/postgis/spatial_table_definition.rb'
-
 # Offense count: 32
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment.

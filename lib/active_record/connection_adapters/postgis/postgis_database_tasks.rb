@@ -2,7 +2,6 @@ module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGIS  # :nodoc:
       class PostGISDatabaseTasks < ::ActiveRecord::Tasks::PostgreSQLDatabaseTasks  # :nodoc:
-
         def initialize(config)
           super
           ensure_installation_configs
@@ -131,7 +130,6 @@ module ActiveRecord  # :nodoc:
       end
 
       ::ActiveRecord::Tasks::DatabaseTasks.register_task(/postgis/, PostGISDatabaseTasks)
-
     end
   end
 end

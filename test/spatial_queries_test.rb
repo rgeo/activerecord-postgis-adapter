@@ -75,5 +75,4 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     end
     SpatialModel.reset_column_information
   end
-
 end

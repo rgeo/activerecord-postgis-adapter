@@ -17,5 +17,4 @@ class NestedClassTest < ActiveSupport::TestCase  # :nodoc:
     assert_empty Foo::Bar.all
     Foo::Bar.connection.drop_table(:foo_bars)
   end
-
 end

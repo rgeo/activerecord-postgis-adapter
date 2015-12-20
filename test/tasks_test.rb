@@ -155,5 +155,4 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
   end
-
 end
