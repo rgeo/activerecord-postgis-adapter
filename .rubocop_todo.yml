@@ -106,13 +106,6 @@ Style/DoubleNegation:
     - 'lib/active_record/connection_adapters/postgis/spatial_column_info.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_table_definition.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'tmp/tmp.rb'
-
 # Offense count: 32
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment.
@@ -213,7 +206,6 @@ Style/RescueModifier:
 Style/SpaceAroundOperators:
   Exclude:
     - 'test/ddl_test.rb'
-    - 'tmp/tmp.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
