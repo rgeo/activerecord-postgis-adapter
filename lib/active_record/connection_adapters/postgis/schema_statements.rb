@@ -49,7 +49,7 @@ module ActiveRecord
         def type_to_sql(type, limit = nil, precision = nil, scale = nil)
           case type
           when :geometry, :geography
-            "#{ type.to_s }(#{ limit })"
+            "#{ type }(#{ limit })"
           else
             super
           end

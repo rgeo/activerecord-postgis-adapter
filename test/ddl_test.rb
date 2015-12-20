@@ -263,7 +263,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
       t.column 'sample_integer', :integer, default: -1
     end
     klass.reset_column_information
-    assert_equal -1, klass.new.sample_integer
+    assert_equal(-1, klass.new.sample_integer)
   end
 
   def test_column_types
