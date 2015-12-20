@@ -290,7 +290,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_reload_dumped_schema
     klass.connection.create_table(:spatial_models, force: true) do |t|
-      t.geography "latlon1", limit: {:srid=>4326, :type=>"point", :geographic=>true}
+      t.geography "latlon1", limit: { srid: 4326, type: "point", geographic: true }
     end
     klass.reset_column_information
     col = klass.columns.last
@@ -317,6 +317,6 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def geo_column_sql(postgis_view, table_name)
-    "SELECT COUNT(*) FROM #{ postgis_view } WHERE f_table_name='#{ table_name }'"
+    "SELECT COUNT(*) FROM #{postgis_view} WHERE f_table_name='#{table_name}'"
   end
 end

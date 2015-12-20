@@ -200,46 +200,11 @@ Style/RescueModifier:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: MultiSpaceAllowedForOperators.
-Style/SpaceAroundOperators:
-  Exclude:
-    - 'test/ddl_test.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/SpaceBeforeBlockBraces:
-  Enabled: false
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false
-
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/SpaceInsideStringInterpolation:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/schema_statements.rb'
-    - 'lib/active_record/connection_adapters/postgis/spatial_table_definition.rb'
-    - 'lib/active_record/connection_adapters/postgis_adapter.rb'
-    - 'test/ddl_test.rb'
-
 # Offense count: 159
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/StringLiterals:
   Enabled: false
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/TrailingWhitespace:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/arel_tosql.rb'
 
 # Offense count: 5
 # Cop supports --auto-correct.

@@ -50,7 +50,7 @@ module ActiveRecord  # :nodoc:
           spatial_type = geo_type(type)
           spatial_type << "Z" if options[:has_z]
           spatial_type << "M" if options[:has_m]
-          spatial_type << ",#{ options[:srid] || 4326 }"
+          spatial_type << ",#{options[:srid] || 4326}"
           spatial_type
         end
 
@@ -61,7 +61,7 @@ module ActiveRecord  # :nodoc:
             value << self.class.geo_type(spatial_type)
             value << "Z" if has_z?
             value << "M" if has_m?
-            value << ",#{ srid }"
+            value << ",#{srid}"
           end
         end
 

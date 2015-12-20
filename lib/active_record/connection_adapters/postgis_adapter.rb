@@ -79,9 +79,9 @@ module ActiveRecord
 
       def quote(value, column = nil)
         if RGeo::Feature::Geometry.check_type(value)
-          "'#{ RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value) }'"
+          "'#{RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)}'"
         elsif value.is_a?(RGeo::Cartesian::BoundingBox)
-          "'#{ value.min_x },#{ value.min_y },#{ value.max_x },#{ value.max_y }'::box"
+          "'#{value.min_x},#{value.min_y},#{value.max_x},#{value.max_y}'::box"
         else
           super
         end

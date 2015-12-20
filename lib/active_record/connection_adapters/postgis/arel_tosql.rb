@@ -13,7 +13,7 @@ module Arel  # :nodoc:
       FUNC_MAP = {
         'st_wkttosql' => 'ST_GeomFromEWKT',
       }
-      
+
       def st_func(standard_name)
         FUNC_MAP[standard_name.downcase] || standard_name
       end

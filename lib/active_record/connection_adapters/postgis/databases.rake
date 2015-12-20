@@ -7,7 +7,7 @@ namespace :db do
       ActiveRecord::Base.configurations
         .values_at(*environments)
         .compact
-        .reject{ |config| config["database"].blank? }
+        .reject { |config| config["database"].blank? }
         .each do |config|
           ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(config).setup_gis
         end
