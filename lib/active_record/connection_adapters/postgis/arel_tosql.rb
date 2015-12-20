@@ -11,7 +11,7 @@ module Arel  # :nodoc:
       include RGeo::ActiveRecord::SpatialToSql
 
       FUNC_MAP = {
-        'st_wkttosql' => 'ST_GeomFromEWKT',
+        "st_wkttosql" => "ST_GeomFromEWKT",
       }
 
       def st_func(standard_name)

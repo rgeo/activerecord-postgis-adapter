@@ -10,7 +10,7 @@ module ActiveRecord
             oid = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
             default_value = extract_value_from_default(oid, default)
             default_function = extract_default_function(default_value, default)
-            new_column(table_name, column_name, default_value, oid, type, notnull == 'f', default_function)
+            new_column(table_name, column_name, default_value, oid, type, notnull == "f", default_function)
           end
         end
 
@@ -18,7 +18,7 @@ module ActiveRecord
         def new_column(table_name, column_name, default, cast_type, sql_type = nil, null = true, default_function = nil)
           # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
           if null.is_a?(String)
-            null = (null == 't')
+            null = (null == "t")
           end
 
           column_info = spatial_column_info(table_name).get(column_name, sql_type)

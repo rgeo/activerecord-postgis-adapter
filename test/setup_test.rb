@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
   def test_ignore_tables

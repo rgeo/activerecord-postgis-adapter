@@ -200,12 +200,6 @@ Style/RescueModifier:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
 
-# Offense count: 159
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/StringLiterals:
-  Enabled: false
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: ExactNameMatch, AllowPredicates, AllowDSLWriters, IgnoreClassMethods, Whitelist.

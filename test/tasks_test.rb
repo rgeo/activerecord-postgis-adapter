@@ -1,5 +1,5 @@
-require 'test_helper'
-require 'active_record/schema_dumper'
+require "test_helper"
+require "active_record/schema_dumper"
 
 class TasksTest < ActiveSupport::TestCase  # :nodoc:
   NEW_CONNECTION = {
@@ -39,8 +39,8 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     end
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert(data.index('latlon geography(Point,4326)'))
-    assert(data.index('geo_col geometry(Geometry,4326)'))
+    assert(data.index("latlon geography(Point,4326)"))
+    assert(data.index("geo_col geometry(Geometry,4326)"))
   end
 
   def test_index_sql_dump
@@ -53,9 +53,9 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     connection.add_index :spatial_test, :name, using: :btree
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert(data.index('latlon geography(Point,4326)'))
-    assert data.index('CREATE INDEX index_spatial_test_on_latlon ON spatial_test USING gist (latlon);')
-    assert data.index('CREATE INDEX index_spatial_test_on_name ON spatial_test USING btree (name);')
+    assert(data.index("latlon geography(Point,4326)"))
+    assert data.index("CREATE INDEX index_spatial_test_on_latlon ON spatial_test USING gist (latlon);")
+    assert data.index("CREATE INDEX index_spatial_test_on_name ON spatial_test USING btree (name);")
   end
 
   def test_empty_schema_dump
@@ -64,13 +64,13 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       ActiveRecord::SchemaDumper.dump(::ActiveRecord::Base.connection, file)
     end
     data = File.read(tmp_sql_filename)
-    assert(data.index('ActiveRecord::Schema'))
+    assert(data.index("ActiveRecord::Schema"))
   end
 
   def test_basic_geometry_schema_dump
     setup_database_tasks
     connection.create_table(:spatial_test, force: true) do |t|
-      t.geometry 'object1'
+      t.geometry "object1"
       t.spatial "object2", srid: connection.default_srid, type: "geometry"
     end
     File.open(tmp_sql_filename, "w:utf-8") do |file|
@@ -117,7 +117,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     connection.add_index :test, :name
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert data.index('CREATE INDEX index_test_on_name ON test USING btree (name);')
+    assert data.index("CREATE INDEX index_test_on_name ON test USING btree (name);")
   end
 
   def test_add_index_via_references
@@ -128,7 +128,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     end
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert data.index('CREATE INDEX index_dogs_on_cats_id ON dogs USING btree (cats_id);')
+    assert data.index("CREATE INDEX index_dogs_on_cats_id ON dogs USING btree (cats_id);")
   end
 
   private
@@ -138,7 +138,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def tmp_sql_filename
-    File.expand_path('../tmp/tmp.sql', ::File.dirname(__FILE__))
+    File.expand_path("../tmp/tmp.sql", ::File.dirname(__FILE__))
   end
 
   def setup_database_tasks

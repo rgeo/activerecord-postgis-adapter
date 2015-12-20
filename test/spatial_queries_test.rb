@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
   def test_query_point
@@ -20,10 +20,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     obj.latlon = factory.point(1.0, 2.0)
     obj.save!
     id = obj.id
-    obj2 = SpatialModel.where(latlon: 'SRID=3785;POINT(1 2)').first
+    obj2 = SpatialModel.where(latlon: "SRID=3785;POINT(1 2)").first
     refute_nil(obj2)
     assert_equal(id, obj2.id)
-    obj3 = SpatialModel.where(latlon: 'SRID=3785;POINT(2 2)').first
+    obj3 = SpatialModel.where(latlon: "SRID=3785;POINT(2 2)").first
     assert_nil(obj3)
   end
 
@@ -33,10 +33,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     obj.latlon = factory.point(1.0, 2.0)
     obj.save!
     id = obj.id
-    obj2 = SpatialModel.where(SpatialModel.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').lt(2)).first
+    obj2 = SpatialModel.where(SpatialModel.arel_table[:latlon].st_distance("SRID=3785;POINT(2 3)").lt(2)).first
     refute_nil(obj2)
     assert_equal(id, obj2.id)
-    obj3 = SpatialModel.where(SpatialModel.arel_table[:latlon].st_distance('SRID=3785;POINT(2 3)').gt(2)).first
+    obj3 = SpatialModel.where(SpatialModel.arel_table[:latlon].st_distance("SRID=3785;POINT(2 3)").gt(2)).first
     assert_nil(obj3)
   end
 
@@ -46,10 +46,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
     obj.latlon = factory.point(1.0, 2.0)
     obj.save!
     id = obj.id
-    obj2 = SpatialModel.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(SpatialModel.arel_table[:latlon]).lt(2)).first
+    obj2 = SpatialModel.where(::Arel.spatial("SRID=3785;POINT(2 3)").st_distance(SpatialModel.arel_table[:latlon]).lt(2)).first
     refute_nil(obj2)
     assert_equal(id, obj2.id)
-    obj3 = SpatialModel.where(::Arel.spatial('SRID=3785;POINT(2 3)').st_distance(SpatialModel.arel_table[:latlon]).gt(2)).first
+    obj3 = SpatialModel.where(::Arel.spatial("SRID=3785;POINT(2 3)").st_distance(SpatialModel.arel_table[:latlon]).gt(2)).first
     assert_nil(obj3)
   end
 
@@ -70,8 +70,8 @@ class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
 
   def create_model
     SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
-      t.column 'latlon', :st_point, srid: 3785
-      t.column 'path', :line_string, srid: 3785
+      t.column "latlon", :st_point, srid: 3785
+      t.column "path", :line_string, srid: 3785
     end
     SpatialModel.reset_column_information
   end
