@@ -167,13 +167,6 @@ Style/ParallelAssignment:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowSafeAssignment.
-Style/ParenthesesAroundCondition:
-  Exclude:
-    - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
-
 # Offense count: 5
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist.
 Style/PredicateName:

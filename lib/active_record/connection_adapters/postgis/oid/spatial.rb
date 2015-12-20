@@ -24,7 +24,7 @@ module ActiveRecord
           def self.parse_sql_type(sql_type)
             geo_type, srid, has_z, has_m = nil, 0, false, false
 
-            if (sql_type =~ /[geography,geography]\((.*)\)$/i)
+            if sql_type =~ /[geography,geography]\((.*)\)$/i
               # geometry(Point,4326)
               params = Regexp.last_match(1).split(",")
               if params.size > 1
