@@ -14,8 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
   spec.licenses = ["BSD"]
 
-  spec.files = Dir["lib/**/*", "test/**/*", "LICENSE.txt"]
-  spec.test_files = Dir["test/**/*"]
+  spec.files = Dir["lib/**/*", "LICENSE.txt"]
   spec.platform = Gem::Platform::RUBY
 
   spec.required_ruby_version = ">= 1.9.3"
