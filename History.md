@@ -1,10 +1,15 @@
-### 3.1.0 / 2015-05-25
+### 3.1.1 / 2015-12-28
+
+* Fix require for rgeo-activerecord 0.4.0
+* Rubocop-related cleanup #203
+
+### 3.1.0 / 2015-11-19
 
 * Add JRuby support (#199)
 
 ### 3.0.0 / 2015-05-25
 
-* Support & require ActivelRecord 4.2 (#145)
+* Support & require ActiveRecord 4.2 (#145)
 * Require rgeo-activerecord 4.0 (#180, 089d2dedd9b)
 * Rename adapter module from PostGISAdapter to PostGIS (c2fa909bb)
 * Breaking change: remove #set_rgeo_factory_settings
