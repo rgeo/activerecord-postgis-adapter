@@ -1,6 +1,6 @@
 ### 3.1.1 / 2015-12-28
 
-* Fix require for rgeo-activerecord 0.4.0
+* Fix require for rgeo-activerecord 4.0.2
 * Rubocop-related cleanup #203
 
 ### 3.1.0 / 2015-11-19
