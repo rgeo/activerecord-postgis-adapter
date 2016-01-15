@@ -8,7 +8,8 @@ module ActiveRecord  # :nodoc:
         # cast_type example classes:
         #   OID::Spatial
         #   OID::Integer
-        def initialize(table_name, name, default, cast_type, sql_type = nil, null = true, default_function = nil, opts = nil)
+        def initialize(table_name, name, default, sql_type_metadata, null, default_function, collation, opts)
+          super(name, default, sql_type_metadata, null, default_function, collation)
           @table_name = table_name
           @geographic = !!(sql_type =~ /geography\(/i)
           if opts
@@ -27,7 +28,6 @@ module ActiveRecord  # :nodoc:
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type)
           end
-          super(name, default, cast_type, sql_type, null, default_function)
           if spatial?
             if @srid
               @limit = { srid: @srid, type: geometric_type.type_name.underscore }
@@ -57,7 +57,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def spatial?
-          cast_type.respond_to?(:spatial?) && cast_type.spatial?
+          type == :geography || type == :geometry
         end
 
         private
