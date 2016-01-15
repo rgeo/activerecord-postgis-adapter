@@ -1,3 +1,7 @@
+### 3.1.3 / 2016-1-15
+
+* Restrict ActiveRecord support to 4.2. See 649707cdf
+
 ### 3.1.2 / 2015-12-29
 
 * Require rgeo-activerecord 4.0.4
