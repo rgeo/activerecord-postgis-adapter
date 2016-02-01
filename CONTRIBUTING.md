@@ -7,10 +7,9 @@ Fork the repo:
 Set up your test database:
 
 ```sh
-createdb postgis_adapter_test
 createuser -s postgres
-psql postgis_adapter_test
-=# CREATE EXTENSION postgis;
+psql -U postgres -c "create database postgis_adapter_test"
+psql -U postgres -d postgis_adapter_test -c "create extension postgis"
 ```
 
 Install dependencies:
