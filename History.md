@@ -1,3 +1,7 @@
+### 3.1.4 / 2016-2-7
+
+* Ignore PostGIS views on schema dump - #208
+
 ### 3.1.3 / 2016-1-15
 
 * Restrict ActiveRecord support to 4.2. See 649707cdf
