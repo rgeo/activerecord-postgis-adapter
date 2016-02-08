@@ -21,7 +21,7 @@ module ActiveRecord  # :nodoc:
       # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
       def postgis_connection(config)
 
-        valid_conn_params = ActiveRecord::Base.connection.raw_connection.conndefaults_hash
+        valid_conn_params = PG::Connection.conndefaults_hash 
 
         # FULL REPLACEMENT because we need to create a different class.
         conn_params = config.symbolize_keys
