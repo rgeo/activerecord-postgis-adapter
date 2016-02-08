@@ -62,10 +62,6 @@ module ActiveRecord
             @sql_type =~ /geography/
           end
 
-          def spatial?
-            true
-          end
-
           def type
             geographic? ? :geography : :geometry
           end

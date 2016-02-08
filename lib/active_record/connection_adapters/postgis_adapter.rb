@@ -50,6 +50,9 @@ module ActiveRecord
       def initialize(*args)
         super
         @visitor = Arel::Visitors::PostGIS.new(self)
+        if @prepared_statements
+          @visitor.extend(DetermineIfPreparableVisitor)
+        end
       end
 
       def adapter_name
