@@ -20,6 +20,9 @@ module ActiveRecord  # :nodoc:
       # Based on the default <tt>postgresql_connection</tt> definition from ActiveRecord.
       # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
       def postgis_connection(config)
+
+        valid_conn_params = PG::Connection.conndefaults_hash 
+
         # FULL REPLACEMENT because we need to create a different class.
         conn_params = config.symbolize_keys
 
@@ -30,7 +33,7 @@ module ActiveRecord  # :nodoc:
         conn_params[:dbname] = conn_params.delete(:database) if conn_params[:database]
 
         # Forward only valid config params to PGconn.connect.
-        conn_params.keep_if { |k, _| VALID_CONN_PARAMS.include?(k) }
+        conn_params.keep_if { |k, _| valid_conn_params.include?(k) }
 
         # The postgres drivers don't allow the creation of an unconnected PGconn object,
         # so just pass a nil connection object for the time being.
