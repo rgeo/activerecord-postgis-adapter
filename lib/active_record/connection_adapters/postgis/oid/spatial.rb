@@ -71,9 +71,9 @@ module ActiveRecord
           end
 
           # support setting an RGeo object or a WKT string
-          def type_cast_for_database(value)
+          def serialize(value)
             return if value.nil?
-            geo_value = type_cast(value)
+            geo_value = cast_value(value)
 
             # TODO - only valid types should be allowed
             # e.g. linestring is not valid for point column
@@ -85,16 +85,9 @@ module ActiveRecord
 
           private
 
-          def type_cast(value)
-            return if value.nil?
-            String === value ? parse_wkt(value) : value
-          end
-
           def cast_value(value)
             return if value.nil?
-            RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true).parse(value)
-          rescue RGeo::Error::ParseError
-            nil
+            String === value ? parse_wkt(value) : value
           end
 
           # convert WKT string into RGeo object
