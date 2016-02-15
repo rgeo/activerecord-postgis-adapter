@@ -9,6 +9,7 @@ gemfile:
   - gemfiles/ar50.gemfile
 matrix:
   allow_failures:
+    - rvm: jruby-9.0.4.0
     - rvm: rbx-2
 addons:
   postgresql: "9.3"
