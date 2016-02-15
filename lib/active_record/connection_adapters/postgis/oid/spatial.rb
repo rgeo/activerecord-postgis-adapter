@@ -86,21 +86,22 @@ module ActiveRecord
 
           # convert WKT string into RGeo object
           def parse_wkt(string)
-            wkt_parser(string).parse(string)
+            factory = if spatial_factory.is_a?(::RGeo::Feature::Factory::Instance)
+                        spatial_factory
+                      else
+                        spatial_factory.call(support_ewkb: true, support_ewkt: true)
+                      end
+            if binary_string?(string)
+              factory.parse_wkb(string)
+            else
+              factory.parse_wkt(string)
+            end
           rescue RGeo::Error::ParseError
             nil
           end
 
           def binary_string?(string)
             string[0] == "\x00" || string[0] == "\x01" || string[0, 4] =~ /[0-9a-fA-F]{4}/
-          end
-
-          def wkt_parser(string)
-            if binary_string?(string)
-              RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true, default_srid: @srid)
-            else
-              RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
-            end
           end
 
           def factory_attrs
