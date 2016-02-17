@@ -19,7 +19,7 @@ module ActiveRecord
         end
 
         # override
-        def new_column(table_name, column_name, default, cast_type, sql_type_metadata =  nil, null = true, default_function = nil, collation = nil)
+        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil, null = true, default_function = nil, collation = nil)
           # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
           if null.is_a?(String)
             null = (null == "t")
@@ -72,7 +72,7 @@ module ActiveRecord
             multi_polygon:       { name: "multi_polygon" },
             spatial:             { name: "geometry" },
             st_point:            { name: "st_point" },
-            st_polygon:          { name: "st_polygon" },
+            st_polygon:          { name: "st_polygon" }
           )
         end
 

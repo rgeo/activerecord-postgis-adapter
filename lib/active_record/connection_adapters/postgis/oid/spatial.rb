@@ -54,7 +54,7 @@ module ActiveRecord
                 has_m:    @has_m,
                 has_z:    @has_z,
                 sql_type: @sql_type,
-                srid:     @srid,
+                srid:     @srid
               )
           end
 
@@ -80,7 +80,7 @@ module ActiveRecord
             # raise "maybe should raise" unless RGeo::Feature::Geometry.check_type(geo_value)
 
             RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true)
-              .generate(geo_value)
+                                     .generate(geo_value)
           end
 
           private
