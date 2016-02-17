@@ -1,7 +1,7 @@
 module ActiveRecord
   module ConnectionAdapters
     module PostGIS
-      VERSION = "3.1.4".freeze
+      VERSION = "4.0.0.beta1"
     end
   end
 end
