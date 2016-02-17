@@ -12,5 +12,5 @@ Style/SignalException:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-Style/TrailingComma:
+Style/TrailingCommaInLiteral:
   Enabled: false
