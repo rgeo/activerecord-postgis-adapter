@@ -31,7 +31,27 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 3.x supports ActiveRecord 4.2+
+#### Version 4.x supports ActiveRecord 5.0+
+
+_Version 4.0 is is beta_
+
+See https://github.com/rgeo/activerecord-postgis-adapter/pull/213
+
+Requirements:
+
+```
+ActiveRecord 5.0+
+Ruby 2.2.2+, JRuby
+PostGIS 2.0+
+```
+
+Gemfile:
+
+```ruby
+gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
+```
+
+#### Version 3.x supports ActiveRecord 4.2
 
 Requirements:
 
