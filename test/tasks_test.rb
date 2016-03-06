@@ -106,7 +106,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     end
     data = File.read(tmp_sql_filename)
     assert data.index(%(t.geography "latlon", limit: {:srid=>4326, :type=>"point", :geographic=>true}))
-    assert data.index(%(t.index ["latlon"], name: "index_spatial_test_on_latlon", using: :gist))
+    assert data.index(%(add_index "spatial_test", ["latlon"], name: "index_spatial_test_on_latlon", using: :gist))
   end
 
   def test_add_index_with_no_options
