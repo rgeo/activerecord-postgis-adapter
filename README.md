@@ -145,6 +145,7 @@ development:
   adapter: postgis
   encoding: unicode
   postgis_extension: postgis      # default is postgis
+  postgis_schema: public          # default is public
   schema_search_path: public,postgis
   pool: 5
   database: my_app_development    # your database name
