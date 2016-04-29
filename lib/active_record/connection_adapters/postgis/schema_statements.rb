@@ -73,8 +73,8 @@ module ActiveRecord
         end
 
         # override
-        def create_table_definition(name, temporary, options, as = nil)
-          PostGIS::TableDefinition.new(native_database_types, name, temporary, options, as)
+        def create_table_definition(*args)
+          PostGIS::TableDefinition.new(*args)
         end
 
         # memoize hash of column infos for tables
