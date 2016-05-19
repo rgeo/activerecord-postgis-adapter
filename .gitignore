@@ -6,3 +6,4 @@ Gemfile.lock
 /gemfiles/*.gemfile.lock
 /travis/*.lock
 /test/database_local.yml
+.idea
