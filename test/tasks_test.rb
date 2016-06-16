@@ -131,6 +131,60 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     assert data.index("CREATE INDEX index_dogs_on_cats_id ON dogs USING btree (cats_id);")
   end
 
+  def test_null_schema_dump
+    setup_database_tasks
+    connection.create_table(:spatial_test, force: true) do |t|
+      t.string "nulls_disallowed", null: false
+      t.string "nulls_allowed", null: true
+    end
+    File.open(tmp_sql_filename, "w:utf-8") do |file|
+      ActiveRecord::SchemaDumper.dump(connection, file)
+    end
+    data = File.read(tmp_sql_filename)
+    assert data.index(%(t.string "nulls_disallowed", null: false))
+    assert data.index(/t\.string "nulls_allowed"$/)
+  end
+
+  if RUBY_ENGINE == "jruby"
+    def test_null_schema_dump_jdbc_raw_boolean_false
+      orig_raw_boolean = ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean?
+      ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean = false
+
+      setup_database_tasks
+      connection.create_table(:spatial_test, force: true) do |t|
+        t.string "nulls_disallowed", null: false
+        t.string "nulls_allowed", null: true
+      end
+      File.open(tmp_sql_filename, "w:utf-8") do |file|
+        ActiveRecord::SchemaDumper.dump(connection, file)
+      end
+      data = File.read(tmp_sql_filename)
+      assert data.index(%(t.string "nulls_disallowed", null: false))
+      assert data.index(/t\.string "nulls_allowed"$/)
+
+      ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean = orig_raw_boolean
+    end
+
+    def test_null_schema_dump_jdbc_raw_boolean_true
+      orig_raw_boolean = ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean?
+      ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean = true
+
+      setup_database_tasks
+      connection.create_table(:spatial_test, force: true) do |t|
+        t.string "nulls_disallowed", null: false
+        t.string "nulls_allowed", null: true
+      end
+      File.open(tmp_sql_filename, "w:utf-8") do |file|
+        ActiveRecord::SchemaDumper.dump(connection, file)
+      end
+      data = File.read(tmp_sql_filename)
+      assert data.index(%(t.string "nulls_disallowed", null: false))
+      assert data.index(/t\.string "nulls_allowed"$/)
+
+      ActiveRecord::ConnectionAdapters::PostgreSQLJdbcConnection.raw_boolean = orig_raw_boolean
+    end
+  end
+
   private
 
   def connection
