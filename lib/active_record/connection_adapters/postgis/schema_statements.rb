@@ -31,6 +31,7 @@ module ActiveRecord
                             default,
                             sql_type_metadata,
                             null,
+                            table_name,
                             default_function,
                             collation,
                             cast_type,
