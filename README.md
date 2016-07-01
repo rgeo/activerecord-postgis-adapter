@@ -31,54 +31,6 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 4.x supports ActiveRecord 5.0+
-
-_Version 4.0 is is beta_
-
-See https://github.com/rgeo/activerecord-postgis-adapter/pull/213
-
-Requirements:
-
-```
-ActiveRecord 5.0+
-Ruby 2.2.2+, JRuby
-PostGIS 2.0+
-```
-
-Gemfile:
-
-```ruby
-gem 'activerecord-postgis-adapter', '~> 4.0.0.beta'
-```
-
-#### Version 3.x supports ActiveRecord 4.2
-
-Requirements:
-
-```
-ActiveRecord 4.2+
-Ruby 1.9.3+, JRuby
-PostGIS 2.0+
-```
-
-Gemfile:
-
-```ruby
-gem 'activerecord-postgis-adapter'
-```
-
-#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
-
-_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
-
-Requirements:
-
-```
-ActiveRecord 4.0.0 - 4.1.x
-Ruby 1.9.3+, JRuby
-PostGIS 2.0+
-```
-
 Gemfile:
 
 ```ruby
@@ -94,6 +46,38 @@ gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
+
+#### Version 4.x supports ActiveRecord 5.0+
+
+Requirements:
+
+```
+ActiveRecord 5.0+
+Ruby 2.2.2+, JRuby
+PostGIS 2.0+
+```
+
+#### Version 3.x supports ActiveRecord 4.2
+
+Requirements:
+
+```
+ActiveRecord 4.2
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
+
+#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
+
+_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
+
+Requirements:
+
+```
+ActiveRecord 4.0.0 - 4.1.x
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
 
 #### Version 0.6.x supports ActiveRecord 3.x
 
@@ -474,6 +458,6 @@ a head start on the implementation.
 
 ## License
 
-Copyright 2015 Daniel Azuma, Tee Parham
+Copyright Daniel Azuma, Tee Parham
 
 https://github.com/rgeo/activerecord-postgis-adapter/blob/master/LICENSE.txt
