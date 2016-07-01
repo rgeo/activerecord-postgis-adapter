@@ -38,7 +38,7 @@ module ActiveRecord  # :nodoc:
             "database"           => "postgres",
             "password"           => su_password,
             "schema_search_path" => "public",
-            "username"           => su_username,
+            "username"           => su_username
           ))
         end
 
@@ -46,7 +46,7 @@ module ActiveRecord  # :nodoc:
           establish_connection(configuration.merge(
             "password"           => su_password,
             "schema_search_path" => "public",
-            "username"           => su_username,
+            "username"           => su_username
           ))
         end
 
