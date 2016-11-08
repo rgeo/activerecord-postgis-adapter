@@ -1,3 +1,12 @@
+### 4.0.1 / 2016-11-08
+
+* Auto-load tasks (#237)
+
+### 4.0.0 / 2016-06-30
+
+* Support ActiveRecord 5.0 (#213)
+* Fix schema dump null issues in JRuby (#229)
+
 ### 3.1.4 / 2016-2-7
 
 * Ignore PostGIS views on schema dump - #208
