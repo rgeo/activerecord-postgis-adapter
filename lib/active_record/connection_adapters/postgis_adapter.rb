@@ -15,7 +15,17 @@ require "active_record/connection_adapters/postgis/arel_tosql"
 require "active_record/connection_adapters/postgis/setup"
 require "active_record/connection_adapters/postgis/oid/spatial"
 require "active_record/connection_adapters/postgis/create_connection"
-require "active_record/connection_adapters/postgis/postgis_database_tasks"
+
+module ActiveRecord  # :nodoc:
+  module ConnectionAdapters  # :nodoc:
+    module PostGIS  # :nodoc:
+      extend ActiveSupport::Autoload
+
+      autoload :PostGISDatabaseTasks,
+        "active_record/connection_adapters/postgis/postgis_database_tasks"
+    end
+  end
+end
 
 ::ActiveRecord::ConnectionAdapters::PostGIS.initial_setup
 
