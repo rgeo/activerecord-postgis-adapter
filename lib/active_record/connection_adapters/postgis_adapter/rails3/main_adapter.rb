@@ -103,7 +103,7 @@ module ActiveRecord  # :nodoc:
           # Remove postgis from schemas
           schemas_ = schema_search_path.split(/,/).map(&:strip)
           schemas_.delete('postgis')
-          schemas_ = schemas_.map{ |p_| quote(p_) }.join(',')
+          schemas_ = schemas_.map{ |p_| quote(p_) }.join(', ')
 
           # Get index type by joining with pg_am.
           result_ = query(<<-SQL, name_)
