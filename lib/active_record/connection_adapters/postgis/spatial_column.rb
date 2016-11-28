@@ -1,7 +1,7 @@
-module ActiveRecord  # :nodoc:
-  module ConnectionAdapters  # :nodoc:
-    module PostGIS  # :nodoc:
-      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn  # :nodoc:
+module ActiveRecord # :nodoc:
+  module ConnectionAdapters # :nodoc:
+    module PostGIS # :nodoc:
+      class SpatialColumn < ConnectionAdapters::PostgreSQLColumn # :nodoc:
         # sql_type examples:
         #   "Geometry(Point,4326)"
         #   "Geography(Point,4326)"
@@ -30,7 +30,7 @@ module ActiveRecord  # :nodoc:
           super(name, default, cast_type, sql_type, null, default_function)
           if spatial?
             if @srid
-              @limit = { srid: @srid, type: geometric_type.type_name.underscore }
+              @limit = {srid: @srid, type: active_record_version_aware_type_name(geometric_type)}
               @limit[:has_z] = true if @has_z
               @limit[:has_m] = true if @has_m
               @limit[:geographic] = true if @geographic
@@ -61,6 +61,22 @@ module ActiveRecord  # :nodoc:
         end
 
         private
+
+        def active_record_version_aware_type_name(geometric_type)
+          type_name = geometric_type.type_name.underscore
+          if ActiveRecord::VERSION::MAJOR == 4 && ActiveRecord::VERSION::MINOR > 1
+            case type_name
+              when 'point'
+                'st_point'
+              when 'polygon'
+                'st_polygon'
+              else
+                type_name
+            end
+          else
+            type_name
+          end
+        end
 
         def set_geometric_type_from_name(name)
           @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(name) || RGeo::Feature::Geometry
