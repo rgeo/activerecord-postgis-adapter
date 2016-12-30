@@ -143,6 +143,24 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
     refute_nil SpatialModel.select("CURRENT_TIMESTAMP as ts").first.ts
   end
 
+  def test_multi_polygon_column
+    SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
+      t.column "m_poly", :multi_polygon
+    end
+    SpatialModel.reset_column_information
+    rec = SpatialModel.new
+    wkt = "MULTIPOLYGON (((-73.97210545302842 40.782991711401195, " \
+          "-73.97228912063449 40.78274091498208, " \
+          "-73.97235226842568 40.78276752827304, " \
+          "-73.97216860098405 40.783018324791776, " \
+          "-73.97210545302842 40.782991711401195)))"
+    rec.m_poly = wkt
+    assert rec.save
+    rec = SpatialModel.find(rec.id) # force reload
+    assert rec.m_poly.is_a?(RGeo::Geos::CAPIMultiPolygonImpl)
+    assert_equal wkt, rec.m_poly.to_s
+  end
+
   private
 
   def create_model
