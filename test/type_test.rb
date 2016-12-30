@@ -16,6 +16,7 @@ class TypeTest < ActiveSupport::TestCase
     assert_equal ["Polygon", 4327, true, false], spatial.parse_sql_type("geography(PolygonZ,4327)")
     assert_equal ["Point", 4328, false, true], spatial.parse_sql_type("geography(PointM,4328)")
     assert_equal ["Point", 4329, true, true], spatial.parse_sql_type("geography(PointZM,4329)")
+    assert_equal ["MultiPolygon", 4326, false, false], spatial.parse_sql_type("geometry(MultiPolygon,4326)")
   end
 
   private
