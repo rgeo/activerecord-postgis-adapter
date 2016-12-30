@@ -31,16 +31,18 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     assert(sql !~ /CREATE TABLE/)
   end
 
-  def test_basic_geography_sql_dump
+  def test_sql_dump
     setup_database_tasks
     connection.create_table(:spatial_test, force: true) do |t|
       t.st_point "latlon", geographic: true
       t.geometry "geo_col", srid: 4326
+      t.column "poly", :multi_polygon, srid: 4326
     end
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
     assert(data.index("latlon geography(Point,4326)"))
     assert(data.index("geo_col geometry(Geometry,4326)"))
+    assert(data.index("poly geometry(MultiPolygon,4326)"))
   end
 
   def test_index_sql_dump
