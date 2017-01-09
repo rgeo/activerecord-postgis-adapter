@@ -87,13 +87,13 @@ class BasicTest < ActiveSupport::TestCase  # :nodoc:
   def test_set_point_from_array
     klass = SpatialModel
     obj = klass.new
-    obj.latlon = [1.0, 2.0]
+    obj.latlon_geo = [1.0, 2.0]
     obj.save!
     id = obj.id
     obj2 = klass.find(id)
     assert_equal(geographic_factory.point(1.0, 2.0), obj2.latlon_geo)
-    assert_equal(4326, obj2.latlon.srid)
-    assert_equal(false, ::RGeo::Geos.is_geos?(obj2.latlon))
+    assert_equal(4326, obj2.latlon_geo.srid)
+    assert_equal(false, ::RGeo::Geos.is_geos?(obj2.latlon_geo))
   end
 
   def test_set_line_string_from_array
