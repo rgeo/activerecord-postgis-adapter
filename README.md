@@ -31,36 +31,6 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### Version 3.x supports ActiveRecord 4.2+
-
-_JRuby is not supported due to AR-JDBC not supporting 4.2 yet._
-
-Requirements:
-
-```
-ActiveRecord 4.2+
-Ruby 1.9.3+
-PostGIS 2.0+
-```
-
-Gemfile:
-
-```ruby
-gem 'activerecord-postgis-adapter'
-```
-
-#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
-
-_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
-
-Requirements:
-
-```
-ActiveRecord 4.0.0 - 4.1.x
-Ruby 1.9.3+, JRuby
-PostGIS 2.0+
-```
-
 Gemfile:
 
 ```ruby
@@ -76,6 +46,38 @@ gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
+
+#### Version 4.x supports ActiveRecord 5.0+
+
+Requirements:
+
+```
+ActiveRecord 5.0+
+Ruby 2.2.2+, JRuby
+PostGIS 2.0+
+```
+
+#### Version 3.x supports ActiveRecord 4.2
+
+Requirements:
+
+```
+ActiveRecord 4.2
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
+
+#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
+
+_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
+
+Requirements:
+
+```
+ActiveRecord 4.0.0 - 4.1.x
+Ruby 1.9.3+, JRuby
+PostGIS 2.0+
+```
 
 #### Version 0.6.x supports ActiveRecord 3.x
 
@@ -127,6 +129,7 @@ development:
   adapter: postgis
   encoding: unicode
   postgis_extension: postgis      # default is postgis
+  postgis_schema: public          # default is public
   schema_search_path: public,postgis
   pool: 5
   database: my_app_development    # your database name
@@ -298,7 +301,7 @@ You can configure the adapter to use a particular factory (i.e. a
 particular combination of settings) for data associated with each type in
 the database.
 
-Here are some examples, given the spatial table defined above:
+Here's an example using a Geos default factory:
 
 ```ruby
 RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
@@ -309,6 +312,12 @@ RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
   config.register(RGeo::Geographic.spherical_factory(srid: 4326), geo_type: "point")
 end
 ```
+
+The default spatial factory for geographic columns is `RGeo::Geographic.spherical_factory`.
+The default spatial factory for cartesian columns is `RGeo::Cartesian.preferred_factory`.
+You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
+
+For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README] (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
 
 ## Working With Spatial Data
 
@@ -449,6 +458,6 @@ a head start on the implementation.
 
 ## License
 
-Copyright 2015 Daniel Azuma, Tee Parham
+Copyright Daniel Azuma, Tee Parham
 
 https://github.com/rgeo/activerecord-postgis-adapter/blob/master/LICENSE.txt

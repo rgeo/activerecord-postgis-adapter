@@ -24,17 +24,17 @@ module ActiveRecord
           def self.parse_sql_type(sql_type)
             geo_type, srid, has_z, has_m = nil, 0, false, false
 
-            if (sql_type =~ /[geography,geography]\((.*)\)$/i)
+            if sql_type =~ /[geography,geometry]\((.*)\)$/i
               # geometry(Point,4326)
-              params = $1.split(',')
+              params = Regexp.last_match(1).split(",")
               if params.size > 1
                 if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
-                  has_z = $2.length > 0
-                  has_m = $3.length > 0
-                  geo_type = $1
+                  has_z = Regexp.last_match(2).length > 0
+                  has_m = Regexp.last_match(3).length > 0
+                  geo_type = Regexp.last_match(1)
                 end
                 if params.last =~ /(\d+)/
-                  srid = $1.to_i
+                  srid = Regexp.last_match(1).to_i
                 end
               else
                 # geometry(Point)
@@ -54,7 +54,7 @@ module ActiveRecord
                 has_m:    @has_m,
                 has_z:    @has_z,
                 sql_type: @sql_type,
-                srid:     @srid,
+                srid:     @srid
               )
           end
 
@@ -77,30 +77,23 @@ module ActiveRecord
           end
 
           # support setting an RGeo object or a WKT string
-          def type_cast_for_database(value)
+          def serialize(value)
             return if value.nil?
-            geo_value = type_cast(value)
+            geo_value = cast_value(value)
 
             # TODO - only valid types should be allowed
             # e.g. linestring is not valid for point column
             # raise "maybe should raise" unless RGeo::Feature::Geometry.check_type(geo_value)
 
             RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true)
-              .generate(geo_value)
+                                     .generate(geo_value)
           end
 
           private
 
-          def type_cast(value)
-            return if value.nil?
-            String === value ? parse_wkt(value) : value
-          end
-
           def cast_value(value)
             return if value.nil?
-            RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true).parse(value)
-          rescue RGeo::Error::ParseError
-            nil
+            String === value ? parse_wkt(value) : value
           end
 
           # convert WKT string into RGeo object
