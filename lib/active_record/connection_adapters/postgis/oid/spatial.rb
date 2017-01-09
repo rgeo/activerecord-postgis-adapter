@@ -73,7 +73,7 @@ module ActiveRecord
           end
 
           # support also setting arrays
-          def type_cast_from_user(value)
+          def cast(value)
             value = value.to_wkt(@geo_type.underscore.to_sym) if Array === value
             cast_value(value)
           end
