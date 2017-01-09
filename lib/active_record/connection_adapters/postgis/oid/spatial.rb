@@ -1,3 +1,5 @@
+require 'to_wkt_'
+
 module ActiveRecord
   module ConnectionAdapters
     module PostGIS
@@ -72,7 +74,7 @@ module ActiveRecord
 
           # support also setting arrays
           def type_cast_from_user(value)
-            value = value.to_wkt(@geo_type.to_sym) if Array === value
+            value = value.to_wkt(@geo_type.underscore.to_sym) if Array === value
             type_cast(value)
           end
 
