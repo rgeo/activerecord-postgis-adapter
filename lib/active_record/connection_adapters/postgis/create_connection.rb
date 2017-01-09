@@ -1,4 +1,4 @@
-if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
+if RUBY_ENGINE == 'jruby'
   require 'active_record/connection_adapters/jdbcpostgresql_adapter'
 else
   require 'pg'
@@ -6,13 +6,18 @@ end
 
 module ActiveRecord  # :nodoc:
   module ConnectionHandling  # :nodoc:
-    if(defined?(::RUBY_ENGINE) && ::RUBY_ENGINE == 'jruby')
+
+    if RUBY_ENGINE == 'jruby'
+
       def postgis_connection(config)
-        config[:adapter_class] = ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter
+        config[:adapter_class] = ConnectionAdapters::PostGISAdapter
         postgresql_connection(config)
       end
+
       alias_method :jdbcpostgis_connection, :postgis_connection
+
     else
+
       # Based on the default <tt>postgresql_connection</tt> definition from ActiveRecord.
       # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql_adapter.rb
       def postgis_connection(config)
@@ -30,8 +35,9 @@ module ActiveRecord  # :nodoc:
 
         # The postgres drivers don't allow the creation of an unconnected PGconn object,
         # so just pass a nil connection object for the time being.
-        ::ActiveRecord::ConnectionAdapters::PostGISAdapter::MainAdapter.new(nil, logger, conn_params, config)
+        ConnectionAdapters::PostGISAdapter.new(nil, logger, conn_params, config)
       end
+
     end
 
   end

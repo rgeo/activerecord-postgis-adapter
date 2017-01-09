@@ -1,7 +1,3 @@
-appraise "ar40" do
-  gem 'activerecord', '~> 4.0.5'
-end
-
-appraise "ar41" do
-  gem 'activerecord', '~> 4.1.0'
+appraise "ar42" do
+  gem 'activerecord', '~> 4.2.0.beta4'
 end

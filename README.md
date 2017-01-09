@@ -31,7 +31,27 @@ RGeo objects can be embedded in where clauses.
 
 The adapter requires PostgreSQL 9.0+.
 
-#### The latest version supports ActiveRecord 4.0.x and 4.1.x
+#### Version 3.x supports ActiveRecord 4.2+
+
+_JRuby is not supported due to AR-JDBC not supporting 4.2 yet._
+
+Requirements:
+
+```
+ActiveRecord 4.2+
+Ruby 1.9.3+
+PostGIS 2.0+
+```
+
+Gemfile:
+
+```ruby
+gem 'activerecord-postgis-adapter'
+```
+
+#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
+
+_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
 
 Requirements:
 
@@ -55,9 +75,11 @@ gem 'activerecord-jdbcpostgresql-adapter', '~> 1.3.9'
 gem 'ffi-geos'
 ```
 
-_JRuby support for Rails 4.x was added in version 2.2.0_
+_JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
 
 #### Version 0.6.x supports ActiveRecord 3.x
+
+_If you are using version 0.6.x, you should read [the version 0.6.x / 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
 
 Requirements:
 
@@ -173,36 +195,36 @@ This rake task adds the PostGIS extension to your existing database.
 To store spatial data, you must create a column with a spatial type. PostGIS
 provides a variety of spatial types, including point, linestring, polygon, and
 different kinds of collections. These types are defined in a standard produced
-by the Open Geospatial Consortium. Furthermore, you can specify options
-indicating the coordinate system and number of coordinates for the values you
-are storing.
+by the Open Geospatial Consortium. You can specify options indicating the coordinate
+system and number of coordinates for the values you are storing.
 
 The activerecord-postgis-adapter extends ActiveRecord's migration syntax to
-support these spatial types. The following example creates four spatial
+support these spatial types. The following example creates five spatial
 columns in a table:
 
 ```ruby
 create_table :my_spatial_table do |t|
   t.column :shape1, :geometry
   t.geometry :shape2
-  t.line_string :path, :srid => 3785
-  t.point :lonlat, :geographic => true
-  t.point :lonlatheight, :geographic => true, :has_z => true
+  t.line_string :path, srid: 3785
+  t.st_point :lonlat, geographic: true
+  t.st_point :lonlatheight, geographic: true, has_z: true
 end
 ```
 
 The first column, "shape1", is created with type "geometry". This is a general
 "base class" for spatial types; the column declares that it can contain values
-of *any* spatial type. The second column, "shape2", uses a shorthand syntax
-for the same type. Like "normal" types, you can create a column either by
-invoking `column` or invoking the name of the type directly.
+of *any* spatial type.
+
+The second column, "shape2", uses a shorthand syntax for the same type as the shape1 column.
+You can create a column either by invoking `column` or invoking the name of the type directly.
 
 The third column, "path", has a specific geometric type, `line_string`. It
 also specifies an SRID (spatial reference ID) that indicates which coordinate
 system it expects the data to be in. The column now has a "constraint" on it;
 it will accept only LineString data, and only data whose SRID is 3785.
 
-The fourth column, "lonlat", has the `point` type, and accepts only Point
+The fourth column, "lonlat", has the `st_point` type, and accepts only Point
 data. Furthermore, it declares the column as "geographic", which means it
 accepts longitude/latitude data, and performs calculations such as distances
 using a spheroidal domain.
@@ -215,9 +237,9 @@ The following are the data types understood by PostGIS and exposed by
 activerecord-postgis-adapter:
 
 * `:geometry` -- Any geometric type
-* `:point` -- Point data
+* `:st_point` -- Point data
 * `:line_string` -- LineString data
-* `:polygon` -- Polygon data
+* `:st_polygon` -- Polygon data
 * `:geometry_collection` -- Any collection type
 * `:multi_point` -- A collection of Points
 * `:multi_line_string` -- A collection of LineStrings
@@ -239,15 +261,24 @@ Following are the options understood by the adapter:
   Default is false.
 
 
-The adapter also extends the ActiveRecord migration syntax for creating
-spatial indexes. To create a PostGIS spatial index, simply set the :spatial
-option to true, as follows:
+To create a PostGIS spatial index, add `using: :gist` to your index:
 
 ```ruby
-change_table :my_spatial_table do |t|
-  t.index :lonlat, :spatial => true
+add_index :my_table, :lonlat, using: :gist
+
+# or
+
+change_table :my_table do |t|
+  t.index :lonlat, using: :gist
 end
 ```
+
+### Point and Polygon Types with ActiveRecord 4.2+
+
+Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
+adapter added support for the native Postgresql `point` and `polygon` types, which conflict with this
+adapter's types of the same names. The PostGIS point type must be referenced as `st_point`, and the
+PostGIS polygon type must be referenced as `st_polygon`.
 
 ### Configuring ActiveRecord
 
@@ -257,50 +288,27 @@ database has an integer type, ActiveRecord automatically casts the data to a
 Ruby Integer. In the same way, the activerecord-postgis-adapter automatically
 casts spatial data to a corresponding RGeo data type.
 
-However, RGeo offers more "flexibility" in its type system than can be
+RGeo offers more flexibility in its type system than can be
 interpreted solely from analyzing the database column. For example, you can
 configure RGeo objects to exhibit certain behaviors related to their
 serialization, validation, coordinate system, or computation. These settings
-are embodied in the RGeo "factory" associated with the object.
+are embodied in the RGeo factory associated with the object.
 
-Therefore, you can configure the adapter to use a particular factory (i.e. a
-particular combination of settings) for data associated with each column in
-the database. This is done by calling class methods on the ActiveRecord class
-associated with that database table. Specifically, you can call
-`set_rgeo_factory_for_column` to set the factory that ActiveRecord uses for a
-particular column.
-
-You can also provide a "factory generator" function which takes information
-from the database column and returns a suitable factory. Set the factory
-generator by setting the `rgeo_factory_generator` class attribute of your
-ActiveRecord class. The generator should be a callable object that takes a
-hash that could include the following keys:
-
-*   `:srid` -- the SRID of the database column
-*   `:has_z_coordinate` -- true if the database column has a Z coordinate
-*   `:has_m_coordinate` -- true if the database column has a M coordinate
-*   `:geographic` -- true if the database column is geographic instead of
-    geometric
-
+You can configure the adapter to use a particular factory (i.e. a
+particular combination of settings) for data associated with each type in
+the database.
 
 Here are some examples, given the spatial table defined above:
 
 ```ruby
-class MySpatialTable < ActiveRecord::Base
-
+RGeo::ActiveRecord::SpatialFactoryStore.instance.tap do |config|
   # By default, use the GEOS implementation for spatial columns.
-  self.rgeo_factory_generator = RGeo::Geos.factory_generator
+  config.default = RGeo::Geos.factory_generator
 
-  # But use a geographic implementation for the :lonlat column.
-  set_rgeo_factory_for_column(:lonlat, RGeo::Geographic.spherical_factory(:srid => 4326))
-
+  # But use a geographic implementation for point columns.
+  config.register(RGeo::Geographic.spherical_factory(srid: 4326), geo_type: "point")
 end
 ```
-
-The `rgeo_factory_generator` attribute and `set_rgeo_factory_for_column`
-method are actually implemented (and documented) in the "rgeo-activerecord"
-gem, which is a dependency of the activerecord-postgis-adapter.
-
 
 ## Working With Spatial Data
 
@@ -386,49 +394,6 @@ want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
 
-Unfortunately, Rails by itself doesn't provide good support for embedding
-arbitrary function calls in your where clause. You could get around this by
-writing raw SQL. But the solution we recommend is to use the "squeel" gem.
-This gem extends the ActiveRecord syntax to support more complex queries.
-
-Let's say you wanted to find all records whose lonlat fell within a particular
-polygon. In the query, you can accomplish this by calling the ST_Intersects()
-SQL function on the lonlat and the polygon. That is, you'd want to generate
-SQL that looks something like this:
-
-```
-SELECT * FROM my_spatial_table WHERE ST_Intersects(lonlat, <i>my-polygon</i>);
-```
-
-Using squeel, you can write this as follows:
-
-```ruby
-my_polygon = get_my_polygon    # Obtain the polygon as an RGeo geometry
-MySpatialTable.where{st_intersects(lonlat, my_polygon)}.first
-```
-
-Notice the curly brackets instead of parentheses in the where clause. This is
-how to write squeel queries: squeel is actually a DSL, and you're passing a
-block to the where method instead of an argument list. Also note that Squeel
-requires ActiveRecord 3.1 or later to handle SQL function calls such as
-ST_Intersects.
-
-As another example, one common query is to find all objects displaying in a
-window. This can be done using the overlap (&&) operator with a bounding box.
-Here's an example that finds linestrings in the "path" column that intersect a
-bounding box:
-
-```ruby
-sw = get_sw_corner_in_projected_coordinates
-ne = get_ne_corner_in_projected_coordinates
-window = RGeo::Cartesian::BoundingBox.create_from_points(sw, ne)
-MySpatialTable.where{path.op('&&', window)}.all
-```
-
-Note that bounding box queries make sense only in a projected coordinate
-system; you shouldn't try to run such a query against a lat/long (geographic)
-column.
-
 ## Background: PostGIS
 
 A spatial database is one that includes a set of data types, functions,
@@ -484,8 +449,6 @@ a head start on the implementation.
 
 ## License
 
-Copyright 2013 Daniel Azuma
-
-Copyright 2014 Tee Parham
+Copyright 2015 Daniel Azuma, Tee Parham
 
 https://github.com/rgeo/activerecord-postgis-adapter/blob/master/LICENSE.txt
