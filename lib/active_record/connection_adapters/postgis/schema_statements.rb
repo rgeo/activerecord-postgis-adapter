@@ -51,10 +51,10 @@ module ActiveRecord
         #
         # type_to_sql(:geography, "Point,4326")
         # => "geography(Point,4326)"
-        def type_to_sql(type, limit = nil, precision = nil, scale = nil, array = nil)
+        def type_to_sql(type, options = {})
           case type
           when :geometry, :geography
-            "#{type}(#{limit})"
+            "#{type}(#{options[:limit]})"
           else
             super
           end
