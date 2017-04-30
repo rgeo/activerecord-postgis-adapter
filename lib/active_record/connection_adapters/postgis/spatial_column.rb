@@ -30,7 +30,7 @@ module ActiveRecord  # :nodoc:
           super(name, default, cast_type, sql_type, null, default_function)
           if spatial?
             if @srid
-              @limit = { srid: @srid, type: geometric_type.type_name.underscore }
+              @limit = { srid: @srid, type: to_type_name(geometric_type) }
               @limit[:has_z] = true if @has_z
               @limit[:has_m] = true if @has_m
               @limit[:geographic] = true if @geographic
@@ -69,6 +69,17 @@ module ActiveRecord  # :nodoc:
         def build_from_sql_type(sql_type)
           geo_type, @srid, @has_z, @has_m = OID::Spatial.parse_sql_type(sql_type)
           set_geometric_type_from_name(geo_type)
+        end
+
+        def to_type_name(geometric_type)
+          name = geometric_type.type_name.underscore
+          if name == "point"
+            "st_point"
+          elsif name == "polygon"
+            "st_polygon"
+          else
+            name
+          end
         end
       end
     end

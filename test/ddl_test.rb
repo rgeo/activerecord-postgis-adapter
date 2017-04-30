@@ -228,7 +228,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal false, col.has_z?
     assert_equal true, col.has_m?
     assert_equal 3785, col.srid
-    assert_equal({ has_m: true, type: "polygon", srid: 3785 }, col.limit)
+    assert_equal({ has_m: true, type: "st_polygon", srid: 3785 }, col.limit)
     klass.connection.drop_table(:spatial_models)
     assert_equal 0, count_geometry_columns
   end
