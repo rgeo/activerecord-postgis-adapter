@@ -1,3 +1,7 @@
+### 4.0.3 / 2017-04-30
+
+* Fix st_point, st_polygon exports (affects schema.rb) #253, #226
+
 ### 4.0.2 / 2016-11-13
 
 * Revert #237
@@ -11,11 +15,15 @@
 * Support ActiveRecord 5.0 (#213)
 * Fix schema dump null issues in JRuby (#229)
 
-### 3.1.4 / 2016-2-7
+### 3.1.5 / 2017-04-30
+
+* Fix st_point, st_polygon exports (affects schema.rb) #252, #226
+
+### 3.1.4 / 2016-02-07
 
 * Ignore PostGIS views on schema dump - #208
 
-### 3.1.3 / 2016-1-15
+### 3.1.3 / 2016-01-15
 
 * Restrict ActiveRecord support to 4.2. See 649707cdf
 
