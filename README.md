@@ -47,6 +47,16 @@ gem 'ffi-geos'
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
 
+#### Version 5.x supports ActiveRecord 5.1+
+
+Requirements:
+
+```
+ActiveRecord 5.1+
+Ruby 2.2.2+, JRuby
+PostGIS 2.0+
+```
+
 #### Version 4.x supports ActiveRecord 5.0+
 
 Requirements:

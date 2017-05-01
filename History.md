@@ -1,3 +1,7 @@
+### 5.0.0 / 2017-05-01
+
+* Support ActiveRecord 5.1 - #246
+
 ### 4.0.3 / 2017-04-30
 
 * Fix st_point, st_polygon exports (affects schema.rb) #253, #226
