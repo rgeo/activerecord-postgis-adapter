@@ -20,18 +20,15 @@ bundle install
 
 Make sure the tests pass:
 
-`rake`
+`bundle exec rake`
 
-Run tests against both ActiveRecord 4.0 and 4.1 test gemfiles:
+Run tests against the test gemfiles:
 
 run `rake appraisal` or run the tests manually:
 
 ```
-BUNDLE_GEMFILE=./gemfiles/ar40.gemfile bundle
-BUNDLE_GEMFILE=./gemfiles/ar40.gemfile rake
-
-BUNDLE_GEMFILE=./gemfiles/ar41.gemfile bundle
-BUNDLE_GEMFILE=./gemfiles/ar41.gemfile rake
+BUNDLE_GEMFILE=./gemfiles/ar51.gemfile bundle
+BUNDLE_GEMFILE=./gemfiles/ar51.gemfile rake
 ```
 
 Make your changes and submit a pull request.
