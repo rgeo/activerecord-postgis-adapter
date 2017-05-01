@@ -19,7 +19,7 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
 
   def test_type_to_sql
     adapter = SpatialModel.connection
-    assert_equal "geometry(point,4326)", adapter.type_to_sql(:geometry, "point,4326")
+    assert_equal "geometry(point,4326)", adapter.type_to_sql(:geometry, limit: "point,4326")
   end
 
   def test_create_simple_geometry

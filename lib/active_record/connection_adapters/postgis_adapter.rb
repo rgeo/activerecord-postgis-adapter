@@ -86,7 +86,7 @@ module ActiveRecord
         }
       end
 
-      def quote(value, column = nil)
+      def quote(value)
         if RGeo::Feature::Geometry.check_type(value)
           "'#{RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)}'"
         elsif value.is_a?(RGeo::Cartesian::BoundingBox)
