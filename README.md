@@ -53,7 +53,7 @@ Requirements:
 
 ```
 ActiveRecord 5.1+
-Ruby 2.2.2+, JRuby
+Ruby 2.2.2+ (no JRuby support yet)
 PostGIS 2.0+
 ```
 
