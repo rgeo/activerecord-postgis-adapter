@@ -149,6 +149,8 @@ development:
   su_password: my_global_pasword  # the superuser's password
 ```
 
+When you are using database URL (used in heroku for example) change `postgres://` for `postgis://`
+
 ##### `rgeo` dependency
 
 This adapter uses the `rgeo` gem, which has additional dependencies.
