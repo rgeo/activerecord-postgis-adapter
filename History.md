@@ -1,4 +1,8 @@
-### 5.0.0 / 2017-05-01
+### 5.0.1 / 2017-05-01
+
+* Fix activerecord gem dependency - 69e8815
+
+### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
 
