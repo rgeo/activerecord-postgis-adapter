@@ -34,6 +34,8 @@ The adapter requires PostgreSQL 9.0+.
 Gemfile:
 
 ```ruby
+gem 'rgeo'
+gem 'rgeo-activerecord'
 gem 'activerecord-postgis-adapter'
 ```
 
