@@ -1,3 +1,7 @@
+### 5.0.2 / 2017-06-14
+
+* Use PG::Connection instead of PGconn #257
+
 ### 5.0.1 / 2017-05-01
 
 * Fix activerecord gem dependency - 69e8815
@@ -5,6 +9,10 @@
 ### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
+
+### 4.0.4 / 2017-06-14
+
+* Use PG::Connection instead of PGconn #257
 
 ### 4.0.3 / 2017-04-30
 
