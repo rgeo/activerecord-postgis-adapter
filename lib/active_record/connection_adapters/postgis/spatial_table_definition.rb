@@ -14,8 +14,6 @@ module ActiveRecord  # :nodoc:
             geo_type = ColumnDefinitionUtils.geo_type(options[:type] || type || info[:type])
             base_type = info[:type] || (options[:geographic] ? :geography : :geometry)
 
-            # puts name.dup << " - " << type.to_s << " - " << options.to_s << " :: " << geo_type.to_s << " - " << base_type.to_s
-
             options[:limit] = ColumnDefinitionUtils.limit_from_options(geo_type, options)
             options[:spatial_type] = geo_type
             column = super(name, base_type, options)
