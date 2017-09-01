@@ -12,6 +12,9 @@ matrix:
     - rvm: jruby-9.0.5.0
 addons:
   postgresql: "9.4"
+  apt:
+    packages:
+      - postgresql-9.4-postgis-2.3
 before_script:
   - psql -U postgres -c "create database postgis_adapter_test"
   - psql -U postgres -d postgis_adapter_test -c "create extension postgis"
