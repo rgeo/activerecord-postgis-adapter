@@ -116,7 +116,7 @@ You must modify your `config/database.yml` file to use the postgis
 adapter. At minimum, you will need to change the `adapter` field from
 `postgresql` to `postgis`. Recommended configuration:
 
-```
+```yml
 development:
   username:           your_username
   adapter:            postgis
@@ -127,14 +127,14 @@ development:
 If you have installed your PostGIS extension in a schema other than `public`, which
 is the default, add that schema to your `schema_search_path`:
 
-```
+```yml
 development:
   schema_search_path: public, postgis
 ```
 
 Here are some other options that are supported:
 
-```
+```yml
 development:
   adapter: postgis
   encoding: unicode
@@ -164,7 +164,7 @@ to convert a non-spatial database to a spatial database), see the section on
 To create a new Rails application using `activerecord-postgis-adapter`, start by
 using the postgresql adapter.
 
-```sh
+```rake
 rails new my_app --database=postgresql
 ```
 
@@ -176,7 +176,7 @@ gem 'activerecord-postgis-adapter'
 
 Once you have set up your database config, run:
 
-```sh
+```rake
 rake db:create
 ```
 
@@ -197,7 +197,7 @@ described above.
 
 Once you have set up your database configs, run:
 
-```sh
+```rake
 rake db:gis:setup
 ```
 
@@ -352,57 +352,73 @@ you as an RGeo geometry object (or nil, for attributes that allow null
 values). You can then call the RGeo api on the object. For example, consider
 the MySpatialTable class we worked with above:
 
-    record = MySpatialTable.find(1)
-    p = record.lonlat                  # Returns an RGeo::Feature::Point
-    puts p.x                           # displays the x coordinate
-    puts p.geometry_type.type_name     # displays "Point"
+```ruby
+record = MySpatialTable.find(1)
+p = record.lonlat                  # Returns an RGeo::Feature::Point
+puts p.x                           # displays the x coordinate
+puts p.geometry_type.type_name     # displays "Point"
+```
 
 The RGeo factory for the value is determined by how you configured the
 ActiveRecord class, as described above. In this case, we explicitly set a
 spherical factory for the `:lonlat` column:
 
-    factory = p.factory                # returns a spherical factory
+```ruby
+factory = p.factory                # returns a spherical factory
+```
 
 You can set a spatial attribute by providing an RGeo geometry object, or by
 providing the WKT string representation of the geometry. If a string is
 provided, the activerecord-postgis-adapter will attempt to parse it as WKT and
 set the value accordingly.
 
-    record.lonlat = 'POINT(-122 47)'  # sets the value to the given point
+```ruby
+record.lonlat = 'POINT(-122 47)'  # sets the value to the given point
+```
 
 If the WKT parsing fails, the value currently will be silently set to nil. In
 the future, however, this will raise an exception.
 
-    record.lonlat = 'POINT(x)'         # sets the value to nil
+```ruby
+record.lonlat = 'POINT(x)'         # sets the value to nil
+```
 
 If you set the value to an RGeo object, the factory needs to match the factory
 for the attribute. If the factories do not match, activerecord-postgis-adapter
 will attempt to cast the value to the correct factory.
 
-    p2 = factory.point(-122, 47)       # p2 is a point in a spherical factory
-    record.lonlat = p2                 # sets the value to the given point
-    record.shape1 = p2                 # shape1 uses a flat geos factory, so it
-                                       # will cast p2 into that coordinate system
-                                       # before setting the value
-    record.save
+```ruby
+p2 = factory.point(-122, 47)       # p2 is a point in a spherical factory
+record.lonlat = p2                 # sets the value to the given point
+record.shape1 = p2                 # shape1 uses a flat geos factory, so it
+                                   # will cast p2 into that coordinate system
+                                   # before setting the value
+record.save
+```
 
 If, however, you attempt to set the value to the wrong type-- for example,
 setting a linestring attribute to a point value, you will get an exception
 from Postgres when you attempt to save the record.
 
-    record.path = p2      # This will appear to work, but...
-    record.save           # This will raise an exception from the database
+```ruby
+record.path = p2      # This will appear to work, but...
+record.save           # This will raise an exception from the database
+```
 
 ### Spatial Queries
 
 You can create simple queries based on representational equality in the same
 way you would on a scalar column:
 
-    record2 = MySpatialTable.where(:lonlat => factory.point(-122, 47)).first
+```ruby
+record2 = MySpatialTable.where(:lonlat => factory.point(-122, 47)).first
+```
 
 You can also use WKT:
 
-    record3 = MySpatialTable.where(:lonlat => 'POINT(-122 47)').first
+```ruby
+record3 = MySpatialTable.where(:lonlat => 'POINT(-122 47)').first
+```
 
 Note that these queries use representational equality, meaning they return
 records where the lonlat value matches the given value exactly. A 0.00001
@@ -429,7 +445,9 @@ invokes PostGIS to add the appropriate definitions to your database. You can
 determine whether your database includes the correct definitions by attempting
 to invoke the POSTGIS_VERSION function:
 
-    SELECT POSTGIS_VERSION(); # succeeds if PostGIS objects are present.
+```sql
+SELECT POSTGIS_VERSION(); # succeeds if PostGIS objects are present.
+```
 
 Standard spatial databases also include a table called `spatial_ref_sys`. This
 table includes a set of "spatial reference systems", or coordinate systems---
