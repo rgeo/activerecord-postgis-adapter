@@ -43,8 +43,8 @@ module ActiveRecord
           column(name, :st_polygon, options)
         end
       end
-
-      PostgreSQL::Table.send(:include, ColumnMethods)
     end
+
+    PostgreSQL::Table.include PostGIS::ColumnMethods
   end
 end
