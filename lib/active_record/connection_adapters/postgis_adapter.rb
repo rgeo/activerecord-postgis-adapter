@@ -24,8 +24,8 @@ require "active_record/connection_adapters/postgis/postgis_database_tasks"
 
 ActiveRecord::ConnectionAdapters::PostGIS.initial_setup
 
-  load ::File.expand_path("postgis/railtie.rb", ::File.dirname(__FILE__))
 if defined?(Rails::Railtie)
+  require "active_record/connection_adapters/postgis/railtie"
 end
 
 # :startdoc:
