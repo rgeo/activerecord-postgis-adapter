@@ -5,11 +5,14 @@
 
 require "rgeo/active_record"
 
-# autoload AbstractAdapter to avoid circular require warnings
-ActiveRecord::ConnectionAdapters::AbstractAdapter
+# autoload AbstractAdapter to avoid circular require and void context warnings
+module ActiveRecord
+  module ConnectionAdapters
+    AbstractAdapter
+  end
+end
 
 require "active_record/connection_adapters/postgresql_adapter"
-
 require "active_record/connection_adapters/postgis/version"
 require "active_record/connection_adapters/postgis/column_methods"
 require "active_record/connection_adapters/postgis/schema_statements"
