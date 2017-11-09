@@ -1,5 +1,4 @@
 require "test_helper"
-require "active_record/schema_dumper"
 
 class TasksTest < ActiveSupport::TestCase  # :nodoc:
   NEW_CONNECTION = {
@@ -140,12 +139,12 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
   end
 
   def tmp_sql_filename
-    File.expand_path("../tmp/tmp.sql", ::File.dirname(__FILE__))
+    File.expand_path("../tmp/tmp.sql", File.dirname(__FILE__))
   end
 
   def setup_database_tasks
     FileUtils.rm_f(tmp_sql_filename)
-    FileUtils.mkdir_p(::File.dirname(tmp_sql_filename))
+    FileUtils.mkdir_p(File.dirname(tmp_sql_filename))
     drop_db_if_exists
     ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(NEW_CONNECTION).create
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
