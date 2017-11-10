@@ -1,3 +1,11 @@
+### 5.0.3 / 2017-11-09
+
+* Improve requires, fix warnings #268
+* Improve readme #264
+* Fix Travis #261
+* Remove comment #260
+* Fix regex for parsing spacial column types #259
+
 ### 5.0.2 / 2017-06-14
 
 * Use PG::Connection instead of PGconn #257
@@ -9,6 +17,13 @@
 ### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
+
+### 4.0.5 / 2017-11-09
+
+* Backport fixes from master #270
+* Fix circular require warning
+* Improve requires
+* Fix regex for parsing spacial column types #259
 
 ### 4.0.4 / 2017-06-14
 
