@@ -3,8 +3,16 @@
 
 # :stopdoc:
 
-require "active_record/connection_adapters/postgresql_adapter"
 require "rgeo/active_record"
+
+# autoload AbstractAdapter to avoid circular require and void context warnings
+module ActiveRecord
+  module ConnectionAdapters
+    AbstractAdapter
+  end
+end
+
+require "active_record/connection_adapters/postgresql_adapter"
 require "active_record/connection_adapters/postgis/version"
 require "active_record/connection_adapters/postgis/column_methods"
 require "active_record/connection_adapters/postgis/schema_statements"
@@ -20,7 +28,7 @@ require "active_record/connection_adapters/postgis/postgis_database_tasks"
 ::ActiveRecord::ConnectionAdapters::PostGIS.initial_setup
 
 if defined?(::Rails::Railtie)
-  load ::File.expand_path("postgis/railtie.rb", ::File.dirname(__FILE__))
+  require "active_record/connection_adapters/postgis/railtie"
 end
 
 # :startdoc:

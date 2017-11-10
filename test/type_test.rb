@@ -19,6 +19,12 @@ class TypeTest < ActiveSupport::TestCase
     assert_equal ["MultiPolygon", 4326, false, false], spatial.parse_sql_type("geometry(MultiPolygon,4326)")
   end
 
+  def test_parse_non_geo_types
+    assert_equal ["x", 0, false, false], spatial.parse_sql_type("x")
+    assert_equal ["foo", 0, false, false], spatial.parse_sql_type("foo")
+    assert_equal ["foo(A,1234)", 0, false, false], spatial.parse_sql_type("foo(A,1234)")
+  end
+
   private
 
   def spatial
