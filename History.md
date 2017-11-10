@@ -1,3 +1,13 @@
+### 4.0.5 / 2017-11-09
+
+* Backport fixes from master #270
+* Fix circular require warning
+* Improve requires
+
+### 4.0.4 / 2017-04-30
+
+* Use PG::Connection instead of PGconn #257
+
 ### 4.0.3 / 2017-04-30
 
 * Fix st_point, st_polygon exports (affects schema.rb) #253, #226
