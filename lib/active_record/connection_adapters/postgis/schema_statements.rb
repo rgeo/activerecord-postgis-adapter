@@ -88,7 +88,7 @@ module ActiveRecord
           @spatial_column_info[table_name.to_sym] ||= SpatialColumnInfo.new(self, table_name.to_s)
         end
 
-        def initialize_type_map(map)
+        def initialize_type_map(map = type_map)
           super
 
           %w(
