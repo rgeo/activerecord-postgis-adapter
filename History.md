@@ -1,3 +1,7 @@
+### 5.1.0 / 2017-12-02
+
+* Require rgeo-activerecord 6.0, require rgeo 1.0. #272
+
 ### 5.0.3 / 2017-11-09
 
 * Improve requires, fix warnings #268
@@ -17,6 +21,10 @@
 ### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
+
+### 4.1.0 / 2017-12-02
+
+* Require rgeo-activerecord 6.0, require rgeo 1.0.
 
 ### 4.0.5 / 2017-11-09
 
