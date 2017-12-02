@@ -1,16 +1,16 @@
 language: ruby
 sudo: false
 rvm:
-  - 2.4.1
-  - 2.3.4
-  - 2.2.7
-  - jruby-9.0.5.0
+  - 2.4.2
+  - 2.3.5
+  - 2.2.8
+  - jruby-9.1.9.0
 gemfile:
   - gemfiles/ar51.gemfile
   - gemfiles/ar52.gemfile
 matrix:
   allow_failures:
-    - rvm: jruby-9.0.5.0
+    - rvm: jruby-9.1.9.0
 addons:
   postgresql: "9.4"
   apt:
