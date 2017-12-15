@@ -6,7 +6,7 @@ module ActiveRecord
         # pass table_name to #new_column
         def columns(table_name)
           # Limit, precision, and scale are all handled by the superclass.
-          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod, collation|
+          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod, collation, comment|
             oid = oid.to_i
             fmod = fmod.to_i
             type_metadata = fetch_type_metadata(column_name, type, oid, fmod)
@@ -14,12 +14,12 @@ module ActiveRecord
             default_value = extract_value_from_default(default)
 
             default_function = extract_default_function(default_value, default)
-            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull, default_function, collation)
+            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull, default_function, collation, comment)
           end
         end
 
         # override
-        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil, null = true, default_function = nil, collation = nil)
+        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil, null = true, default_function = nil, collation = nil, comment = nil)
           # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
           if null.is_a?(String)
             null = (null == "t")
@@ -34,6 +34,7 @@ module ActiveRecord
                             table_name,
                             default_function,
                             collation,
+                            comment,
                             cast_type,
                             column_info)
         end
