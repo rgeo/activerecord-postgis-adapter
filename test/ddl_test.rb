@@ -306,6 +306,15 @@ class DDLTest < ActiveSupport::TestCase  # :nodoc:
     assert_equal 123, col.limit
   end
 
+  def test_column_comments
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.string :sample_comment, comment: 'Comment test'
+    end
+    klass.reset_column_information
+    col = klass.columns.last
+    assert_equal 'Comment test', col.comment
+  end
+
   private
 
   def klass
