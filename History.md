@@ -1,3 +1,7 @@
+### 5.2.0 / 2017-12-24
+
+* Support comments - #275
+
 ### 5.1.0 / 2017-12-02
 
 * Require rgeo-activerecord 6.0, require rgeo 1.0. #272
@@ -21,6 +25,10 @@
 ### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
+
+### 4.1.1 / 2017-12-24
+
+* Support comments - backport #275
 
 ### 4.1.0 / 2017-12-02
 
