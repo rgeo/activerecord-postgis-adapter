@@ -1,3 +1,7 @@
+### 4.1.1 / 2017-12-24
+
+* Support comments - backport #275
+
 ### 4.1.0 / 2017-12-02
 
 * Require rgeo-activerecord 6.0, require rgeo 1.0. #44
