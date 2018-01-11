@@ -21,3 +21,4 @@ before_script:
   - psql -U postgres -c "create database postgis_adapter_test"
   - psql -U postgres -d postgis_adapter_test -c "create extension postgis"
 script: bundle exec rake test
+before_install: "gem update --system" # https://github.com/travis-ci/travis-ci/issues/8974
