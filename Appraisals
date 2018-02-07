@@ -4,4 +4,5 @@ end
 
 appraise "ar52" do
   gem "activerecord", "~> 5.2.0.beta2"
+  gem "pg", "~> 1.0", platform: :ruby
 end
