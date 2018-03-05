@@ -27,7 +27,7 @@ module ActiveRecord
             if sql_type =~ /(geography|geometry)\((.*)\)$/i
               # geometry(Point,4326)
               params = Regexp.last_match(2).split(",")
-              if params.size > 1
+              if params.size >= 1
                 if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
                   has_z = Regexp.last_match(2).length > 0
                   has_m = Regexp.last_match(3).length > 0
