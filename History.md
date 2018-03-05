@@ -1,3 +1,8 @@
+### 5.2.1 / 2018-03-05
+
+* Fix type parsing for Z/M variants with no SRID #281, #282
+* Test ActiveRecord 5.2 with pg gem version 1.0.0 #279
+
 ### 5.2.0 / 2017-12-24
 
 * Support comments - #275
@@ -25,6 +30,10 @@
 ### 5.0.0 / 2017-05-01 *** YANKED
 
 * Support ActiveRecord 5.1 - #246
+
+### 4.1.2 / 2018-03-05
+
+* Fix type parsing for Z/M variants with no SRID #283
 
 ### 4.1.1 / 2017-12-24
 
