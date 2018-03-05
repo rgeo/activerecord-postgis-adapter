@@ -1,3 +1,7 @@
+### 4.1.2 / 2018-03-05
+
+* Fix type parsing for Z/M variants with no SRID #283
+
 ### 4.1.1 / 2017-12-24
 
 * Support comments - backport #275
