@@ -8,11 +8,13 @@ class TypeTest < ActiveSupport::TestCase
 
   def test_parse_geo_type
     assert_equal ["Point", 0, false, false], spatial.parse_sql_type("geography(Point)")
-    assert_equal ["Polygon", 0, false, false], spatial.parse_sql_type("geography(Polygon)")
-  end
-
-  def test_parse_type_with_z_but_no_srid
+    assert_equal ["Point", 0, false, true], spatial.parse_sql_type("geography(PointM)")
     assert_equal ["Point", 0, true, false], spatial.parse_sql_type("geography(PointZ)")
+    assert_equal ["Point", 0, true, true], spatial.parse_sql_type("geography(PointZM)")
+    assert_equal ["Polygon", 0, false, false], spatial.parse_sql_type("geography(Polygon)")
+    assert_equal ["Polygon", 0, true, false], spatial.parse_sql_type("geography(PolygonZ)")
+    assert_equal ["Polygon", 0, false, true], spatial.parse_sql_type("geography(PolygonM)")
+    assert_equal ["Polygon", 0, true, true], spatial.parse_sql_type("geography(PolygonZM)")
   end
 
   def test_parse_type_with_srid
