@@ -1,10 +1,10 @@
 language: ruby
 sudo: false
 rvm:
-  - 2.5.0
-  - 2.4.3
-  - 2.3.6
-  - 2.2.9
+  - 2.5
+  - 2.4
+  - 2.3
+  - 2.2
   - jruby-9.1.9.0
 gemfile:
   - gemfiles/ar51.gemfile
@@ -21,4 +21,6 @@ before_script:
   - psql -U postgres -c "create database postgis_adapter_test"
   - psql -U postgres -d postgis_adapter_test -c "create extension postgis"
 script: bundle exec rake test
-before_install: "gem update --system" # https://github.com/travis-ci/travis-ci/issues/8974
+before_install:
+  - gem update --system
+  - gem install bundler
