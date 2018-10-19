@@ -33,9 +33,8 @@ module ActiveRecord  # :nodoc:
         valid_conn_param_keys = PG::Connection.conndefaults_hash.keys + [:requiressl]
         conn_params.slice!(*valid_conn_param_keys)
 
-        # The postgres drivers don't allow the creation of an unconnected PGconn object,
-        # so just pass a nil connection object for the time being.
-        ConnectionAdapters::PostGISAdapter.new(nil, logger, conn_params, config)
+        conn = PG.connect(conn_params)
+        ConnectionAdapters::PostGISAdapter.new(conn, logger, conn_params, config)
       end
 
     end
