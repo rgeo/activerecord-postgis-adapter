@@ -11,7 +11,7 @@ Layout/MultilineOperationIndentation:
   Enabled: false
 
 Metrics/LineLength:
-  Max: 110
+  Max: 130
 
 Style/SignalException:
   EnforcedStyle: only_raise
