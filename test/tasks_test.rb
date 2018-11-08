@@ -2,32 +2,23 @@
 
 require "test_helper"
 
-class TasksTest < ActiveSupport::TestCase  # :nodoc:
-  NEW_CONNECTION = {
-    "adapter"            => "postgis",
-    "host"               => "127.0.0.1",
-    "database"           => "postgis_tasks_test",
-    "username"           => "postgres",
-    "setup"              => "default",
-    "schema_search_path" => "public",
-  }
-
+class TasksTest < ActiveSupport::TestCase # :nodoc:
   def test_create_database_from_extension_in_public_schema
     drop_db_if_exists
-    ActiveRecord::Tasks::DatabaseTasks.create(NEW_CONNECTION)
+    ActiveRecord::Tasks::DatabaseTasks.create(new_connection)
     refute_empty connection.select_values("SELECT * from public.spatial_ref_sys")
   end
 
   def test_create_database_from_extension_in_separate_schema
     drop_db_if_exists
-    configuration = NEW_CONNECTION.merge("postgis_schema" => "postgis")
+    configuration = new_connection.merge("postgis_schema" => "postgis")
     ActiveRecord::Tasks::DatabaseTasks.create(configuration)
     refute_empty connection.select_values("SELECT * from postgis.spatial_ref_sys")
   end
 
   def test_empty_sql_dump
     setup_database_tasks
-    ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
+    ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     sql = File.read(tmp_sql_filename)
     assert(sql !~ /CREATE TABLE/)
   end
@@ -39,7 +30,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       t.geometry "geo_col", srid: 4326
       t.column "poly", :multi_polygon, srid: 4326
     end
-    ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
+    ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
     assert(data.index("latlon geography(Point,4326)"))
     assert(data.index("geo_col geometry(Geometry,4326)"))
@@ -54,7 +45,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     end
     connection.add_index :spatial_test, :latlon, using: :gist
     connection.add_index :spatial_test, :name, using: :btree
-    ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
+    ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
     assert(data.index("latlon geography(Point,4326)"))
     assert data.index("CREATE INDEX index_spatial_test_on_latlon ON spatial_test USING gist (latlon);")
@@ -118,7 +109,7 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
       t.string "name"
     end
     connection.add_index :test, :name
-    ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
+    ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
     assert data.index("CREATE INDEX index_test_on_name ON test USING btree (name);")
   end
@@ -129,13 +120,17 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     connection.create_table(:dogs, force: true) do |t|
       t.references :cats, index: true
     end
-    ActiveRecord::Tasks::DatabaseTasks.structure_dump(NEW_CONNECTION, tmp_sql_filename)
+    ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
     assert data.index("CREATE INDEX index_dogs_on_cats_id ON dogs USING btree (cats_id);")
   end
 
   private
 
+  def new_connection
+    ActiveRecord::Base.test_connection_hash.merge("database" => "postgis_tasks_test")
+  end
+  
   def connection
     ActiveRecord::Base.connection
   end
@@ -148,13 +143,13 @@ class TasksTest < ActiveSupport::TestCase  # :nodoc:
     FileUtils.rm_f(tmp_sql_filename)
     FileUtils.mkdir_p(File.dirname(tmp_sql_filename))
     drop_db_if_exists
-    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(NEW_CONNECTION).create
+    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(new_connection).create
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
   end
 
   def drop_db_if_exists
-    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(NEW_CONNECTION).drop
+    ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(new_connection).drop
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
   end

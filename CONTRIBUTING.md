@@ -12,6 +12,21 @@ psql -U postgres -c "create database postgis_adapter_test"
 psql -U postgres -d postgis_adapter_test -c "create extension postgis"
 ```
 
+You may also set up environment variables to define the database connection.
+See `test/database.yml` for which variables are used. All are optional.
+For example:
+
+```sh
+export PGUSER=postgis_test
+export PGPASSWORD=password123
+export PGPORT=95432
+export PGHOST=127.0.0.2
+export PGDATABASE=postgis_adapter_test
+
+psql -c "create database postgis_adapter_test"
+psql -c "create extension postgis"
+```
+
 Install dependencies:
 
 ```sh
