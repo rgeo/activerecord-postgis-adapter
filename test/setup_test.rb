@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class SpatialQueriesTest < ActiveSupport::TestCase  # :nodoc:
+class SpatialQueriesTest < ActiveSupport::TestCase
   def test_ignore_tables
     expect_to_ignore = %w(
       geography_columns

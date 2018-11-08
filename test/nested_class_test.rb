@@ -2,13 +2,14 @@
 
 require "test_helper"
 
-class NestedClassTest < ActiveSupport::TestCase  # :nodoc:
+class NestedClassTest < ActiveSupport::TestCase
   module Foo
     def self.table_name_prefix
       "foo_"
     end
+
     class Bar < ActiveRecord::Base
-      establish_connection YAML.load_file(ActiveSupport::TestCase::DATABASE_CONFIG_PATH)
+      establish_test_connection
     end
   end
 

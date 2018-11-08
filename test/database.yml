@@ -1,6 +1,8 @@
 adapter: postgis
-host: 127.0.0.1
-database: postgis_adapter_test
-username: postgres
+host: <%= ENV["PGHOST"] || "127.0.0.1" %>
+port: <%= ENV["PGPORT"] || "5432" %>
+database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>
+username: <%= ENV["PGUSER"] || "postgres" %>
+password: <%= ENV["PGPASSWORD"] || "" %>
 setup: default
 schema_search_path: public
