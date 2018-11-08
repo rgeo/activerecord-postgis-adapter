@@ -13,13 +13,20 @@ matrix:
   allow_failures:
     - rvm: jruby-9.1.9.0
 addons:
-  postgresql: "9.4"
+  postgresql: 10
   apt:
     packages:
-      - postgresql-9.4-postgis-2.3
+      - postgresql-10-postgis-2.4
+      - postgresql-10-postgis-2.4-scripts
+      - postgresql-client-10
+env:
+  global:
+    - PGUSER=travis
+    - PGHOST=""
+    - PGPORT=5433
 before_script:
-  - psql -U postgres -c "create database postgis_adapter_test"
-  - psql -U postgres -d postgis_adapter_test -c "create extension postgis"
+  - psql -U travis -c "create database postgis_adapter_test"
+  - psql -U travis -d postgis_adapter_test -c "create extension postgis"
 script: bundle exec rake test
 before_install:
   - gem update --system
