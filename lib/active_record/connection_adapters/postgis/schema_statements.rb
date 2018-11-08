@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ActiveRecord
   module ConnectionAdapters
     module PostGIS
@@ -14,12 +16,14 @@ module ActiveRecord
             default_value = extract_value_from_default(default)
 
             default_function = extract_default_function(default_value, default)
-            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull, default_function, collation, comment)
+            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull,
+                       default_function, collation, comment)
           end
         end
 
         # override
-        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil, null = true, default_function = nil, collation = nil, comment = nil)
+        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil,
+                       null = true, default_function = nil, collation = nil, comment = nil)
           # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
           if null.is_a?(String)
             null = (null == "t")

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ActiveRecord  # :nodoc:
   module ConnectionAdapters  # :nodoc:
     module PostGIS
@@ -9,7 +11,9 @@ module ActiveRecord  # :nodoc:
         end
 
         def all
-          info = @adapter.query("SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'")
+          info = @adapter.query(
+            "SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'"
+          )
           result = {}
           info.each do |row|
             name = row[0]

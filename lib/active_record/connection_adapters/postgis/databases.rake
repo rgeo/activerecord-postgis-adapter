@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :db do
   namespace :gis do
     desc "Setup PostGIS data in the database"

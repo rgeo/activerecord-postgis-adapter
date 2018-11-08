@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The activerecord-postgis-adapter gem installs the *postgis*
 # connection adapter into ActiveRecord.
 
@@ -70,7 +72,7 @@ module ActiveRecord
       end
 
       def adapter_name
-        "PostGIS".freeze
+        "PostGIS"
       end
 
       def self.spatial_column_options(key)

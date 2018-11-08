@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Arel  # :nodoc:
   module Visitors  # :nodoc:
     # Different super-class under JRuby JDBC adapter.
