@@ -1,10 +1,17 @@
 inherit_from: .rubocop_todo.yml
 
-Style/AlignParameters:
+AllCops:
+  TargetRubyVersion: 2.2
+  DisplayCopNames: true
+
+Layout/AlignParameters:
   Enabled: false
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   Enabled: false
+
+Metrics/LineLength:
+  Max: 110
 
 Style/SignalException:
   EnforcedStyle: only_raise
@@ -12,5 +19,11 @@ Style/SignalException:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
-Style/TrailingCommaInLiteral:
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Style/ZeroLengthPredicate:
   Enabled: false
