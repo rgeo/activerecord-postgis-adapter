@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TasksTest < ActiveSupport::TestCase # :nodoc:
+class TasksTest < ActiveSupport::TestCase
   def test_create_database_from_extension_in_public_schema
     drop_db_if_exists
     ActiveRecord::Tasks::DatabaseTasks.create(new_connection)

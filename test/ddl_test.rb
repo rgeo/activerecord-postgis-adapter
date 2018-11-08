@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class DDLTest < ActiveSupport::TestCase  # :nodoc:
+class DDLTest < ActiveSupport::TestCase
   def test_spatial_column_options
     [
       :geography,

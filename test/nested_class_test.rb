@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class NestedClassTest < ActiveSupport::TestCase # :nodoc:
+class NestedClassTest < ActiveSupport::TestCase
   module Foo
     def self.table_name_prefix
       "foo_"
