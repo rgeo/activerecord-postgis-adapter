@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if RUBY_ENGINE == "jruby"
   require "active_record/connection_adapters/jdbcpostgresql_adapter"
 else
