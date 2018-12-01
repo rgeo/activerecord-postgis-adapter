@@ -1,3 +1,12 @@
+### 5.2.2 / 2018-12-02
+
+* Freeze strings
+
+
+** Note: rgeo 2.0 is supported with version 5.1.0+
+** The rgeo gem version requirement is specified by rgeo-activerecord
+
+
 ### 5.2.1 / 2018-03-05
 
 * Fix type parsing for Z/M variants with no SRID #281, #282
