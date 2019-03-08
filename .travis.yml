@@ -4,7 +4,6 @@ rvm:
   - 2.5
   - 2.4
   - 2.3
-  - 2.2
   - jruby-9.1.9.0
 gemfile:
   - gemfiles/ar51.gemfile
@@ -17,8 +16,6 @@ matrix:
   - rvm: 2.4
     gemfile: gemfiles/ar60.gemfile
   - rvm: 2.3
-    gemfile: gemfiles/ar60.gemfile
-  - rvm: 2.2
     gemfile: gemfiles/ar60.gemfile
 addons:
   postgresql: 10
