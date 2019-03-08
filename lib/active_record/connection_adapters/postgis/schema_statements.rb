@@ -84,7 +84,11 @@ module ActiveRecord
 
         # override
         def create_table_definition(*args)
-          PostGIS::TableDefinition.new(*args)
+          if ActiveRecord::VERSION::MAJOR < 6
+            PostGIS::TableDefinition.new(*args)
+          else
+            PostGIS::TableDefinition.new(self, *args)
+          end
         end
 
         # memoize hash of column infos for tables
