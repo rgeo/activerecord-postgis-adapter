@@ -9,6 +9,7 @@ rvm:
 gemfile:
   - gemfiles/ar51.gemfile
   - gemfiles/ar52.gemfile
+  - gemfiles/ar60.gemfile
 matrix:
   allow_failures:
     - rvm: jruby-9.1.9.0
