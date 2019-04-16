@@ -327,7 +327,7 @@ The default spatial factory for geographic columns is `RGeo::Geographic.spherica
 The default spatial factory for cartesian columns is `RGeo::Cartesian.preferred_factory`.
 You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
 
-For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README] (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
+For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
 
 ## Working With Spatial Data
 
