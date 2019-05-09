@@ -8,6 +8,6 @@ appraise "ar52" do
 end
 
 appraise "ar60" do
-  gem "activerecord", "~> 6.0.0"
+  gem "activerecord", "~> 6.0.0.rc1"
   gem "pg", "~> 1.0", platform: :ruby
 end
