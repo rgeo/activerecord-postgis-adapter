@@ -17,6 +17,8 @@ matrix:
     gemfile: gemfiles/ar60.gemfile
   - rvm: 2.3
     gemfile: gemfiles/ar60.gemfile
+services:
+  - postgresql
 addons:
   postgresql: 10
   apt:
