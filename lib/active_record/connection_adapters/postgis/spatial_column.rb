@@ -12,6 +12,7 @@ module ActiveRecord  # :nodoc:
         #   OID::Integer
         def initialize(name, default, sql_type_metadata = nil, null = true, table_name = nil,
                        default_function = nil, collation = nil, comment = nil, cast_type = nil, opts = nil)
+          @sql_type_metadata = sql_type_metadata
           @cast_type = cast_type
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
           if opts
