@@ -12,6 +12,7 @@ module ActiveRecord  # :nodoc:
         #   OID::Integer
         def initialize(name, default, sql_type_metadata = nil, null = true, table_name = nil,
                        default_function = nil, collation = nil, comment = nil, cast_type = nil, opts = nil)
+          @sql_type_metadata = sql_type_metadata
           @cast_type = cast_type
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
           if opts
@@ -32,7 +33,11 @@ module ActiveRecord  # :nodoc:
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type_metadata.sql_type)
           end
-          super(name, default, sql_type_metadata, null, table_name, default_function, collation, comment: comment)
+          if ActiveRecord::VERSION::MAJOR < 6
+            super(name, default, sql_type_metadata, null, table_name, default_function, collation, comment: comment)
+          else
+            super(name, default, sql_type_metadata, null, default_function, collection: collation, comment: comment)
+          end
           if spatial?
             if @srid
               @limit = { srid: @srid, type: to_type_name(geometric_type) }
