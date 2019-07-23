@@ -47,3 +47,8 @@ BUNDLE_GEMFILE=./gemfiles/ar51.gemfile rake
 ```
 
 Make your changes and submit a pull request.
+
+Note: the master branch targets the latest version of Active Record. To submit
+a pull request for a prior version, be sure to branch from the correct version
+(for example, 4.0-stable). Also be sure to set the target branch of the pull
+request to that version (for example, 4.0-stable).
