@@ -7,14 +7,10 @@ module ActiveRecord  # :nodoc:
         # sql_type examples:
         #   "Geometry(Point,4326)"
         #   "Geography(Point,4326)"
-        # cast_type example classes:
-        #   OID::Spatial
-        #   OID::Integer
         def initialize(name, default, sql_type_metadata = nil, null = true,
-                       default_function = nil, collation: nil, comment: nil, cast_type: nil,
+                       default_function = nil, collation: nil, comment: nil,
                        serial: nil, spatial: nil)
           @sql_type_metadata = sql_type_metadata
-          @cast_type = cast_type
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
           if spatial
             # This case comes from an entry in the geometry_columns table
@@ -57,15 +53,11 @@ module ActiveRecord  # :nodoc:
         alias :has_m? :has_m
 
         def limit
-          if spatial?
-            @limit
-          else
-            super
-          end
+          spatial? ? @limit : super
         end
 
         def spatial?
-          @cast_type.respond_to?(:spatial?) && @cast_type.spatial?
+          %i[geometry geography].include?(@sql_type_metadata.type)
         end
 
         private
