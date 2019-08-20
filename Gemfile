@@ -6,4 +6,4 @@ gemspec
 gem "pg", "~> 1.0", platform: :ruby
 gem "activerecord-jdbcpostgresql-adapter", "~> 1.3.9", platform: :jruby
 gem "ffi-geos", platform: :jruby
-gem "byebug", platform: :mri_24
+gem "byebug" if ENV["BYEBUG"]
