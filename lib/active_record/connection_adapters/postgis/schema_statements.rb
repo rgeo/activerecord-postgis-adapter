@@ -5,46 +5,37 @@ module ActiveRecord
     module PostGIS
       module SchemaStatements
         # override
-        # pass table_name to #new_column
-        def columns(table_name)
-          # Limit, precision, and scale are all handled by the superclass.
-          column_definitions(table_name).map do |column_name, type, default, notnull, oid, fmod, collation, comment|
-            oid = oid.to_i
-            fmod = fmod.to_i
-            type_metadata = fetch_type_metadata(column_name, type, oid, fmod)
-            cast_type = get_oid_type(oid.to_i, fmod.to_i, column_name, type)
-            default_value = extract_value_from_default(default)
+        # https://github.com/rails/rails/blob/6-0-stable/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L624
+        # Create a SpatialColumn instead of a PostgreSQL::Column
+        def new_column_from_field(table_name, field)
+          column_name, type, default, notnull, oid, fmod, collation, comment = field
+          type_metadata = fetch_type_metadata(column_name, type, oid.to_i, fmod.to_i)
+          default_value = extract_value_from_default(default)
+          default_function = extract_default_function(default_value, default)
 
-            default_function = extract_default_function(default_value, default)
-            new_column(table_name, column_name, default_value, cast_type, type_metadata, !notnull,
-                       default_function, collation, comment)
-          end
+          serial =
+            if (match = default_function&.match(/\Anextval\('"?(?<sequence_name>.+_(?<suffix>seq\d*))"?'::regclass\)\z/))
+              sequence_name_from_parts(table_name, column_name, match[:suffix]) == match[:sequence_name]
+            end
+
+          # {:dimension=>2, :has_m=>false, :has_z=>false, :name=>"latlon", :srid=>0, :type=>"GEOMETRY"}
+          spatial = spatial_column_info(table_name).get(column_name, type_metadata.sql_type)
+
+          SpatialColumn.new(
+            column_name,
+            default_value,
+            type_metadata,
+            !notnull,
+            default_function,
+            collation: collation,
+            comment: comment.presence,
+            serial: serial,
+            spatial: spatial
+          )
         end
 
         # override
-        def new_column(table_name, column_name, default, cast_type, sql_type_metadata = nil,
-                       null = true, default_function = nil, collation = nil, comment = nil)
-          # JDBC gets true/false in Rails 4, where other platforms get 't'/'f' strings.
-          if null.is_a?(String)
-            null = (null == "t")
-          end
-
-          column_info = spatial_column_info(table_name).get(column_name, sql_type_metadata.sql_type)
-
-          SpatialColumn.new(column_name,
-                            default,
-                            sql_type_metadata,
-                            null,
-                            table_name,
-                            default_function,
-                            collation,
-                            comment,
-                            cast_type,
-                            column_info)
-        end
-
-        # override
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L583
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L523
         #
         # returns Postgresql sql type string
         # examples:
@@ -54,12 +45,12 @@ module ActiveRecord
         # note: type alone is not enough to detect the sql type,
         # so `limit` is used to pass the additional information. :(
         #
-        # type_to_sql(:geography, "Point,4326")
+        # type_to_sql(:geography, limit: "Point,4326")
         # => "geography(Point,4326)"
-        def type_to_sql(type, options = {})
-          case type
-          when :geometry, :geography
-            "#{type}(#{options[:limit]})"
+        def type_to_sql(type, limit: nil, precision: nil, scale: nil, array: nil, **)
+          case type.to_s
+          when "geometry", "geography"
+            "#{type}(#{limit})"
           else
             super
           end
@@ -84,7 +75,7 @@ module ActiveRecord
 
         # override
         def create_table_definition(*args)
-          PostGIS::TableDefinition.new(*args)
+          PostGIS::TableDefinition.new(self, *args)
         end
 
         # memoize hash of column infos for tables

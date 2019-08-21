@@ -5,12 +5,7 @@ require "minitest/pride"
 require "mocha/minitest"
 require "activerecord-postgis-adapter"
 require "erb"
-
-begin
-  require "byebug"
-rescue LoadError
-  # ignore
-end
+require "byebug" if ENV["BYEBUG"]
 
 module ActiveRecord
   class Base
