@@ -1,6 +1,6 @@
 # PostGIS ActiveRecord Adapter
 
-[![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](http://badge.fury.io/rb/activerecord-postgis-adapter)
+[![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](https://badge.fury.io/rb/activerecord-postgis-adapter)
 [![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
 [![Code Climate](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter.png)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter)
 
@@ -8,7 +8,7 @@ The activerecord-postgis-adapter provides access to features
 of the PostGIS geospatial database from ActiveRecord. It extends
 the standard postgresql adapter to provide support for the spatial data types
 and features added by the PostGIS extension. It uses the
-[RGeo](http://github.com/rgeo/rgeo) library to represent spatial data in Ruby.
+[RGeo](https://github.com/rgeo/rgeo) library to represent spatial data in Ruby.
 
 ## Overview
 
@@ -37,32 +37,42 @@ Gemfile:
 gem 'activerecord-postgis-adapter'
 ```
 
-Gemfile for JRuby:
+Gemfile for JRuby*:
 
 ```ruby
 gem 'activerecord-postgis-adapter'
-gem 'activerecord-jdbcpostgresql-adapter', '~> 1.3.9'
+gem 'activerecord-jdbcpostgresql-adapter'
 gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
 
-#### Version 5.x supports ActiveRecord 5.1+
+#### Version 6.x supports ActiveRecord 6.0
 
 Requirements:
 
 ```
-ActiveRecord 5.1+
+ActiveRecord 6.0
+Ruby 2.5.0+ (no JRuby support yet)
+PostGIS 2.0+
+```
+
+#### Version 5.x supports ActiveRecord 5.1 and 5.2
+
+Requirements:
+
+```
+ActiveRecord 5.1 or 5.2
 Ruby 2.2.2+ (no JRuby support yet)
 PostGIS 2.0+
 ```
 
-#### Version 4.x supports ActiveRecord 5.0+
+#### Version 4.x supports ActiveRecord 5.0
 
 Requirements:
 
 ```
-ActiveRecord 5.0+
+ActiveRecord 5.0
 Ruby 2.2.2+, JRuby
 PostGIS 2.0+
 ```
@@ -460,27 +470,27 @@ view into the system catalogs.
 
 ## Development and Support
 
-RDoc Documentation is available at http://rdoc.info/gems/activerecord-postgis-adapter
+RDoc Documentation is available at https://rdoc.info/gems/activerecord-postgis-adapter
 
 Contributions are welcome. See CONTRIBUTING.md for instructions.
 
-Report issues at http://github.com/rgeo/activerecord-postgis-adapter/issues
+Report issues at https://github.com/rgeo/activerecord-postgis-adapter/issues
 
-Support is also available on the rgeo-users google group at http://groups.google.com/group/rgeo-users
+Support is also available on the rgeo-users google group at https://groups.google.com/group/rgeo-users
 
 ## Acknowledgments
 
-[Daniel Azuma](http://www.daniel-azuma.com) authored the PostGIS Adapter and its supporting
+[Daniel Azuma](https://daniel-azuma.com) authored the PostGIS Adapter and its supporting
 libraries (including RGeo).
 [Tee Parham](https://twitter.com/teeparham) is the current maintainer.
 
-Development is supported by:
+Development is/was supported by:
 
-* [Pirq](http://pirq.com)
+* [Pirq](https://pirq.com)
 * [Neighborland](https://neighborland.com)
 
 This adapter implementation owes some debt to the spatial_adapter plugin
-(http://github.com/fragility/spatial_adapter). Although we made some different
+(https://github.com/fragility/spatial_adapter). Although we made some different
 design decisions for this adapter, studying the spatial_adapter source gave us
 a head start on the implementation.
 
