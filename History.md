@@ -1,11 +1,10 @@
+### 6.0.0 / 2019-08-21
+
+* Support ActiveRecord 6.0 #303
+
 ### 5.2.2 / 2018-12-02
 
 * Freeze strings
-
-
-** Note: rgeo 2.0 is supported with version 5.1.0+
-** The rgeo gem version requirement is specified by rgeo-activerecord
-
 
 ### 5.2.1 / 2018-03-05
 
@@ -15,6 +14,11 @@
 ### 5.2.0 / 2017-12-24
 
 * Support comments - #275
+
+---
+* Note: rgeo 2.0 is supported with version 5.1.0+
+* The rgeo gem version requirement is specified by rgeo-activerecord
+---
 
 ### 5.1.0 / 2017-12-02
 
