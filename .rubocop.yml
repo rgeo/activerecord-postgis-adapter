@@ -13,6 +13,9 @@ Layout/MultilineOperationIndentation:
 Metrics/LineLength:
   Max: 130
 
+Style/NumericPredicate:
+  Enabled: false
+
 Style/SignalException:
   EnforcedStyle: only_raise
 
@@ -27,3 +30,11 @@ Style/TrailingCommaInHashLiteral:
 
 Style/ZeroLengthPredicate:
   Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Exclude:
+    - Appraisals
+    - Gemfile
+    - Rakefile
+    - activerecord-postgis-adapter.gemspec
+    - gemfiles/*
