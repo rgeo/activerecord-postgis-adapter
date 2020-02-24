@@ -85,8 +85,6 @@ module ActiveRecord
         end
 
         def initialize_type_map(map = type_map)
-          super
-
           %w(
             geography
             geometry
@@ -102,6 +100,8 @@ module ActiveRecord
               OID::Spatial.new(oid, sql_type)
             end
           end
+
+          super
         end
       end
     end

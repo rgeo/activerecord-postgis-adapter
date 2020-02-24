@@ -43,7 +43,7 @@ run `rake appraisal` or run the tests manually:
 
 ```
 BUNDLE_GEMFILE=./gemfiles/ar60.gemfile bundle
-BUNDLE_GEMFILE=./gemfiles/ar60.gemfile rake
+BUNDLE_GEMFILE=./gemfiles/ar60.gemfile bundle exec rake
 ```
 
 Make your changes and submit a pull request.
