@@ -10,6 +10,12 @@ the standard postgresql adapter to provide support for the spatial data types
 and features added by the PostGIS extension. It uses the
 [RGeo](https://github.com/rgeo/rgeo) library to represent spatial data in Ruby.
 
+:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
+
+This organization is looking for maintainers, see [this issue](https://github.com/rgeo/rgeo/issues/216) for more information.
+
+:warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning::warning:
+
 ## Overview
 
 The adapter provides three basic capabilities:
