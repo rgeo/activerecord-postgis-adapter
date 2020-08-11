@@ -7,7 +7,7 @@ module ActiveRecord  # :nodoc:
         include ColumnMethods
 
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb
-        def new_column_definition(name, type, options)
+        def new_column_definition(name, type, **options)
           if (info = PostGISAdapter.spatial_column_options(type.to_sym))
             if (limit = options.delete(:limit))
               options.merge!(limit) if limit.is_a?(::Hash)
@@ -18,9 +18,9 @@ module ActiveRecord  # :nodoc:
 
             options[:limit] = ColumnDefinitionUtils.limit_from_options(geo_type, options)
             options[:spatial_type] = geo_type
-            column = super(name, base_type, options)
+            column = super(name, base_type, **options)
           else
-            column = super(name, type, options)
+            column = super(name, type, **options)
           end
 
           column
