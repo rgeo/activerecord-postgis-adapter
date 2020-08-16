@@ -1,3 +1,9 @@
+### 6.0.1 / 2020-08-16
+
+* Fix SchemaStatements#initialize_type_map #309
+* Add support for Ruby 2.7 #306
+* Adapt gem to ActiveRecord 6.0. #315
+
 ### 6.0.0 / 2019-08-21
 
 * Support ActiveRecord 6.0 #303
