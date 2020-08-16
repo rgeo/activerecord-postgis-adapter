@@ -10,12 +10,12 @@ matrix:
   allow_failures:
     - rvm: jruby-9.2.6.0
 addons:
-  postgresql: 10
+  postgresql: 12
   apt:
     packages:
-      - postgresql-10-postgis-2.4
-      - postgresql-10-postgis-2.4-scripts
-      - postgresql-client-10
+      - postgresql-12-postgis-3
+      - postgresql-12-postgis-3-scripts
+      - postgresql-client-12
 env:
   global:
     - PGHOST=""
