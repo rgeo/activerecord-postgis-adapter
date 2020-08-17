@@ -16,6 +16,10 @@ addons:
   apt:
     packages:
       - postgresql-12
+<<<<<<< HEAD
+=======
+      - postgresql-12-client
+>>>>>>> 8d3810d7152a66c4b5f3f0aabc7bf8b2a62ac0d9
       - postgresql-12-postgis-3
       - postgresql-12-postgis-3-scripts
 env:
