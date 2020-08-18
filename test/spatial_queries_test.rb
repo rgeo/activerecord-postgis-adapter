@@ -15,7 +15,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase
 
   def test_query_multi_point
     # why doesn't this work with PG 10?
-    unless pg_10?
+    unless pg_10_or_newer?
       create_model
       obj = SpatialModel.create!(latlon: factory.point(1, 2))
       id = obj.id

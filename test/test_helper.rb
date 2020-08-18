@@ -33,8 +33,12 @@ module ActiveSupport
       @database_version ||= SpatialModel.connection.select_value("SELECT version()")
     end
 
-    def pg_10?
-      database_version.include?("PostgreSQL 10")
+    def postgis_version
+      @postgis_version ||= SpatialModel.connection.select_value("SELECT postgis_lib_version()")
+    end
+
+    def pg_10_or_newer?
+      /(PostgreSQL 1[0-2])/.match?(database_version)
     end
 
     def factory

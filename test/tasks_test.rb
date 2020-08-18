@@ -155,6 +155,6 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   def schema_prefix
-    pg_10? ? "public." : ""
+    pg_10_or_newer? ? "public." : ""
   end
 end
