@@ -37,10 +37,6 @@ module ActiveSupport
       @postgis_version ||= SpatialModel.connection.select_value("SELECT postgis_lib_version()")
     end
 
-    def pg_10_or_newer?
-      /(PostgreSQL 1[0-2])/.match?(database_version)
-    end
-
     def factory
       RGeo::Cartesian.preferred_factory(srid: 3785)
     end
