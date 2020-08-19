@@ -4,13 +4,13 @@ AllCops:
   TargetRubyVersion: 2.5
   DisplayCopNames: true
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Enabled: false
 
 Layout/MultilineOperationIndentation:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 130
 
 Style/NumericPredicate:

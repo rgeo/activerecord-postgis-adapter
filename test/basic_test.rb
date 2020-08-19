@@ -9,7 +9,9 @@ class BasicTest < ActiveSupport::TestCase
 
   def test_postgis_available
     assert_equal "PostGIS", SpatialModel.connection.adapter_name
-    assert SpatialModel.connection.postgis_lib_version.start_with? "2."
+    assert_equal postgis_version, SpatialModel.connection.postgis_lib_version
+    valid_version = ["2.", "3."].any? { |major_ver| SpatialModel.connection.postgis_lib_version.start_with? major_ver }
+    assert valid_version
   end
 
   def test_arel_visitor

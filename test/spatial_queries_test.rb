@@ -14,15 +14,12 @@ class SpatialQueriesTest < ActiveSupport::TestCase
   end
 
   def test_query_multi_point
-    # why doesn't this work with PG 10?
-    unless pg_10?
-      create_model
-      obj = SpatialModel.create!(latlon: factory.point(1, 2))
-      id = obj.id
-      obj2 = SpatialModel.find_by(latlon: factory.multi_point([factory.point(1, 2)]))
-      refute_nil(obj2)
-      assert_equal(id, obj2.id)
-    end
+    create_model
+    obj = SpatialModel.create!(points: factory.multi_point([factory.point(1, 2)]))
+    id = obj.id
+    obj2 = SpatialModel.find_by(points: factory.multi_point([factory.point(1, 2)]))
+    refute_nil(obj2)
+    assert_equal(id, obj2.id)
   end
 
   def test_query_point_wkt
@@ -76,6 +73,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase
   def create_model
     SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
       t.column "latlon", :st_point, srid: 3785
+      t.column "points", :multi_point, srid: 3785
       t.column "path", :line_string, srid: 3785
     end
     SpatialModel.reset_column_information

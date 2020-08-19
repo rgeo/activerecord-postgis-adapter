@@ -32,9 +32,9 @@ class TasksTest < ActiveSupport::TestCase
     end
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert_includes data, "latlon #{schema_prefix}geography(Point,4326)"
-    assert_includes data, "geo_col #{schema_prefix}geometry(Geometry,4326)"
-    assert_includes data, "poly #{schema_prefix}geometry(MultiPolygon,4326)"
+    assert_includes data, "latlon public.geography(Point,4326)"
+    assert_includes data, "geo_col public.geometry(Geometry,4326)"
+    assert_includes data, "poly public.geometry(MultiPolygon,4326)"
   end
 
   def test_index_sql_dump
@@ -47,9 +47,9 @@ class TasksTest < ActiveSupport::TestCase
     connection.add_index :spatial_test, :name, using: :btree
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert_includes data, "latlon #{schema_prefix}geography(Point,4326)"
-    assert_includes data, "CREATE INDEX index_spatial_test_on_latlon ON #{schema_prefix}spatial_test USING gist (latlon);"
-    assert_includes data, "CREATE INDEX index_spatial_test_on_name ON #{schema_prefix}spatial_test USING btree (name);"
+    assert_includes data, "latlon public.geography(Point,4326)"
+    assert_includes data, "CREATE INDEX index_spatial_test_on_latlon ON public.spatial_test USING gist (latlon);"
+    assert_includes data, "CREATE INDEX index_spatial_test_on_name ON public.spatial_test USING btree (name);"
   end
 
   def test_empty_schema_dump
@@ -111,7 +111,7 @@ class TasksTest < ActiveSupport::TestCase
     connection.add_index :test, :name
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert_includes data,"CREATE INDEX index_test_on_name ON #{schema_prefix}test USING btree (name);"
+    assert_includes data,"CREATE INDEX index_test_on_name ON public.test USING btree (name);"
   end
 
   def test_add_index_via_references
@@ -122,7 +122,7 @@ class TasksTest < ActiveSupport::TestCase
     end
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
     data = File.read(tmp_sql_filename)
-    assert_includes data,"CREATE INDEX index_dogs_on_cats_id ON #{schema_prefix}dogs USING btree (cats_id);"
+    assert_includes data,"CREATE INDEX index_dogs_on_cats_id ON public.dogs USING btree (cats_id);"
   end
 
   private
@@ -152,9 +152,5 @@ class TasksTest < ActiveSupport::TestCase
     ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(new_connection).drop
   rescue ActiveRecord::Tasks::DatabaseAlreadyExists
     # ignore
-  end
-
-  def schema_prefix
-    pg_10? ? "public." : ""
   end
 end
