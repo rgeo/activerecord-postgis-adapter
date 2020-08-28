@@ -37,10 +37,10 @@ class SpatialQueriesTest < ActiveSupport::TestCase
     create_model
     obj = SpatialModel.create!(latlon: factory.point(1, 2))
     id = obj.id
-    obj2 = SpatialModel.find_by(SpatialModel.arel_table[:latlon].st_distance("SRID=3785;POINT(2 3)").lt(2))
+    obj2 = SpatialModel.find_by(SpatialModel.arel_table[:latlon].st_distance(Arel::Nodes::Quoted.new("SRID=3785;POINT(2 3)")).lt(2))
     refute_nil(obj2)
     assert_equal(id, obj2.id)
-    obj3 = SpatialModel.find_by(SpatialModel.arel_table[:latlon].st_distance("SRID=3785;POINT(2 3)").gt(2))
+    obj3 = SpatialModel.find_by(SpatialModel.arel_table[:latlon].st_distance(Arel::Nodes::Quoted.new("SRID=3785;POINT(2 3)")).gt(2))
     assert_nil(obj3)
   end
 
@@ -66,6 +66,15 @@ class SpatialQueriesTest < ActiveSupport::TestCase
     assert_equal(id, obj2.id)
     obj3 = SpatialModel.find_by(SpatialModel.arel_table[:path].st_length.gt(3))
     assert_nil(obj3)
+  end
+
+  def test_arel_visit_String
+    # issue 183 (Arel deprecated visit_String)
+    create_model
+    SpatialModel.create!(latlon: factory.point(1, 2))
+    assert_raises Arel::Visitors::UnsupportedVisitError do
+      SpatialModel.find_by(SpatialModel.arel_table[:latlon].st_distance("SRID=3785;POINT(2 3)")).lt(2)
+    end
   end
 
   private
