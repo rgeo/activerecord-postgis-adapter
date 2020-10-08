@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
     "provided by PostGIS. It uses the RGeo library to represent spatial data in Ruby."
 
   spec.version = ActiveRecord::ConnectionAdapters::PostGIS::VERSION
-  spec.author = "Daniel Azuma, Tee Parham"
-  spec.email = "dazuma@gmail.com, parhameter@gmail.com"
+  spec.authors = ["Daniel Azuma", "Tee Parham"]
+  spec.email = ["dazuma@gmail.com", "parhameter@gmail.com", "kfdoggett@gmail.com"]
   spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
-  spec.licenses = ["BSD"]
+  spec.license = "BSD-3-Clause"
 
   spec.files = Dir["lib/**/*", "LICENSE.txt"]
   spec.platform = Gem::Platform::RUBY
