@@ -5,6 +5,6 @@ source "https://rubygems.org"
 gem "pg", "~> 1.0", platform: :ruby
 gem "activerecord-jdbcpostgresql-adapter", platform: :jruby
 gem "ffi-geos", platform: :jruby
-gem "activerecord", "6.0.3.4"
+gem "activerecord", "~> 6.1.0"
 
 gemspec path: "../"
