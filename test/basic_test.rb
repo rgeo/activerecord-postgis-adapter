@@ -105,6 +105,30 @@ class BasicTest < ActiveSupport::TestCase
     spatial_factory_store.clear
   end
 
+  def test_spatial_factory_attrs_parsing
+    klass = SpatialModel
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.multi_polygon(:areas, srid: 4326)
+    end
+    klass.reset_column_information
+    factory = RGeo::Cartesian.preferred_factory(srid: 4326)
+    spatial_factory_store.register(factory, { srid: 4326,
+                                              sql_type: "geometry",
+                                              geo_type: "multi_polygon",
+                                              has_z: false, has_m: false })
+
+    # wrong factory for default
+    spatial_factory_store.default = RGeo::Geographic.spherical_factory(srid: 4326)
+
+    object = klass.new
+    object.areas = "MULTIPOLYGON (((0 0, 0 1, 1 1, 1 0, 0 0)))"
+    object.save!
+    object.reload
+    assert_equal(factory, object.areas.factory)
+
+    spatial_factory_store.clear
+  end
+
   def test_readme_example
     spatial_factory_store.register(
       RGeo::Geographic.spherical_factory, geo_type: "point", sql_type: "geography")
@@ -173,9 +197,5 @@ class BasicTest < ActiveSupport::TestCase
       t.column "latlon_geo", :st_point, srid: 4326, geographic: true
     end
     SpatialModel.reset_column_information
-  end
-
-  def spatial_factory_store
-    RGeo::ActiveRecord::SpatialFactoryStore.instance
   end
 end

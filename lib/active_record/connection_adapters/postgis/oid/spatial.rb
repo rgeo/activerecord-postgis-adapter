@@ -49,11 +49,7 @@ module ActiveRecord
           def spatial_factory
             @spatial_factory ||=
               RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
-                geo_type: @geo_type,
-                has_m:    @has_m,
-                has_z:    @has_z,
-                sql_type: @sql_type,
-                srid:     @srid
+                factory_attrs
               )
           end
 
@@ -106,6 +102,16 @@ module ActiveRecord
             else
               RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
             end
+          end
+
+          def factory_attrs
+            {
+              geo_type: @geo_type.underscore,
+              has_m: @has_m,
+              has_z: @has_z,
+              srid: @srid,
+              sql_type: type.to_s
+            }
           end
         end
       end
