@@ -19,7 +19,17 @@ class BasicTest < ActiveSupport::TestCase
     node = RGeo::ActiveRecord::SpatialConstantNode.new("POINT (1.0 2.0)")
     collector = Arel::Collectors::PlainString.new
     visitor.accept(node, collector)
-    assert_equal "ST_GeomFromEWKT('POINT (1.0 2.0)')", collector.value
+    assert_equal "ST_GeomFromText('POINT (1.0 2.0)')", collector.value
+  end
+
+  def test_arel_visitor_will_not_visit_string
+    visitor = Arel::Visitors::PostGIS.new(SpatialModel.connection)
+    node = "POINT (1 2)"
+    collector = Arel::Collectors::PlainString.new
+
+    assert_raises(Arel::Visitors::UnsupportedVisitError) do
+      visitor.accept(node, collector)
+    end
   end
 
   def test_set_and_get_point
@@ -130,8 +140,8 @@ class BasicTest < ActiveSupport::TestCase
   end
 
   def test_readme_example
-    spatial_factory_store.register(
-      RGeo::Geographic.spherical_factory, geo_type: "point", sql_type: "geography")
+    geo_factory = RGeo::Geographic.spherical_factory(srid: 4326)
+    spatial_factory_store.register(geo_factory, geo_type: "point", sql_type: "geography")
 
     klass = SpatialModel
     klass.connection.create_table(:spatial_models, force: true) do |t|
@@ -150,7 +160,11 @@ class BasicTest < ActiveSupport::TestCase
     point = object.latlon
     assert_equal 47, point.latitude
     object.shape = point
-    # assert_equal true, RGeo::Geos.is_geos?(object.shape)
+
+    # test that shape column will not use geographic factory
+    object.save!
+    object.reload
+    refute_equal geo_factory, object.shape.factory
 
     spatial_factory_store.clear
   end
