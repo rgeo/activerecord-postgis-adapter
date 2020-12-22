@@ -48,10 +48,12 @@ class SpatialQueriesTest < ActiveSupport::TestCase
     create_model
     obj = SpatialModel.create!(latlon: factory.point(1, 2))
     id = obj.id
-    obj2 = SpatialModel.find_by(Arel.spatial("SRID=3785;POINT(2 3)").st_distance(SpatialModel.arel_table[:latlon]).lt(2))
+
+    query_point = parser.parse("SRID=3785;POINT(2 3)")
+    obj2 = SpatialModel.find_by(Arel.spatial(query_point).st_distance(SpatialModel.arel_table[:latlon]).lt(2))
     refute_nil(obj2)
     assert_equal(id, obj2.id)
-    obj3 = SpatialModel.find_by(Arel.spatial("SRID=3785;POINT(2 3)").st_distance(SpatialModel.arel_table[:latlon]).gt(2))
+    obj3 = SpatialModel.find_by(Arel.spatial(query_point).st_distance(SpatialModel.arel_table[:latlon]).gt(2))
     assert_nil(obj3)
   end
 
@@ -104,10 +106,7 @@ class SpatialQueriesTest < ActiveSupport::TestCase
     obj = SpatialModel.create!(latlon: factory.point(1, 2))
     id = obj.id
 
-    ewkt_parser = RGeo::WKRep::WKTParser
-                  .new(RGeo::Cartesian.preferred_factory(srid: 3785), support_ewkt: true)
-    query_point = ewkt_parser.parse("SRID=3785;POINT(2 3)")
-
+    query_point = parser.parse("SRID=3785;POINT(2 3)")
     obj2 = SpatialModel.find_by(Arel.spatial(query_point).st_distance(SpatialModel.arel_table[:latlon]).lt(2))
     refute_nil(obj2)
     assert_equal(id, obj2.id)
@@ -124,5 +123,9 @@ class SpatialQueriesTest < ActiveSupport::TestCase
       t.column "path", :line_string, srid: 3785
     end
     SpatialModel.reset_column_information
+  end
+
+  def parser
+    RGeo::WKRep::WKTParser.new(nil, support_ewkt: true)
   end
 end
