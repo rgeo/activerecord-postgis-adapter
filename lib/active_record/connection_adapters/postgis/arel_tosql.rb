@@ -2,20 +2,21 @@
 
 module RGeo
   module ActiveRecord
-    module SpatialToSqlExtension
+    ##
+    # Extend rgeo-activerecord visitors to use PostGIS specific functionality
+    module SpatialToPostGISSql
       def visit_in_spatial_context(node, collector)
-        if node.is_a?(String) && node =~ /^SRID=[\d+]{0,};/
-          msg = "EWKT Strings are no longer recommended for Arel.spatial queries, please use the RGeo::WKRep::WKTParser class to convert this to an RGeo Feature first."
-          ActiveSupport::Deprecation.warn(msg)
-          parser = RGeo::WKRep::WKTParser.new(nil, support_ewkt: true)
-          node = parser.parse(node)
+        # Use ST_GeomFromEWKT for EWKT geometries
+        if node.is_a?(String) && node =~ /SRID=[\d+]{0,};/
+          collector << "#{st_func('ST_GeomFromEWKT')}(#{quote(node)})"
+        else
+          super(node, collector)
         end
-        super(node, collector)
       end
     end
   end
 end
-RGeo::ActiveRecord::SpatialToSql.prepend RGeo::ActiveRecord::SpatialToSqlExtension
+RGeo::ActiveRecord::SpatialToSql.prepend RGeo::ActiveRecord::SpatialToPostGISSql
 
 module Arel  # :nodoc:
   module Visitors  # :nodoc:
