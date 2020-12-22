@@ -1,4 +1,4 @@
-# PostGIS ActiveRecord Adapter
+# ActiveRecord PostGIS Adapter
 
 [![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](https://badge.fury.io/rb/activerecord-postgis-adapter)
 [![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
@@ -46,6 +46,16 @@ gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
+
+#### Version 7.x supports ActiveRecord 6.1
+
+Requirements:
+
+```
+ActiveRecord 6.1
+Ruby 2.5.0+ (no JRuby support yet)
+PostGIS 2.0+
+```
 
 #### Version 6.x supports ActiveRecord 6.0
 
@@ -304,6 +314,8 @@ PostGIS polygon type must be referenced as `st_polygon`.
 
 ### Configuring ActiveRecord
 
+_NOTE: In version 7.0.0 changes were made so that the attributes in the second argument of `register` will be camel_cased, which may break existing configurations. See [this commit](https://github.com/rgeo/activerecord-postgis-adapter/pull/325/commits/075d8db036c29b88c0e13234affef260d262e76f) for more details._
+
 ActiveRecord's usefulness stems from the way it automatically configures
 classes based on the database structure and schema. If a column in the
 database has an integer type, ActiveRecord automatically casts the data to a
@@ -444,6 +456,17 @@ want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
 
+For more advanced queries, activerecord-postgis-adapter exposes an arel interface that can perform queries using PostGIS functions. The functions accept WKT strings or RGeo features.
+
+```rb
+point = RGeo::Geos.factory(srid: 0).point(1,1)
+
+buildings = Building.arel_table
+containing_buiildings = Building.where(buildings[:geom].st_contains(point))
+```
+
+See [rgeo-activerecord](https://github.com/rgeo/rgeo-activerecord) for more information about advanced spatial queries.
+
 ## Background: PostGIS
 
 A spatial database is one that includes a set of data types, functions,
@@ -486,12 +509,17 @@ Support is also available on the rgeo-users google group at https://groups.googl
 
 [Daniel Azuma](https://daniel-azuma.com) authored the PostGIS Adapter and its supporting
 libraries (including RGeo).
-[Tee Parham](https://twitter.com/teeparham) is the current maintainer.
 
-Development is/was supported by:
+[Tee Parham](https://twitter.com/teeparham) is a former maintainer.
 
-- [Pirq](https://pirq.com)
-- [Neighborland](https://neighborland.com)
+[Keith Doggett](https://github.com/keithdoggett) is a current maintainer.
+
+[Ulysse Buonomo](https://github.com/BuonOmo) is a current maintainer.
+
+Development is supported by:
+
+- [Klaxit](https://www.klaxit.com)
+- Goldfish Ads
 
 This adapter implementation owes some debt to the spatial_adapter plugin
 (https://github.com/fragility/spatial_adapter). Although we made some different

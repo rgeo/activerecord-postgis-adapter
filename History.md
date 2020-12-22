@@ -1,3 +1,9 @@
+### 7.0.0 / 2020-12-22
+
+* Add ActiveRecord 6.1 Compatability (tagliala) #324
+* Change SpatialFactoryStore attribute parsing #325
+* Update Arel Module #325
+
 ### 6.0.1 / 2020-08-16
 
 * Fix SchemaStatements#initialize_type_map #309
