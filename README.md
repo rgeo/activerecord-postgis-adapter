@@ -314,8 +314,6 @@ PostGIS polygon type must be referenced as `st_polygon`.
 
 ### Configuring ActiveRecord
 
-_NOTE: In version 7.0.0 changes were made so that the attributes in the second argument of `register` will be camel_cased, which may break existing configurations. See [this commit](https://github.com/rgeo/activerecord-postgis-adapter/pull/325/commits/075d8db036c29b88c0e13234affef260d262e76f) for more details._
-
 ActiveRecord's usefulness stems from the way it automatically configures
 classes based on the database structure and schema. If a column in the
 database has an integer type, ActiveRecord automatically casts the data to a
@@ -349,6 +347,30 @@ The default spatial factory for cartesian columns is `RGeo::Cartesian.preferred_
 You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
 
 For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
+
+#### Changes in 7.0.0
+
+In version 7.0.0+ the attributes in the second argument of `register` will be parsed to try to match one of the expected values for each field. This may break existing store configurations.
+
+For example:
+
+```rb
+# This subset of fields for a Spatial Column
+{geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'}
+
+# will be parsed like this to lookup the matching factory
+
+{geo_type: 'multi_point', sql_type: 'geography'}
+
+# so you should update your configuration from
+config.register(RGeo::Geos.factory_generator,
+                {geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'})
+# to
+config.register(RGeo::Geos.factory_generator,
+                {geo_type: 'multi_point', sql_type: 'geography'})
+```
+
+See the [rgeo-activerecord docs](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns) for a list of the expected values for all of the accepted fields.
 
 ### Deploying to Heroku
 
@@ -456,7 +478,7 @@ want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
 
-For more advanced queries, activerecord-postgis-adapter exposes an arel interface that can perform queries using PostGIS functions. The functions accept WKT strings or RGeo features.
+To perform more advanced spatial queries, you can use the extended Arel interface included in the activerecord-postgis-adapter. The functions accept WKT strings or RGeo features.
 
 ```rb
 point = RGeo::Geos.factory(srid: 0).point(1,1)
