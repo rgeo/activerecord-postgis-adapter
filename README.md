@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](https://badge.fury.io/rb/activerecord-postgis-adapter)
 [![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
-[![Code Climate](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter.png)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter)
+[![Maintainability](https://api.codeclimate.com/v1/badges/4444dc80a2cd6a37baa1/maintainability)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter/maintainability)
 
 The activerecord-postgis-adapter provides access to features
 of the PostGIS geospatial database from ActiveRecord. It extends
