@@ -1,4 +1,4 @@
-# PostGIS ActiveRecord Adapter
+# ActiveRecord PostGIS Adapter
 
 [![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](https://badge.fury.io/rb/activerecord-postgis-adapter)
 [![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
@@ -46,6 +46,16 @@ gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
+
+#### Version 7.x supports ActiveRecord 6.1
+
+Requirements:
+
+```
+ActiveRecord 6.1
+Ruby 2.5.0+ (no JRuby support yet)
+PostGIS 2.0+
+```
 
 #### Version 6.x supports ActiveRecord 6.0
 
@@ -338,6 +348,30 @@ You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
 
 For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
 
+#### Changes in 7.0.0
+
+In version 7.0.0+ the attributes in the second argument of `register` will be parsed to try to match one of the expected values for each field. This may break existing store configurations.
+
+For example:
+
+```rb
+# This subset of fields for a Spatial Column
+{geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'}
+
+# will be parsed like this to lookup the matching factory
+
+{geo_type: 'multi_point', sql_type: 'geography'}
+
+# so you should update your configuration from
+config.register(RGeo::Geos.factory_generator,
+                {geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'})
+# to
+config.register(RGeo::Geos.factory_generator,
+                {geo_type: 'multi_point', sql_type: 'geography'})
+```
+
+See the [rgeo-activerecord docs](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns) for a list of the expected values for all of the accepted fields.
+
 ### Deploying to Heroku
 
 See the [wiki entry](https://github.com/rgeo/activerecord-postgis-adapter/wiki/Heroku) and [linked issue](https://github.com/rgeo/activerecord-postgis-adapter/issues/14) for some notes on Heroku deployments.
@@ -444,6 +478,17 @@ want to perform a spatial query, you'll look for, say, all the points within a
 given area. For those queries, you'll need to use the standard spatial SQL
 functions provided by PostGIS.
 
+To perform more advanced spatial queries, you can use the extended Arel interface included in the activerecord-postgis-adapter. The functions accept WKT strings or RGeo features.
+
+```rb
+point = RGeo::Geos.factory(srid: 0).point(1,1)
+
+buildings = Building.arel_table
+containing_buiildings = Building.where(buildings[:geom].st_contains(point))
+```
+
+See [rgeo-activerecord](https://github.com/rgeo/rgeo-activerecord) for more information about advanced spatial queries.
+
 ## Background: PostGIS
 
 A spatial database is one that includes a set of data types, functions,
@@ -486,12 +531,17 @@ Support is also available on the rgeo-users google group at https://groups.googl
 
 [Daniel Azuma](https://daniel-azuma.com) authored the PostGIS Adapter and its supporting
 libraries (including RGeo).
-[Tee Parham](https://twitter.com/teeparham) is the current maintainer.
 
-Development is/was supported by:
+[Tee Parham](https://twitter.com/teeparham) is a former maintainer.
 
-- [Pirq](https://pirq.com)
-- [Neighborland](https://neighborland.com)
+[Keith Doggett](https://github.com/keithdoggett) is a current maintainer.
+
+[Ulysse Buonomo](https://github.com/BuonOmo) is a current maintainer.
+
+Development is supported by:
+
+- [Klaxit](https://www.klaxit.com)
+- Goldfish Ads
 
 This adapter implementation owes some debt to the spatial_adapter plugin
 (https://github.com/fragility/spatial_adapter). Although we made some different

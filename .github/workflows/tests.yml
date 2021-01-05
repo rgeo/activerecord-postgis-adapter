@@ -1,0 +1,45 @@
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  test-ubuntu-ruby:
+    runs-on: ubuntu-latest
+    services:
+      postgis:
+        image: postgis/postgis:${{matrix.pg}}
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --name=postgres
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      matrix:
+        ruby: [3.0, 2.7, 2.6, 2.5]
+        BUNDLE_GEMFILE:
+          - gemfiles/ar61.gemfile
+        pg: [9.6-3.0, 10-2.5, 11-3.0, 12-master, 13-master]
+    steps:
+      - name: Set Up Actions
+        uses: actions/checkout@v2
+      - name: Install GEOS
+        run: sudo apt-get install libgeos-dev
+      - name: Set Up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Create Database
+        run: psql -d postgresql://postgres:postgres@localhost:5432/postgres -c "create database postgis_adapter_test"
+      - name: Create PostGIS Extension
+        run: psql -d postgresql://postgres:postgres@localhost:5432/postgis_adapter_test -c "create extension postgis"
+      - name: Run Tests
+        run: bundle exec rake test
+        env:
+          PGHOST: localhost
+          PGPASSWORD: postgres

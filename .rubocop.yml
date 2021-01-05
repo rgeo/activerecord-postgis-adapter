@@ -3,6 +3,7 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   TargetRubyVersion: 2.5
   DisplayCopNames: true
+  SuggestExtensions: false
 
 Layout/ParameterAlignment:
   Enabled: false

@@ -1,5 +1,23 @@
 # frozen_string_literal: true
 
+module RGeo
+  module ActiveRecord
+    ##
+    # Extend rgeo-activerecord visitors to use PostGIS specific functionality
+    module SpatialToPostGISSql
+      def visit_in_spatial_context(node, collector)
+        # Use ST_GeomFromEWKT for EWKT geometries
+        if node.is_a?(String) && node =~ /SRID=[\d+]{0,};/
+          collector << "#{st_func('ST_GeomFromEWKT')}(#{quote(node)})"
+        else
+          super(node, collector)
+        end
+      end
+    end
+  end
+end
+RGeo::ActiveRecord::SpatialToSql.prepend RGeo::ActiveRecord::SpatialToPostGISSql
+
 module Arel  # :nodoc:
   module Visitors  # :nodoc:
     # Different super-class under JRuby JDBC adapter.
@@ -11,22 +29,6 @@ module Arel  # :nodoc:
 
     class PostGIS < PostGISSuperclass  # :nodoc:
       include RGeo::ActiveRecord::SpatialToSql
-
-      FUNC_MAP = {
-        "st_wkttosql" => "ST_GeomFromEWKT",
-      }
-
-      def st_func(standard_name)
-        FUNC_MAP[standard_name.downcase] || standard_name
-      end
-
-      def visit_String(node, collector)
-        collector << "#{st_func('ST_WKTToSQL')}(#{quote(node)})"
-      end
-
-      def visit_RGeo_ActiveRecord_SpatialNamedFunction(node, collector)
-        aggregate(st_func(node.name), node, collector)
-      end
     end
   end
 end
