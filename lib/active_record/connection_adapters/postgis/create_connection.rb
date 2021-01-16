@@ -10,7 +10,11 @@ module ActiveRecord  # :nodoc:
   module ConnectionHandling  # :nodoc:
     if RUBY_ENGINE == "jruby"
 
+      # modified from https://github.com/jruby/activerecord-jdbc-adapter/blob/master/lib/arjdbc/postgresql/connection_methods.rb#L3
       def postgis_connection(config)
+        config = config.deep_dup
+        config = symbolize_keys_if_necessary(config)
+
         config[:adapter_class] = ConnectionAdapters::PostGISAdapter
         postgresql_connection(config)
       end

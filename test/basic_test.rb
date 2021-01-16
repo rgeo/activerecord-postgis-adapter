@@ -199,7 +199,7 @@ class BasicTest < ActiveSupport::TestCase
     rec.m_poly = wkt
     assert rec.save
     rec = SpatialModel.find(rec.id) # force reload
-    assert rec.m_poly.is_a?(RGeo::Geos::CAPIMultiPolygonImpl)
+    assert RGeo::Feature::MultiPolygon.check_type(rec.m_poly)
     assert_equal wkt, rec.m_poly.to_s
   end
 

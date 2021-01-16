@@ -90,3 +90,21 @@ module ActiveRecord
     end
   end
 end
+
+# if using JRUBY, create ArJdbc::PostGIS module
+# and prepend it to the PostgreSQL adapter since
+# it is the default adapter_spec.
+# see: https://github.com/jruby/activerecord-jdbc-adapter/blob/master/lib/arjdbc/postgresql/adapter.rb#27
+if RUBY_ENGINE == "jruby"
+  module ArJdbc
+    module PostGIS
+      ADAPTER_NAME = 'PostGIS'.freeze
+
+      def adapter_name
+        ADAPTER_NAME
+      end
+    end
+  end
+
+  ArJdbc::PostgreSQL.prepend(ArJdbc::PostGIS)
+end
