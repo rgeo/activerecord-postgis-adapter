@@ -33,7 +33,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
       - name: Create Database
         run: psql -d postgresql://postgres:postgres@localhost:5432/postgres -c "create database postgis_adapter_test"
       - name: Create PostGIS Extension
