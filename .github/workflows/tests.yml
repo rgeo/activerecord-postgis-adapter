@@ -22,7 +22,7 @@ jobs:
       BUNDLE_GEMFILE: ${{matrix.gemfile}}
     strategy:
       matrix:
-        ruby: [3.0, 2.7, 2.6, 2.5, jruby]
+        ruby: [2.6, 2.5, 2.4, jruby]
         gemfile:
           - gemfiles/ar51.gemfile
           - gemfiles/ar52.gemfile
