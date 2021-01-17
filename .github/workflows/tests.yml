@@ -18,10 +18,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      BUNDLE_GEMFILE: ${{matrix.gemfile}}
     strategy:
       matrix:
         ruby: [3.0, 2.7, 2.6, 2.5, jruby]
-        BUNDLE_GEMFILE:
+        gemfile:
           - gemfiles/ar60.gemfile
         pg: [9.6-3.0, 10-2.5, 11-3.0, 12-master, 13-master]
     steps:
@@ -33,6 +35,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
       - name: Create Database
         run: psql -d postgresql://postgres:postgres@localhost:5432/postgres -c "create database postgis_adapter_test"
       - name: Create PostGIS Extension
