@@ -9,6 +9,7 @@ require "rgeo/active_record"
 
 require "active_record/connection_adapters"
 require "active_record/connection_adapters/postgresql_adapter"
+require "active_record/connection_adapters/postgis/type"
 require "active_record/connection_adapters/postgis/version"
 require "active_record/connection_adapters/postgis/column_methods"
 require "active_record/connection_adapters/postgis/schema_statements"
@@ -86,6 +87,20 @@ module ActiveRecord
         else
           super
         end
+      end
+
+      [
+        :geography,
+        :geometry,
+        :geometry_collection,
+        :line_string,
+        :multi_line_string,
+        :multi_point,
+        :multi_polygon,
+        :st_point,
+        :st_polygon,
+      ].each do |geo_type|
+        ActiveRecord::Type.register(geo_type, PostGIS::OID::Spatial, adapter: :postgresql)
       end
     end
   end

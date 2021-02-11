@@ -48,5 +48,10 @@ module ActiveSupport
     def spatial_factory_store
       RGeo::ActiveRecord::SpatialFactoryStore.instance
     end
+
+    def reset_spatial_store
+      spatial_factory_store.clear
+      spatial_factory_store.default = nil
+    end
   end
 end
