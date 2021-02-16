@@ -9,7 +9,7 @@ namespace :db do
       environments.each do |environment|
         ActiveRecord::Base.configurations
                           .configs_for(env_name: environment)
-                          .reject { |env| env.configuration_hash['database'].blank? }
+                          .reject { |env| env.configuration_hash[:database].blank? }
                           .each do |env|
           ActiveRecord::ConnectionAdapters::PostGIS::PostGISDatabaseTasks.new(env).setup_gis
         end
