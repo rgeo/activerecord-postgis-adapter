@@ -7,7 +7,7 @@ module ActiveRecord
         # Look for :postgis types first, then check for :postgresql
         # types to simulate a kind of Type inheritance.
         def lookup(*args, adapter: current_adapter_name, **kwargs)
-          super
+          super(*args, adapter: adapter, **kwargs)
         rescue ArgumentError
           super(*args, adapter: :postgresql, **kwargs)
         end
