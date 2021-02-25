@@ -19,11 +19,16 @@ class SpatialFoo < ActiveRecord::Base
   attribute :geo_path, :line_string, geographic: true, srid: 4326
 end
 
+class InvalidAttribute < ActiveRecord::Base
+  establish_test_connection
+end
+
 class AttributesTest < ActiveSupport::TestCase
   def setup
     reset_spatial_store
     create_foo
     create_spatial_foo
+    create_invalid_attributes
   end
 
   def test_postgresql_attributes_registered
@@ -36,6 +41,13 @@ class AttributesTest < ActiveSupport::TestCase
 
     assert_equal data.bar, %w[a b c]
     assert_equal data.baz, "1".."3"
+  end
+
+  def test_invalid_attribute
+    assert_raises(ArgumentError) do
+      InvalidAttribute.attribute(:attr, :invalid_attr)
+      InvalidAttribute.new
+    end
   end
 
   def test_spatial_attributes
@@ -95,6 +107,11 @@ class AttributesTest < ActiveSupport::TestCase
       t.references :foo
       t.st_point :geo_point, geographic: true, srid: 4326
       t.st_point :cart_point, srid: 3509
+    end
+  end
+
+  def create_invalid_attributes
+    InvalidAttribute.connection.create_table :invalid_attributes, force: true do |t|
     end
   end
 end
