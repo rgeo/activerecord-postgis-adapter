@@ -8,7 +8,9 @@ module ActiveRecord
         # types to simulate a kind of Type inheritance.
         def lookup(*args, adapter: current_adapter_name, **kwargs)
           super(*args, adapter: adapter, **kwargs)
-        rescue ArgumentError
+        rescue ArgumentError => e
+          raise e unless current_adapter_name == :postgis
+
           super(*args, adapter: :postgresql, **kwargs)
         end
       end
