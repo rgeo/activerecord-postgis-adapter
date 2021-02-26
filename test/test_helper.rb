@@ -21,6 +21,8 @@ module ActiveRecord
   end
 end
 
+ActiveRecord::Base.establish_test_connection
+
 class SpatialModel < ActiveRecord::Base
   establish_test_connection
 end
