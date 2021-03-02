@@ -29,7 +29,29 @@ RGeo objects can be embedded in where clauses.
 
 ## Install
 
-The adapter requires PostgreSQL 9.0+.
+The adapter requires PostgreSQL 9.0+ and PostGIS 2.4+.
+
+### Installing PostGIS
+
+Here are common methods for installing PostGIS, but more detailed methods can be found on the [installation guide](https://postgis.net/install/).
+
+#### MacOS
+
+```sh
+brew install postgis
+```
+
+#### Ubuntu/Debian
+
+```sh
+# The second package can be replaced depending on your postgresql version
+# ex. postgresql-11-postgis-2 is valid as well
+sudo apt-get install postgis postgresql-12-postgis-3
+```
+
+#### Windows
+
+PostGIS is likely available as an optional package via your Postgresql installer. If not, refer to the installation guide.
 
 Gemfile:
 
@@ -305,6 +327,18 @@ change_table :my_table do |t|
 end
 ```
 
+### Attributes
+
+Models may also define attributes using the above data types and options.
+
+```ruby
+class SpatialModel < ActiveRecord::Base
+  attribute :centroid, :st_point, srid: 4326, geographic: true
+end
+```
+
+`centroid` will not have an associated column in the `spatial_models` table, but any geometry object assigned to the `centroid` attribute will be cast to a geographic point.
+
 ### Point and Polygon Types with ActiveRecord 4.2+
 
 Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
@@ -488,6 +522,32 @@ containing_buiildings = Building.where(buildings[:geom].st_contains(point))
 ```
 
 See [rgeo-activerecord](https://github.com/rgeo/rgeo-activerecord) for more information about advanced spatial queries.
+
+### Joining Spatial Columns
+
+If a spatial column is joined with another model, `srid` and `geographic` will not be automatically inferred and they will default to 0 and `false`, by default. In order to properly infer these options after a join, an `attribute` must be created on the target table.
+
+```ruby
+class SpatialModel < ActiveRecord::Base
+ belongs_to :foo
+
+ # has column geo_point (:st_point, srid: 4326, geographic: true)
+end
+
+class Foo < ActiveRecord::Base
+ has_one :spatial_model
+
+ # re-define geo_point here so join works
+ attribute :geo_point, :st_point, srid: 4326, geographic: true
+end
+
+# perform a query where geo_point is joined to foo
+foo = Foo.joins(:spatial_models).select("foos.id, spatial_models.geo_point").first
+p foo.geo_point.class
+# => RGeo::Geographic::SphericalPointImpl
+p foo.geo_point.srid
+# => 4326
+```
 
 ## Background: PostGIS
 
