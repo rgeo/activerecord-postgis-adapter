@@ -96,8 +96,15 @@ module ActiveRecord
             st_point
             st_polygon
           ).each do |geo_type|
-            map.register_type(geo_type) do |oid, _, sql_type|
-              OID::Spatial.new(oid, sql_type)
+            map.register_type(geo_type) do |_, _, sql_type|
+              # sql_type is a string that comes from the database definition
+              # examples:
+              #   "geometry(Point,4326)"
+              #   "geography(Point,4326)"
+              #   "geometry(Polygon,4326) NOT NULL"
+              #   "geometry(Geography,4326)"
+              geo_type, srid, has_z, has_m, geographic = OID::Spatial.parse_sql_type(sql_type)
+              OID::Spatial.new(geo_type: geo_type, srid: srid, has_z: has_z, has_m: has_m, geographic: geographic)
             end
           end
 

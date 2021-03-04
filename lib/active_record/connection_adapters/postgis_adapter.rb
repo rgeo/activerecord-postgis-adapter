@@ -18,6 +18,7 @@ require "active_record/connection_adapters/postgis/spatial_column"
 require "active_record/connection_adapters/postgis/arel_tosql"
 require "active_record/connection_adapters/postgis/setup"
 require "active_record/connection_adapters/postgis/oid/spatial"
+require "active_record/connection_adapters/postgis/type" # has to be after oid/*
 require "active_record/connection_adapters/postgis/create_connection"
 require "active_record/connection_adapters/postgis/postgis_database_tasks"
 
@@ -86,6 +87,21 @@ module ActiveRecord
         else
           super
         end
+      end
+
+      # PostGIS specific types
+      [
+        :geography,
+        :geometry,
+        :geometry_collection,
+        :line_string,
+        :multi_line_string,
+        :multi_point,
+        :multi_polygon,
+        :st_point,
+        :st_polygon,
+      ].each do |geo_type|
+        ActiveRecord::Type.register(geo_type, PostGIS::OID::Spatial, adapter: :postgis)
       end
     end
   end

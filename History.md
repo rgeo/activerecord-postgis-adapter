@@ -1,6 +1,12 @@
+### HEAD
+
+* Support Attributes #334
+* Access `configuration_hash` using symbols #335
+
 ### 7.0.1 / 2021-01-13
 
 * Fix db:gis:setup task #329
+
 ### 7.0.0 / 2020-12-22
 
 * Add ActiveRecord 6.1 Compatability (tagliala) #324

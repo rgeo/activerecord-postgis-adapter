@@ -3,6 +3,10 @@
 require "test_helper"
 
 class BasicTest < ActiveSupport::TestCase
+  def setup
+    reset_spatial_store
+  end
+
   def test_version
     refute_nil ActiveRecord::ConnectionAdapters::PostGIS::VERSION
   end
@@ -112,7 +116,6 @@ class BasicTest < ActiveSupport::TestCase
     object.save!
     object.reload
     assert_equal area.to_s, object.area.to_s
-    spatial_factory_store.clear
   end
 
   def test_spatial_factory_attrs_parsing
@@ -135,8 +138,6 @@ class BasicTest < ActiveSupport::TestCase
     object.save!
     object.reload
     assert_equal(factory, object.areas.factory)
-
-    spatial_factory_store.clear
   end
 
   def test_readme_example
@@ -165,8 +166,6 @@ class BasicTest < ActiveSupport::TestCase
     object.save!
     object.reload
     refute_equal geo_factory, object.shape.factory
-
-    spatial_factory_store.clear
   end
 
   def test_point_to_json
