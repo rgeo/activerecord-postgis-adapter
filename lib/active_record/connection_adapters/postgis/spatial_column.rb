@@ -67,7 +67,7 @@ module ActiveRecord  # :nodoc:
         end
 
         def build_from_sql_type(sql_type)
-          geo_type, @srid, @has_z, @has_m = OID::Spatial.parse_sql_type(sql_type)
+          geo_type, @srid, @has_z, @has_m, @geographic = OID::Spatial.parse_sql_type(sql_type)
           set_geometric_type_from_name(geo_type)
         end
 

@@ -18,6 +18,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      BUNDLE_GEMFILE: ${{matrix.gemfile}}
     strategy:
       matrix:
         ruby: ['3.0', '2.7', '2.6', '2.5', jruby]

@@ -4,16 +4,17 @@ module ActiveRecord
   module ConnectionAdapters
     module PostGIS
       module OID
+        # OID used to represent geometry/geography database types and attributes.
+        #
+        # Accepts `geo_type`, `srid`, `has_z`, `has_m`, and `geographic` as parameters.
+        # Responsible for parsing sql_types returned from the database and WKT features.
         class Spatial < Type::Value
-          # sql_type is a string that comes from the database definition
-          # examples:
-          #   "geometry(Point,4326)"
-          #   "geography(Point,4326)"
-          #   "geometry(Polygon,4326) NOT NULL"
-          #   "geometry(Geography,4326)"
-          def initialize(oid, sql_type)
-            @sql_type = sql_type
-            @geo_type, @srid, @has_z, @has_m = self.class.parse_sql_type(sql_type)
+          def initialize(geo_type: 'geometry', srid: 0, has_z: false, has_m: false, geographic: false)
+            @geo_type = geo_type
+            @srid = srid
+            @has_z = has_z
+            @has_m = has_m
+            @geographic = geographic
           end
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
@@ -43,7 +44,9 @@ module ActiveRecord
               # otherType(a,b)
               geo_type = sql_type
             end
-            [geo_type, srid, has_z, has_m]
+            geographic = sql_type.match?(/geography/)
+
+            [geo_type, srid, has_z, has_m, geographic]
           end
 
           def spatial_factory
@@ -53,16 +56,12 @@ module ActiveRecord
               )
           end
 
-          def geographic?
-            @sql_type =~ /geography/
-          end
-
           def spatial?
             true
           end
 
           def type
-            geographic? ? :geography : :geometry
+            @geographic ? :geography : :geometry
           end
 
           # support setting an RGeo object or a WKT string
