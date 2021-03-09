@@ -38,7 +38,7 @@ end
 module ActiveRecord
   module ConnectionAdapters
     class PostGISAdapter < PostgreSQLAdapter
-      ADAPTER_NAME = 'PostGIS'.freeze
+      ADAPTER_NAME = 'PostGIS'
 
       SPATIAL_COLUMN_OPTIONS =
         {
