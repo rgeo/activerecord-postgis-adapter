@@ -32,7 +32,7 @@ end
 module ActiveRecord
   module ConnectionAdapters
     class PostGISAdapter < PostgreSQLAdapter
-      ADAPTER_NAME = 'PostGIS'.freeze
+      ADAPTER_NAME = 'PostGIS'
 
       SPATIAL_COLUMN_OPTIONS =
         {
@@ -98,7 +98,7 @@ end
 if RUBY_ENGINE == "jruby"
   module ArJdbc
     module PostGIS
-      ADAPTER_NAME = 'PostGIS'.freeze
+      ADAPTER_NAME = 'PostGIS'
 
       def adapter_name
         ADAPTER_NAME
