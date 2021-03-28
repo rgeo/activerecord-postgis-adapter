@@ -75,7 +75,7 @@ Requirements:
 
 ```
 ActiveRecord 6.1
-Ruby 2.5.0+ (no JRuby support yet)
+Ruby 2.5.0+, JRuby
 PostGIS 2.0+
 ```
 
@@ -85,7 +85,7 @@ Requirements:
 
 ```
 ActiveRecord 6.0
-Ruby 2.5.0+ (no JRuby support yet)
+Ruby 2.5.0+, JRuby
 PostGIS 2.0+
 ```
 
@@ -95,7 +95,7 @@ Requirements:
 
 ```
 ActiveRecord 5.1 or 5.2
-Ruby 2.2.2+ (no JRuby support yet)
+Ruby 2.2.2+, JRuby
 PostGIS 2.0+
 ```
 
