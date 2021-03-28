@@ -3,7 +3,7 @@
 module ActiveRecord
   module ConnectionAdapters
     module PostGIS
-      VERSION = "5.2.2"
+      VERSION = "5.2.3"
     end
   end
 end
