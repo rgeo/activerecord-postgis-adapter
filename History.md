@@ -1,3 +1,7 @@
+### 6.0.2 / 2020-03-28
+
+* Support JRuby #331
+
 ### 6.0.1 / 2020-08-16
 
 * Fix SchemaStatements#initialize_type_map #309
@@ -7,6 +11,10 @@
 ### 6.0.0 / 2019-08-21
 
 * Support ActiveRecord 6.0 #303
+
+### 5.2.3 / 2021-03-28
+
+* Support JRuby #332
 
 ### 5.2.2 / 2018-12-02
 
