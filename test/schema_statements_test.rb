@@ -3,6 +3,8 @@
 require "test_helper"
 
 class SchemaStatementsTest < ActiveSupport::TestCase
+  parallelize
+
   def test_initialize_type_map
     initialized_types = SpatialModel.connection.send(:type_map).keys
 
@@ -21,4 +23,13 @@ class SchemaStatementsTest < ActiveSupport::TestCase
       st_polygon
     ]
   end
+
+  class TestRecord < ActiveRecord::Base
+    establish_test_connection
+  end
+
+  def test_spatial_constants_table_not_truncated
+    assert TestRecord.connection.execute('select * from spatial_ref_sys').count > 0
+  end
+
 end

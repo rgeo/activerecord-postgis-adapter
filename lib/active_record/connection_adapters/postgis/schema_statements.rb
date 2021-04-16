@@ -35,6 +35,13 @@ module ActiveRecord
         end
 
         # override
+        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_statements.rb#L51
+        # Returns an array of table names defined in the database, without the PostGIS spatial constants
+        def tables
+          query_values(data_source_sql(type: "BASE TABLE"), "SCHEMA").reject {|t| t == 'spatial_ref_sys'}
+        end
+
+        # override
         # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L544
         #
         # returns Postgresql sql type string
