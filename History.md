@@ -1,3 +1,7 @@
+### Unreleased
+
+* Modify `truncate_tables` to ignore spatial_ref_sys #341
+
 ### 6.0.2 / 2020-03-28
 
 * Support JRuby #331
