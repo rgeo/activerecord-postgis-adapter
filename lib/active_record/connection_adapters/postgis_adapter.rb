@@ -6,6 +6,7 @@
 # :stopdoc:
 
 require "rgeo/active_record"
+require "active_record/connection_adapters/postgis/database_statements"
 
 # autoload AbstractAdapter to avoid circular require and void context warnings
 module ActiveRecord

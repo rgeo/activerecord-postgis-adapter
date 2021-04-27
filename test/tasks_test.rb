@@ -16,6 +16,15 @@ class TasksTest < ActiveSupport::TestCase
     refute_empty connection.select_values("SELECT * from postgis.spatial_ref_sys")
   end
 
+  def test_truncate_tables_ignores_spatial_ref_sys
+    drop_db_if_exists
+    ActiveRecord::Tasks::DatabaseTasks.create(new_connection)
+    refute_empty connection.select_values("SELECT * from public.spatial_ref_sys")
+
+    ActiveRecord::Tasks::DatabaseTasks.send(:truncate_tables, new_connection)
+    refute_empty connection.select_values("SELECT * from public.spatial_ref_sys")
+  end
+
   def test_empty_sql_dump
     setup_database_tasks
     ActiveRecord::Tasks::DatabaseTasks.structure_dump(new_connection, tmp_sql_filename)
