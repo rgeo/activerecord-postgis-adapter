@@ -8,11 +8,11 @@
 require "rgeo/active_record"
 
 require "active_record/connection_adapters"
-require "active_record/connection_adapters/postgis/database_statements"
 require "active_record/connection_adapters/postgresql_adapter"
 require "active_record/connection_adapters/postgis/version"
 require "active_record/connection_adapters/postgis/column_methods"
 require "active_record/connection_adapters/postgis/schema_statements"
+require "active_record/connection_adapters/postgis/database_statements"
 require "active_record/connection_adapters/postgis/spatial_column_info"
 require "active_record/connection_adapters/postgis/spatial_table_definition"
 require "active_record/connection_adapters/postgis/spatial_column"
@@ -54,6 +54,7 @@ module ActiveRecord
       DEFAULT_SRID = 0
 
       include PostGIS::SchemaStatements
+      include PostGIS::DatabaseStatements
 
       def arel_visitor # :nodoc:
         Arel::Visitors::PostGIS.new(self)
