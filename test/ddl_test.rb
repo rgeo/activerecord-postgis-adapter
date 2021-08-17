@@ -235,6 +235,44 @@ class DDLTest < ActiveSupport::TestCase
     assert_equal 0, count_geometry_columns
   end
 
+  def test_create_spatial_column_default_value_geometric
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.column "coordinates", :st_point, srid: 3875, default: 'POINT(0.0 0.0)'
+    end
+    klass.reset_column_information
+
+    assert_equal 1, count_geometry_columns
+    col = klass.columns.last
+    assert_equal RGeo::Feature::Point, col.geometric_type
+    assert_equal false, col.geographic?
+    assert_equal false, col.has_z?
+    assert_equal false, col.has_m?
+    assert_equal 3875, col.srid
+    assert_equal '010100000000000000000000000000000000000000', col.default
+    assert_equal({ type: "st_point", srid: 3875 }, col.limit)
+    klass.connection.drop_table(:spatial_models)
+    assert_equal 0, count_geometry_columns
+  end
+
+  def test_create_spatial_column_default_value_geographic
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.geography "coordinates", limit: { srid: 4326, type: "st_point", geographic: true }, default: "POINT(0.0 0.0)"
+    end
+    klass.reset_column_information
+
+    assert_equal 1, count_geography_columns
+    col = klass.columns.last
+    assert_equal RGeo::Feature::Point, col.geometric_type
+    assert_equal true, col.geographic?
+    assert_equal false, col.has_z?
+    assert_equal false, col.has_m?
+    assert_equal 4326, col.srid
+    assert_equal '0101000020E610000000000000000000000000000000000000', col.default
+    assert_equal({ type: "st_point", srid: 4326, geographic: true }, col.limit)
+    klass.connection.drop_table(:spatial_models)
+    assert_equal 0, count_geography_columns
+  end
+
   def test_no_query_spatial_column_info
     klass.connection.create_table(:spatial_models, force: true) do |t|
       t.string "name"
@@ -325,6 +363,10 @@ class DDLTest < ActiveSupport::TestCase
 
   def count_geometry_columns
     klass.connection.select_value(geo_column_sql("geometry_columns", klass.table_name)).to_i
+  end
+
+  def count_geography_columns
+    klass.connection.select_value(geo_column_sql("geography_columns", klass.table_name)).to_i
   end
 
   def geo_column_sql(postgis_view, table_name)

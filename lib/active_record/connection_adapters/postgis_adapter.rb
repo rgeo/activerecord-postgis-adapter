@@ -6,7 +6,6 @@
 # :stopdoc:
 
 require "rgeo/active_record"
-require "active_record/connection_adapters/postgis/database_statements"
 
 # autoload AbstractAdapter to avoid circular require and void context warnings
 module ActiveRecord
@@ -19,6 +18,7 @@ require "active_record/connection_adapters/postgresql_adapter"
 require "active_record/connection_adapters/postgis/version"
 require "active_record/connection_adapters/postgis/column_methods"
 require "active_record/connection_adapters/postgis/schema_statements"
+require "active_record/connection_adapters/postgis/database_statements"
 require "active_record/connection_adapters/postgis/spatial_column_info"
 require "active_record/connection_adapters/postgis/spatial_table_definition"
 require "active_record/connection_adapters/postgis/spatial_column"
@@ -59,6 +59,7 @@ module ActiveRecord
       DEFAULT_SRID = 0
 
       include PostGIS::SchemaStatements
+      include PostGIS::DatabaseStatements
 
       def arel_visitor # :nodoc:
         Arel::Visitors::PostGIS.new(self)
@@ -90,6 +91,14 @@ module ActiveRecord
           "'#{RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)}'"
         elsif value.is_a?(RGeo::Cartesian::BoundingBox)
           "'#{value.min_x},#{value.min_y},#{value.max_x},#{value.max_y}'::box"
+        else
+          super
+        end
+      end
+
+      def quote_default_expression(value, column)
+        if column.type == :geography || column.type == :geometry
+          quote(value)
         else
           super
         end
