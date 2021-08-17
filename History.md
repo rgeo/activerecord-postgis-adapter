@@ -1,6 +1,7 @@
-### Unreleased
+### 7.1.1 / 2021-08-17
 
-* Modify `truncate_tables` to ignore spatial_ref_sys #341
+* Modify `truncate_tables` to ignore spatial_ref_sys #341, #345
+* Fix Default Values #347
 
 ### 7.1.0 / 2021-03-28
 
