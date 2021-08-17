@@ -91,6 +91,14 @@ module ActiveRecord
         end
       end
 
+      def quote_default_expression(value, column)
+        if column.type == :geography || column.type == :geometry
+          quote(value)
+        else
+          super
+        end
+      end
+
       # PostGIS specific types
       [
         :geography,
