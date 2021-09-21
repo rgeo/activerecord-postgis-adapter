@@ -9,7 +9,7 @@ module ActiveRecord  # :nodoc:
         #   "Geography(Point,4326)"
         def initialize(name, default, sql_type_metadata = nil, null = true,
                        default_function = nil, collation: nil, comment: nil,
-                       serial: nil, spatial: nil)
+                       serial: nil, generated: nil, spatial: nil)
           @sql_type_metadata = sql_type_metadata
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
           if spatial
@@ -31,7 +31,7 @@ module ActiveRecord  # :nodoc:
             build_from_sql_type(sql_type_metadata.sql_type)
           end
           super(name, default, sql_type_metadata, null, default_function,
-                collation: collation, comment: comment, serial: serial)
+                collation: collation, comment: comment, serial: serial, generated: generated)
           if spatial?
             if @srid
               @limit = { srid: @srid, type: to_type_name(geometric_type) }
