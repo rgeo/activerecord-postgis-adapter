@@ -23,8 +23,6 @@ jobs:
     strategy:
       matrix:
         ruby: ['3.0', '2.7']
-        BUNDLE_GEMFILE:
-          - gemfiles/ar70.gemfile
         pg: [9.6-3.0, 10-2.5, 11-3.0, 12-master, 13-master]
     steps:
       - name: Set Up Actions

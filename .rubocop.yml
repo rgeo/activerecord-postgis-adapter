@@ -34,7 +34,6 @@ Style/ZeroLengthPredicate:
 
 Style/FrozenStringLiteralComment:
   Exclude:
-    - Appraisals
     - Gemfile
     - Rakefile
     - activerecord-postgis-adapter.gemspec

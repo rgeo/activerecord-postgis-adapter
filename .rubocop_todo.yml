@@ -13,7 +13,6 @@
 Bundler/OrderedGems:
   Exclude:
     - 'Gemfile'
-    - 'gemfiles/ar60.gemfile'
 
 # Offense count: 2
 # Cop supports --auto-correct.
@@ -29,7 +28,6 @@ Layout/EmptyLineAfterGuardClause:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/column_methods.rb'
     - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column_info.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_table_definition.rb'
 
@@ -40,8 +38,6 @@ Layout/ExtraSpacing:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/arel_tosql.rb'
     - 'lib/active_record/connection_adapters/postgis/create_connection.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
-    - 'lib/active_record/connection_adapters/postgis/railtie.rb'
     - 'lib/active_record/connection_adapters/postgis/setup.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column_info.rb'
@@ -53,7 +49,7 @@ Layout/ExtraSpacing:
 # SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
 Layout/FirstArgumentIndentation:
   Exclude:
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
+
 
 # Offense count: 32
 # Cop supports --auto-correct.
@@ -64,7 +60,6 @@ Layout/FirstArgumentIndentation:
 Layout/HashAlignment:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis/schema_statements.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column_info.rb'
     - 'lib/active_record/connection_adapters/postgis_adapter.rb'
@@ -162,7 +157,6 @@ Naming/MethodName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.
@@ -170,7 +164,6 @@ Naming/PredicateName:
 Naming/RescuedExceptionsVariableName:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/create_connection.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -193,7 +186,7 @@ Style/Alias:
 Style/CaseEquality:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
+
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -227,7 +220,6 @@ Style/DoubleNegation:
 Style/GuardClause:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/create_connection.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis/spatial_column.rb'
     - 'test/spatial_queries_test.rb'
 
@@ -236,7 +228,6 @@ Style/GuardClause:
 Style/IfUnlessModifier:
   Exclude:
     - 'lib/active_record/connection_adapters/postgis/oid/spatial.rb'
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
     - 'lib/active_record/connection_adapters/postgis_adapter.rb'
 
 # Offense count: 2
@@ -274,7 +265,7 @@ Style/RedundantFreeze:
 # Cop supports --auto-correct.
 Style/RescueModifier:
   Exclude:
-    - 'lib/active_record/connection_adapters/postgis/postgis_database_tasks.rb'
+
 
 # Offense count: 3
 # Cop supports --auto-correct.
