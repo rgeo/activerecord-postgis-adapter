@@ -105,7 +105,7 @@ class BasicTest < ActiveSupport::TestCase
   def test_default_value
     create_model
     obj = SpatialModel.create
-    assert_equal factory.point(0, 0), obj.default_latlon
+    assert_equal factory.point(0, 0).to_s, obj.default_latlon.to_s
   end
 
   def test_custom_factory

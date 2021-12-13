@@ -17,18 +17,9 @@ require "active_record/connection_adapters/postgis/spatial_column_info"
 require "active_record/connection_adapters/postgis/spatial_table_definition"
 require "active_record/connection_adapters/postgis/spatial_column"
 require "active_record/connection_adapters/postgis/arel_tosql"
-require "active_record/connection_adapters/postgis/setup"
 require "active_record/connection_adapters/postgis/oid/spatial"
 require "active_record/connection_adapters/postgis/type" # has to be after oid/*
 require "active_record/connection_adapters/postgis/create_connection"
-require "active_record/connection_adapters/postgis/postgis_database_tasks"
-
-ActiveRecord::ConnectionAdapters::PostGIS.initial_setup
-
-if defined?(Rails::Railtie)
-  require "active_record/connection_adapters/postgis/railtie"
-end
-
 # :startdoc:
 
 module ActiveRecord
@@ -144,6 +135,15 @@ module ActiveRecord
       end
     end
   end
+  SchemaDumper.ignore_tables |= %w[
+    geography_columns
+    geometry_columns
+    layer
+    raster_columns
+    raster_overviews
+    spatial_ref_sys
+    topology
+  ]
 end
 
 # if using JRUBY, create ArJdbc::PostGIS module
