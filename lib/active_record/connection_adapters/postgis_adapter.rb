@@ -65,7 +65,7 @@ module ActiveRecord
 
       class << self
         def initialize_type_map(map = type_map)
-          %w(
+          %w[
             geography
             geometry
             geometry_collection
@@ -75,7 +75,7 @@ module ActiveRecord
             multi_polygon
             st_point
             st_polygon
-          ).each do |geo_type|
+          ].each do |geo_type|
             map.register_type(geo_type) do |_, _, sql_type|
               # sql_type is a string that comes from the database definition
               # examples:

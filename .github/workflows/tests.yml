@@ -1,5 +1,11 @@
 name: Tests
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test-ubuntu-ruby:
@@ -36,8 +42,6 @@ jobs:
           bundler-cache: true
       - name: Create Database
         run: psql -d postgresql://postgres:postgres@localhost:5432/postgres -c "create database postgis_adapter_test"
-      - name: Create PostGIS Extension
-        run: psql -d postgresql://postgres:postgres@localhost:5432/postgis_adapter_test -c "create extension postgis"
       - name: Run Tests
         run: bundle exec rake test
         env:
