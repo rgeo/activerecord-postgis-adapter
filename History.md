@@ -1,3 +1,7 @@
+### 8.0.0 / 2022-01-03
+
+* ActiveRecord 7 support (seuros) #352
+
 ### 7.1.1 / 2021-08-17
 
 * Modify `truncate_tables` to ignore spatial_ref_sys #341, #345

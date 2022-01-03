@@ -71,7 +71,7 @@ class AttributesTest < ActiveSupport::TestCase
 
     assert_equal 3857, data.polygon.srid
     assert_equal 3857, data.path.srid
-    assert_equal data.path, data.polygon.exterior_ring
+    assert_equal data.path.to_s, data.polygon.exterior_ring.to_s
 
     assert_equal 4326, data.geo_path.srid
     assert_equal RGeo::Geographic::Factory, data.geo_path.factory.class

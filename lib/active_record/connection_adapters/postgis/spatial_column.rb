@@ -32,13 +32,11 @@ module ActiveRecord  # :nodoc:
           end
           super(name, default, sql_type_metadata, null, default_function,
                 collation: collation, comment: comment, serial: serial)
-          if spatial?
-            if @srid
-              @limit = { srid: @srid, type: to_type_name(geometric_type) }
-              @limit[:has_z] = true if @has_z
-              @limit[:has_m] = true if @has_m
-              @limit[:geographic] = true if @geographic
-            end
+          if spatial? && @srid
+            @limit = { srid: @srid, type: to_type_name(geometric_type) }
+            @limit[:has_z] = true if @has_z
+            @limit[:has_m] = true if @has_m
+            @limit[:geographic] = true if @geographic
           end
         end
 
@@ -73,9 +71,10 @@ module ActiveRecord  # :nodoc:
 
         def to_type_name(geometric_type)
           name = geometric_type.type_name.underscore
-          if name == "point"
+          case name
+          when "point"
             "st_point"
-          elsif name == "polygon"
+          when "polygon"
             "st_polygon"
           else
             name

@@ -9,7 +9,7 @@ module ActiveRecord
         # Accepts `geo_type`, `srid`, `has_z`, `has_m`, and `geographic` as parameters.
         # Responsible for parsing sql_types returned from the database and WKT features.
         class Spatial < Type::Value
-          def initialize(geo_type: 'geometry', srid: 0, has_z: false, has_m: false, geographic: false)
+          def initialize(geo_type: "geometry", srid: 0, has_z: false, has_m: false, geographic: false)
             @geo_type = geo_type
             @srid = srid
             @has_z = has_z
