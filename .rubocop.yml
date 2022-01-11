@@ -1,9 +1,10 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
-  TargetRubyVersion: 2.5
+  TargetRubyVersion: 2.7
   DisplayCopNames: true
   SuggestExtensions: false
+  NewCops: enable
 
 Layout/ParameterAlignment:
   Enabled: false
@@ -34,7 +35,6 @@ Style/ZeroLengthPredicate:
 
 Style/FrozenStringLiteralComment:
   Exclude:
-    - Appraisals
     - Gemfile
     - Rakefile
     - activerecord-postgis-adapter.gemspec

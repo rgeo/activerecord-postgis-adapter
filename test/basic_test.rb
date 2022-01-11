@@ -105,7 +105,7 @@ class BasicTest < ActiveSupport::TestCase
   def test_default_value
     create_model
     obj = SpatialModel.create
-    assert_equal factory.point(0, 0), obj.default_latlon
+    assert_equal factory.point(0, 0).to_s, obj.default_latlon.to_s
   end
 
   def test_custom_factory
@@ -214,7 +214,7 @@ class BasicTest < ActiveSupport::TestCase
     SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
       t.column "latlon", :st_point, srid: 3785
       t.column "latlon_geo", :st_point, srid: 4326, geographic: true
-      t.column "default_latlon", :st_point, srid: 0, default: 'POINT(0.0 0.0)'
+      t.column "default_latlon", :st_point, srid: 0, default: "POINT(0.0 0.0)"
     end
     SpatialModel.reset_column_information
   end

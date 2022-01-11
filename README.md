@@ -1,7 +1,7 @@
 # ActiveRecord PostGIS Adapter
 
 [![Gem Version](https://badge.fury.io/rb/activerecord-postgis-adapter.svg)](https://badge.fury.io/rb/activerecord-postgis-adapter)
-[![Build Status](https://travis-ci.org/rgeo/activerecord-postgis-adapter.svg?branch=master)](https://travis-ci.org/rgeo/activerecord-postgis-adapter)
+![Build Status](https://github.com/rgeo/activerecord-postgis-adapter/actions/workflows/tests.yml/badge.svg?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/4444dc80a2cd6a37baa1/maintainability)](https://codeclimate.com/github/rgeo/activerecord-postgis-adapter/maintainability)
 
 The activerecord-postgis-adapter provides access to features
@@ -16,12 +16,12 @@ The adapter provides three basic capabilities:
 
 First, it provides _spatial migrations_. It extends the ActiveRecord migration
 syntax to support creating spatially-typed columns and spatial indexes. You
-can control the various PostGIS-provided attributes such as srid, dimension,
+can control the various PostGIS-provided attributes such as SRID, dimension,
 and geographic vs geometric math.
 
 Second, it recognizes spatial types and casts them properly to RGeo geometry
 objects. The adapter can configure these objects automatically based on the
-srid and dimension in the database table, or you can tell it to convert the
+SRID and dimension in the database table, or you can tell it to convert the
 data to a different form. You can also set attribute data using WKT format.
 
 Third, it lets you include simple spatial data in queries. WKT format data and
@@ -68,6 +68,16 @@ gem 'ffi-geos'
 ```
 
 _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
+
+#### Version 8.x supports ActiveRecord 7.0
+
+Requirements:
+
+```
+ActiveRecord 7.0
+Ruby 2.7.0+
+PostGIS 2.0+
+```
 
 #### Version 7.x supports ActiveRecord 6.1
 
@@ -234,16 +244,23 @@ and you want to add geospatial features, follow these steps.
 First, add the `activerecord-postgis-adapter` gem to the Gemfile, and update
 your bundle by running `bundle install`.
 
-Next, modify your `config/database.yml` file to invoke the postgis adapter, as
-described above.
-
-Once you have set up your database configs, run:
-
+Then, create a migration to add the PostGIS extension to your database.
 ```rake
-rake db:gis:setup
+rails g migration AddPostgisExtensionToDatabase
+```
+The migration should look something like this:
+```ruby
+class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.0]
+  def change
+    enable_extension 'postgis'
+  end
+end
 ```
 
-This rake task adds the PostGIS extension to your existing database.
+Then run the migration:
+```rake
+rails db:migrate
+```
 
 ### Creating Spatial Tables
 
@@ -339,13 +356,6 @@ end
 
 `centroid` will not have an associated column in the `spatial_models` table, but any geometry object assigned to the `centroid` attribute will be cast to a geographic point.
 
-### Point and Polygon Types with ActiveRecord 4.2+
-
-Prior to version 3, the `point` and `polygon` types were supported. In ActiveRecord 4.2, the Postgresql
-adapter added support for the native Postgresql `point` and `polygon` types, which conflict with this
-adapter's types of the same names. The PostGIS point type must be referenced as `st_point`, and the
-PostGIS polygon type must be referenced as `st_polygon`.
-
 ### Configuring ActiveRecord
 
 ActiveRecord's usefulness stems from the way it automatically configures
@@ -381,30 +391,6 @@ The default spatial factory for cartesian columns is `RGeo::Cartesian.preferred_
 You do not need to configure the `SpatialFactoryStore` if these defaults are ok.
 
 For more explanation of `SpatialFactoryStore`, see [the rgeo-activerecord README](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns)
-
-#### Changes in 7.0.0
-
-In version 7.0.0+ the attributes in the second argument of `register` will be parsed to try to match one of the expected values for each field. This may break existing store configurations.
-
-For example:
-
-```rb
-# This subset of fields for a Spatial Column
-{geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'}
-
-# will be parsed like this to lookup the matching factory
-
-{geo_type: 'multi_point', sql_type: 'geography'}
-
-# so you should update your configuration from
-config.register(RGeo::Geos.factory_generator,
-                {geo_type: 'MultiPoint', sql_type: 'geography(MultiPoint,4326)'})
-# to
-config.register(RGeo::Geos.factory_generator,
-                {geo_type: 'multi_point', sql_type: 'geography'})
-```
-
-See the [rgeo-activerecord docs](https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns) for a list of the expected values for all of the accepted fields.
 
 ### Deploying to Heroku
 

@@ -17,18 +17,9 @@ require "active_record/connection_adapters/postgis/spatial_column_info"
 require "active_record/connection_adapters/postgis/spatial_table_definition"
 require "active_record/connection_adapters/postgis/spatial_column"
 require "active_record/connection_adapters/postgis/arel_tosql"
-require "active_record/connection_adapters/postgis/setup"
 require "active_record/connection_adapters/postgis/oid/spatial"
 require "active_record/connection_adapters/postgis/type" # has to be after oid/*
 require "active_record/connection_adapters/postgis/create_connection"
-require "active_record/connection_adapters/postgis/postgis_database_tasks"
-
-ActiveRecord::ConnectionAdapters::PostGIS.initial_setup
-
-if defined?(Rails::Railtie)
-  require "active_record/connection_adapters/postgis/railtie"
-end
-
 # :startdoc:
 
 module ActiveRecord
@@ -70,6 +61,35 @@ module ActiveRecord
 
       def default_srid
         DEFAULT_SRID
+      end
+
+      class << self
+        def initialize_type_map(map = type_map)
+          %w[
+            geography
+            geometry
+            geometry_collection
+            line_string
+            multi_line_string
+            multi_point
+            multi_polygon
+            st_point
+            st_polygon
+          ].each do |geo_type|
+            map.register_type(geo_type) do |_, _, sql_type|
+              # sql_type is a string that comes from the database definition
+              # examples:
+              #   "geometry(Point,4326)"
+              #   "geography(Point,4326)"
+              #   "geometry(Polygon,4326) NOT NULL"
+              #   "geometry(Geography,4326)"
+              geo_type, srid, has_z, has_m, geographic = PostGIS::OID::Spatial.parse_sql_type(sql_type)
+              PostGIS::OID::Spatial.new(geo_type: geo_type, srid: srid, has_z: has_z, has_m: has_m, geographic: geographic)
+            end
+          end
+
+          super
+        end
       end
 
       def srs_database_columns
@@ -115,6 +135,16 @@ module ActiveRecord
       end
     end
   end
+  SchemaDumper.ignore_tables |= %w[
+    geography_columns
+    geometry_columns
+    layer
+    raster_columns
+    raster_overviews
+    spatial_ref_sys
+    topology
+  ]
+  Tasks::DatabaseTasks.register_task(/postgis/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
 end
 
 # if using JRUBY, create ArJdbc::PostGIS module
