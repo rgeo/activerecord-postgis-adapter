@@ -13,10 +13,9 @@ module ActiveRecord
           default_value = extract_value_from_default(default)
           default_function = extract_default_function(default_value, default)
 
-          serial =
-            if (match = default_function&.match(/\Anextval\('"?(?<sequence_name>.+_(?<suffix>seq\d*))"?'::regclass\)\z/))
-              sequence_name_from_parts(table_name, column_name, match[:suffix]) == match[:sequence_name]
-            end
+          if match = default_function&.match(/\Anextval\('"?(?<sequence_name>.+_(?<suffix>seq\d*))"?'::regclass\)\z/)
+            serial = sequence_name_from_parts(table_name, column_name, match[:suffix]) == match[:sequence_name]
+          end
 
           # {:dimension=>2, :has_m=>false, :has_z=>false, :name=>"latlon", :srid=>0, :type=>"GEOMETRY"}
           spatial = spatial_column_info(table_name).get(column_name, type_metadata.sql_type)
@@ -36,7 +35,7 @@ module ActiveRecord
         end
 
         # override
-        # https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L544
+        # https://github.com/rails/rails/blob/7-0-stable/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L547
         #
         # returns Postgresql sql type string
         # examples:
@@ -49,29 +48,41 @@ module ActiveRecord
         # type_to_sql(:geography, limit: "Point,4326")
         # => "geography(Point,4326)"
         def type_to_sql(type, limit: nil, precision: nil, scale: nil, array: nil, **)
-          case type.to_s
-          when "geometry", "geography"
-            "#{type}(#{limit})"
-          else
-            super
-          end
-        end
+          sql = \
+            case type.to_s
+            when "geometry", "geography"
+              "#{type}(#{limit})"
+            when "binary"
+              # PostgreSQL doesn't support limits on binary (bytea) columns.
+              # The hard limit is 1GB, because of a 32-bit size field, and TOAST.
+              case limit
+              when nil, 0..0x3fffffff; super(type)
+              else raise ArgumentError, "No binary type has byte size #{limit}. The limit on binary can be at most 1GB - 1byte."
+              end
+            when "text"
+              # PostgreSQL doesn't support limits on text columns.
+              # The hard limit is 1GB, according to section 8.3 in the manual.
+              case limit
+              when nil, 0..0x3fffffff; super(type)
+              else raise ArgumentError, "No text type has byte size #{limit}. The limit on text can be at most 1GB - 1byte."
+              end
+            when "integer"
+              case limit
+              when 1, 2; "smallint"
+              when nil, 3, 4; "integer"
+              when 5..8; "bigint"
+              else raise ArgumentError, "No integer type has byte size #{limit}. Use a numeric with scale 0 instead."
+              end
+            when "enum"
+              raise ArgumentError, "enum_type is required for enums" if enum_type.nil?
 
-        # override
-        def native_database_types
-          # Add spatial types
-          super.merge(
-            geography:           { name: "geography" },
-            geometry:            { name: "geometry" },
-            geometry_collection: { name: "geometry_collection" },
-            line_string:         { name: "line_string" },
-            multi_line_string:   { name: "multi_line_string" },
-            multi_point:         { name: "multi_point" },
-            multi_polygon:       { name: "multi_polygon" },
-            spatial:             { name: "geometry" },
-            st_point:            { name: "st_point" },
-            st_polygon:          { name: "st_polygon" }
-          )
+              enum_type
+            else
+              super
+            end
+
+          sql = "#{sql}[]" if array && type != :primary_key
+          sql
         end
 
         # override

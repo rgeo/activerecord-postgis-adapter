@@ -90,6 +90,24 @@ module ActiveRecord
 
           super
         end
+
+        def native_database_types
+          @native_database_types ||= begin
+            default_types = PostgreSQLAdapter.native_database_types
+            default_types.merge({
+              geography:           { name: "geography" },
+              geometry:            { name: "geometry" },
+              geometry_collection: { name: "geometry_collection" },
+              line_string:         { name: "line_string" },
+              multi_line_string:   { name: "multi_line_string" },
+              multi_point:         { name: "multi_point" },
+              multi_polygon:       { name: "multi_polygon" },
+              spatial:             { name: "geometry" },
+              st_point:            { name: "st_point" },
+              st_polygon:          { name: "st_polygon" }
+            })
+          end
+        end
       end
 
       def srs_database_columns
