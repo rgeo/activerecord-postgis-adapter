@@ -48,41 +48,12 @@ module ActiveRecord
         # type_to_sql(:geography, limit: "Point,4326")
         # => "geography(Point,4326)"
         def type_to_sql(type, limit: nil, precision: nil, scale: nil, array: nil, **)
-          sql = \
-            case type.to_s
-            when "geometry", "geography"
-              "#{type}(#{limit})"
-            when "binary"
-              # PostgreSQL doesn't support limits on binary (bytea) columns.
-              # The hard limit is 1GB, because of a 32-bit size field, and TOAST.
-              case limit
-              when nil, 0..0x3fffffff; super(type)
-              else raise ArgumentError, "No binary type has byte size #{limit}. The limit on binary can be at most 1GB - 1byte."
-              end
-            when "text"
-              # PostgreSQL doesn't support limits on text columns.
-              # The hard limit is 1GB, according to section 8.3 in the manual.
-              case limit
-              when nil, 0..0x3fffffff; super(type)
-              else raise ArgumentError, "No text type has byte size #{limit}. The limit on text can be at most 1GB - 1byte."
-              end
-            when "integer"
-              case limit
-              when 1, 2; "smallint"
-              when nil, 3, 4; "integer"
-              when 5..8; "bigint"
-              else raise ArgumentError, "No integer type has byte size #{limit}. Use a numeric with scale 0 instead."
-              end
-            when "enum"
-              raise ArgumentError, "enum_type is required for enums" if enum_type.nil?
-
-              enum_type
-            else
-              super
-            end
-
-          sql = "#{sql}[]" if array && type != :primary_key
-          sql
+          case type.to_s
+          when "geometry", "geography"
+            "#{type}(#{limit})"
+          else
+            super
+          end
         end
 
         # override
