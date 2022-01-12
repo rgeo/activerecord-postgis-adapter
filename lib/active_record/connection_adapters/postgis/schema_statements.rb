@@ -35,28 +35,6 @@ module ActiveRecord
         end
 
         # override
-        # https://github.com/rails/rails/blob/7-0-stable/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L547
-        #
-        # returns Postgresql sql type string
-        # examples:
-        #   "geometry(Point,4326)"
-        #   "geography(Point,4326)"
-        #
-        # note: type alone is not enough to detect the sql type,
-        # so `limit` is used to pass the additional information. :(
-        #
-        # type_to_sql(:geography, limit: "Point,4326")
-        # => "geography(Point,4326)"
-        def type_to_sql(type, limit: nil, precision: nil, scale: nil, array: nil, **)
-          case type.to_s
-          when "geometry", "geography"
-            "#{type}(#{limit})"
-          else
-            super
-          end
-        end
-
-        # override
         def create_table_definition(*args, **kwargs)
           PostGIS::TableDefinition.new(self, *args, **kwargs)
         end
