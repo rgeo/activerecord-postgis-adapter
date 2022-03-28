@@ -1,18 +1,41 @@
 # frozen_string_literal: true
 
+require "bundler/setup"
+Bundler.require :development
+
 require "minitest/autorun"
 require "minitest/pride"
 require "mocha/minitest"
-require "activerecord-postgis-adapter"
 require "erb"
 require "byebug" if ENV["BYEBUG"]
+require "activerecord-postgis-adapter"
+
+if ENV["ARCONN"]
+  # only install activerecord schema if we need it
+  require "cases/helper"
+
+  def load_postgis_specific_schema
+    original_stdout = $stdout
+    $stdout = StringIO.new
+
+    load "schema/postgis_specific_schema.rb"
+
+    ActiveRecord::FixtureSet.reset_cache
+  ensure
+    $stdout = original_stdout
+  end
+
+  load_postgis_specific_schema
+end
 
 module ActiveRecord
   class Base
     DATABASE_CONFIG_PATH = File.dirname(__FILE__) << "/database.yml"
 
     def self.test_connection_hash
-      YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
+      conns = YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
+      conn_hash = conns["connections"]["postgis"]["arunit"]
+      conn_hash.merge(adapter: "postgis")
     end
 
     def self.establish_test_connection

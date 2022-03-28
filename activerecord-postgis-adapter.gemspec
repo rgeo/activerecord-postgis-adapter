@@ -1,4 +1,4 @@
-require "./lib/active_record/connection_adapters/postgis/version"
+require_relative "lib/active_record/connection_adapters/postgis/version"
 
 Gem::Specification.new do |spec|
   spec.name = "activerecord-postgis-adapter"
@@ -25,6 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.4"
   spec.add_development_dependency "mocha", "~> 1.1"
+  spec.add_development_dependency "benchmark-ips", "~> 2.9.1"
+
   spec.metadata = {
     "rubygems_mfa_required" => "true"
   }
