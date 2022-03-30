@@ -9,6 +9,8 @@ gem "ffi-geos", platform: :jruby
 gem "byebug" if ENV["BYEBUG"]
 
 def activerecord_version
+  return ENV["AR_VERSION"] if ENV["AR_VERSION"]
+
   require "uri"
   require "yaml"
   require "net/http"

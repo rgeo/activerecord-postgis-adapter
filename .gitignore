@@ -9,4 +9,4 @@ Gemfile.lock
 /test/database_local.yml
 .idea
 debug.log
-test/db/*
+/test/db/*

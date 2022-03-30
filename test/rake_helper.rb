@@ -15,7 +15,7 @@ def config_load_paths!
 end
 
 def set_arconfig_env!
-  arconfig_file = File.expand_path(File.join(File.dirname(__FILE__), "database.yml"))
+  arconfig_file = File.expand_path("database.yml", __dir__)
   ENV["ARCONFIG"] = arconfig_file
 end
 

@@ -37,6 +37,13 @@ Make sure the tests pass:
 
 `bundle exec rake`
 
+Run tests with a specific ActiveRecord version:
+
+```sh
+AR_VERSION=7.0.1 bundle install
+AR_VERSION=7.0.1 bundle exec rake test
+```
+
 To run a specific test, use the `POSTGIS_TEST_FILES` environment variable:
 
 `POSTGIS_TEST_FILES=test/cases/ddl_test.rb bundle exec rake`
@@ -47,7 +54,7 @@ If you are testing a feature against the ActiveRecord test suite run:
 
 Files can be specified with the `AR_TEST_FILES` environment variable:
 
-`AR_TEST_FILES test/cases/adapters/postgresql/*_test.rb bundle exec rake test:activerecord`
+`AR_TEST_FILES=test/cases/adapters/postgresql/*_test.rb bundle exec rake test:activerecord`
 
 To test with both local and ActiveRecord tests, run:
 
