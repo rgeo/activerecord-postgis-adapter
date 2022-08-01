@@ -1,6 +1,5 @@
 ### 8.0.0 / 2022-01-03
 
-
 * Breaking Change: Remove `PostgisDatabaseTasks` (seuros) #352
 * ActiveRecord 7 support (seuros) #352
 
