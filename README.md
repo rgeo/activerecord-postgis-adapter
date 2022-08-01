@@ -162,6 +162,14 @@ gem 'activerecord-postgis-adapter', '~> 0.6.6'
 Please read [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md)
 if you would like to use the adapter with an older version of PostGIS.
 
+#### Upgrading to version 8.x
+
+The `PostgisDatabaseTasks` module has been removed which means that the rake tasks to install postgis are no longer available. If using a Rails app, please see [Upgrading an Existing Database](#upgrading-an-existing-database)
+
+#### Upgrading from 6.x
+
+When upgrading from version 6.x to a newer major version, you may need to modify your `SpatialFactoryStore` configuration. Please see this section of the README in rgeo-activerecord for more details (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns).
+
 ##### database.yml
 
 You must modify your `config/database.yml` file to use the postgis
