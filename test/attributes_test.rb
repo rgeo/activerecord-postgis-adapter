@@ -71,7 +71,10 @@ class AttributesTest < ActiveSupport::TestCase
 
     assert_equal 3857, data.polygon.srid
     assert_equal 3857, data.path.srid
-    assert_equal data.path.to_s, data.polygon.exterior_ring.to_s
+
+    # compare points instead of WKT representation because GEOS
+    # handles rings and linestrings differently when generating WKT.
+    assert_equal data.path.points, data.polygon.exterior_ring.points
 
     assert_equal 4326, data.geo_path.srid
     assert_equal RGeo::Geographic::Factory, data.geo_path.factory.class
