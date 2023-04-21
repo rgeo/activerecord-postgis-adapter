@@ -355,6 +355,17 @@ class DDLTest < ActiveSupport::TestCase
     assert_equal 'Comment test', col.comment
   end
 
+  def test_generated_geometry_column
+    klass.connection.create_table(:spatial_models, force: true) do |t|
+      t.st_point :coordinates, limit: { srid: 4326 }
+      t.virtual :generated_buffer, type: :st_polygon, limit: { srid: 4326 }, as: 'ST_Buffer(coordinates, 10)', stored: true
+    end
+    klass.reset_column_information
+    col = klass.columns.last
+    assert_equal(:geometry, col.type)
+    assert(col.virtual?)
+  end
+
   private
 
   def klass
