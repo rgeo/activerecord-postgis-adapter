@@ -8,7 +8,13 @@ module ActiveRecord  # :nodoc:
 
         # super: https://github.com/rails/rails/blob/master/activerecord/lib/active_record/connection_adapters/abstract/schema_definitions.rb
         def new_column_definition(name, type, **options)
-          if (info = PostGISAdapter.spatial_column_options(type.to_sym))
+          col_type = if type.to_sym == :virtual
+            options[:type]
+          else
+            type
+          end
+
+          if (info = PostGISAdapter.spatial_column_options(col_type))
             if (limit = options.delete(:limit)) && limit.is_a?(::Hash)
               options.merge!(limit)
             end

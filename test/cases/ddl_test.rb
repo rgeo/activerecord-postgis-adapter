@@ -238,7 +238,7 @@ module PostGIS
 
     def test_create_spatial_column_default_value_geometric
       klass.connection.create_table(:spatial_models, force: true) do |t|
-        t.column "coordinates", :st_point, srid: 3875, default: 'POINT(0.0 0.0)'
+        t.column "coordinates", :st_point, srid: 3875, default: "POINT(0.0 0.0)"
       end
       klass.reset_column_information
 
@@ -249,7 +249,7 @@ module PostGIS
       assert_equal false, col.has_z?
       assert_equal false, col.has_m?
       assert_equal 3875, col.srid
-      assert_equal '010100000000000000000000000000000000000000', col.default
+      assert_equal "010100000000000000000000000000000000000000", col.default
       assert_equal({ type: "st_point", srid: 3875 }, col.limit)
       klass.connection.drop_table(:spatial_models)
       assert_equal 0, count_geometry_columns
@@ -268,7 +268,7 @@ module PostGIS
       assert_equal false, col.has_z?
       assert_equal false, col.has_m?
       assert_equal 4326, col.srid
-      assert_equal '0101000020E610000000000000000000000000000000000000', col.default
+      assert_equal "0101000020E610000000000000000000000000000000000000", col.default
       assert_equal({ type: "st_point", srid: 4326, geographic: true }, col.limit)
       klass.connection.drop_table(:spatial_models)
       assert_equal 0, count_geography_columns
@@ -349,11 +349,23 @@ module PostGIS
 
     def test_column_comments
       klass.connection.create_table(:spatial_models, force: true) do |t|
-        t.string :sample_comment, comment: 'Comment test'
+        t.string :sample_comment, comment: "Comment test"
       end
       klass.reset_column_information
       col = klass.columns.last
-      assert_equal 'Comment test', col.comment
+      assert_equal "Comment test", col.comment
+    end
+
+    def test_generated_geometry_column
+      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.connection.supports_virtual_columns?
+      klass.connection.create_table(:spatial_models, force: true) do |t|
+        t.st_point :coordinates, limit: { srid: 4326 }
+        t.virtual :generated_buffer, type: :st_polygon, limit: { srid: 4326 }, as: "ST_Buffer(coordinates, 10)", stored: true
+      end
+      klass.reset_column_information
+      col = klass.columns.last
+      assert_equal(:geometry, col.type)
+      assert(col.virtual?)
     end
 
     private

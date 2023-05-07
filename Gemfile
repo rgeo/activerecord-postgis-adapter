@@ -33,7 +33,7 @@ end
 
 group :development do
   # Need to install for tests
-  gem "rails", git: "https://github.com/rails/rails.git", tag: "v#{activerecord_version}"
+  gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
 
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
