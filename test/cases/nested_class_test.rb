@@ -10,7 +10,6 @@ module PostGIS
       end
 
       class Bar < ActiveRecord::Base
-        establish_test_connection
       end
     end
 

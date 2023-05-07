@@ -4,14 +4,12 @@ require_relative "../test_helper"
 
 module PostGIS
   class Foo < ActiveRecord::Base
-    establish_test_connection
     has_one :spatial_foo
     attribute :bar, :string, array: true
     attribute :baz, :string, range: true
   end
 
   class SpatialFoo < ActiveRecord::Base
-    establish_test_connection
     attribute :point, :st_point, srid: 3857
     attribute :pointz, :st_point, has_z: true, srid: 3509
     attribute :pointm, :st_point, has_m: true, srid: 3509
@@ -21,7 +19,6 @@ module PostGIS
   end
 
   class InvalidAttribute < ActiveRecord::Base
-    establish_test_connection
   end
 
   class AttributesTest < ActiveSupport::TestCase
