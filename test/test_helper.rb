@@ -26,25 +26,25 @@ if ENV["ARCONN"]
   end
 
   load_postgis_specific_schema
-end
+else
+  module ActiveRecord
+    class Base
+      DATABASE_CONFIG_PATH = File.dirname(__FILE__) << "/database.yml"
 
-module ActiveRecord
-  class Base
-    DATABASE_CONFIG_PATH = File.dirname(__FILE__) << "/database.yml"
+      def self.test_connection_hash
+        conns = YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
+        conn_hash = conns["connections"]["postgis"]["arunit"]
+        conn_hash.merge(adapter: "postgis")
+      end
 
-    def self.test_connection_hash
-      conns = YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
-      conn_hash = conns["connections"]["postgis"]["arunit"]
-      conn_hash.merge(adapter: "postgis")
-    end
-
-    def self.establish_test_connection
-      establish_connection test_connection_hash
+      def self.establish_test_connection
+        establish_connection test_connection_hash
+      end
     end
   end
-end
 
-ActiveRecord::Base.establish_test_connection
+  ActiveRecord::Base.establish_test_connection
+end
 
 class SpatialModel < ActiveRecord::Base
 end

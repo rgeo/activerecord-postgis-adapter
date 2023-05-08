@@ -31,10 +31,10 @@ def activerecord_version
   ver["number"]
 end
 
-group :development do
-  # Need to install for tests
-  gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
+# Need to install for tests
+gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
 
+group :development do
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
   gem "mocha"
