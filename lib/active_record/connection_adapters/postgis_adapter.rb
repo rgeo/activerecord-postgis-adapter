@@ -18,6 +18,7 @@ require "active_record/connection_adapters/postgis/spatial_table_definition"
 require "active_record/connection_adapters/postgis/spatial_column"
 require "active_record/connection_adapters/postgis/arel_tosql"
 require "active_record/connection_adapters/postgis/oid/spatial"
+require "active_record/connection_adapters/postgis/oid/date_time"
 require "active_record/connection_adapters/postgis/type" # has to be after oid/*
 require "active_record/connection_adapters/postgis/create_connection"
 # :startdoc:

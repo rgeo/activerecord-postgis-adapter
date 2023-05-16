@@ -1,8 +1,28 @@
-adapter: postgis
-host: <%= ENV["PGHOST"] || "127.0.0.1" %>
-port: <%= ENV["PGPORT"] || "5432" %>
-database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>
-username: <%= ENV["PGUSER"] || "postgres" %>
-password: <%= ENV["PGPASSWORD"] || "" %>
-setup: default
-schema_search_path: public
+connections:
+  postgis:
+    arunit:
+      host: <%= ENV["PGHOST"] || "127.0.0.1" %>
+      port: <%= ENV["PGPORT"] || "5432" %>
+      database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>
+      username: <%= ENV["PGUSER"] || "postgres" %>
+      password: <%= ENV["PGPASSWORD"] || "" %>
+      setup: default
+      schema_search_path: public
+    aruint2:
+      host: <%= ENV["PGHOST"] || "127.0.0.1" %>
+      port: <%= ENV["PGPORT"] || "5432" %>
+      database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>
+      username: <%= ENV["PGUSER"] || "postgres" %>
+      password: <%= ENV["PGPASSWORD"] || "" %>
+      setup: default
+      schema_search_path: public
+    arunit_without_prepared_statements:
+      min_messages: warning
+      prepared_statements: false
+      host: <%= ENV["PGHOST"] || "127.0.0.1" %>
+      port: <%= ENV["PGPORT"] || "5432" %>
+      database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>
+      username: <%= ENV["PGUSER"] || "postgres" %>
+      password: <%= ENV["PGPASSWORD"] || "" %>
+      setup: default
+      schema_search_path: public
