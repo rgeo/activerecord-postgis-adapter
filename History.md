@@ -1,3 +1,8 @@
+### 8.0.2 / 2023-05-16
+
+* Fix for geometries in generated columns (Tristramg) #377
+* Add `date_time` type configuration to adapter #363
+
 ### 8.0.1 / 2022-08-01
 
 * Support for generated columns and other adapter fixes (ddiachkov) #360
