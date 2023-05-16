@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "minitest", "~> 5.4"
   spec.add_development_dependency "mocha", "~> 1.1"
   spec.add_development_dependency "benchmark-ips", "~> 2.9.1"
+  spec.add_development_dependency "rubocop", "~> 1.50"
 
   spec.metadata = {
     "rubygems_mfa_required" => "true"

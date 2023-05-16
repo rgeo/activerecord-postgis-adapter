@@ -26,6 +26,22 @@ if ENV["ARCONN"]
   end
 
   load_postgis_specific_schema
+
+  module ARTestCaseOverride
+    def with_postgresql_datetime_type(type)
+      adapter = ActiveRecord::ConnectionAdapters::PostGISAdapter
+      adapter.remove_instance_variable(:@native_database_types) if adapter.instance_variable_defined?(:@native_database_types)
+      datetime_type_was = adapter.datetime_type
+      adapter.datetime_type = type
+      yield
+    ensure
+      adapter = ActiveRecord::ConnectionAdapters::PostGISAdapter
+      adapter.datetime_type = datetime_type_was
+      adapter.remove_instance_variable(:@native_database_types) if adapter.instance_variable_defined?(:@native_database_types)
+    end
+  end
+
+  ActiveRecord::TestCase.prepend(ARTestCaseOverride)
 else
   module ActiveRecord
     class Base
