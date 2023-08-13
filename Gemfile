@@ -32,7 +32,7 @@ def activerecord_version
 end
 
 # Need to install for tests
-gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
+gem "rails", github: "rails/rails", branch: "main"
 
 group :development do
   # Gems used by the ActiveRecord test suite
