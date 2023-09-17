@@ -31,7 +31,7 @@ jobs:
         pg: [11-3.0, 12-master, 13-master, 14-master, 15-master]
     steps:
       - name: Set Up Actions
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install GEOS
         run: sudo apt-get install libgeos-dev
       - name: Set Up Ruby

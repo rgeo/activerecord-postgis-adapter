@@ -19,13 +19,13 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.7.0"
 
-  spec.add_dependency "activerecord", "~> 7.0.0"
+  spec.add_dependency "activerecord", "~> 7.1.beta1"
   spec.add_dependency "rgeo-activerecord", "~> 7.0.0"
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.4"
   spec.add_development_dependency "mocha", "~> 1.1"
-  spec.add_development_dependency "benchmark-ips", "~> 2.9.1"
+  spec.add_development_dependency "benchmark-ips", "~> 2.12"
   spec.add_development_dependency "rubocop", "~> 1.50"
 
   spec.metadata = {

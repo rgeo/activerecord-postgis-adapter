@@ -4,6 +4,7 @@ module ActiveRecord
   module ConnectionAdapters
     module PostGIS
       module ColumnMethods
+
         def spatial(name, options = {})
           raise "You must set a type. For example: 't.spatial type: :st_point'" unless options[:type]
           column(name, options[:type], **options)
@@ -43,6 +44,11 @@ module ActiveRecord
 
         def st_polygon(name, options = {})
           column(name, :st_polygon, **options)
+        end
+
+        private
+        def valid_column_definition_options
+          super + [:srid, :has_z, :has_m, :geographic, :spatial_type]
         end
       end
     end

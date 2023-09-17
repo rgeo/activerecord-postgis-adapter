@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-require "active_record/connection_adapters/postgis_adapter"
+require_relative "active_record/connection_adapters/postgis_adapter"
