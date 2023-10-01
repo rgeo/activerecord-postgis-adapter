@@ -10,4 +10,3 @@ Gemfile.lock
 .idea
 debug.log
 /test/db/*
-.env
