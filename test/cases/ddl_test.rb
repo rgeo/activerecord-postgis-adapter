@@ -307,6 +307,20 @@ module PostGIS
       assert_equal(-1, klass.new.sample_integer)
     end
 
+    # Ensure virtual column default function works like the Postgres adapter.
+    def test_virtual_column_default_function
+      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.connection.supports_virtual_columns?
+      klass.connection.create_table(:spatial_models, force: true) do |t|
+        t.integer :column1
+        t.virtual :column2, type: :integer, as: "(column1 + 1)", stored: true
+      end
+      klass.reset_column_information
+      col = klass.columns.last
+      assert_equal(:integer, col.type)
+      assert_equal("(column1 + 1)", col.default_function)
+      assert(col.virtual?)
+    end
+
     def test_column_types
       klass.connection.create_table(:spatial_models, force: true) do |t|
         t.column "sample_integer", :integer
@@ -364,6 +378,7 @@ module PostGIS
       end
       klass.reset_column_information
       col = klass.columns.last
+      assert_equal("st_buffer(coordinates, (10)::double precision)", col.default_function)
       assert_equal(:geometry, col.type)
       assert(col.virtual?)
     end
