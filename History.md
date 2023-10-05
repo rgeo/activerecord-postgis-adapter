@@ -1,3 +1,7 @@
+### 8.0.3 / 2023-10-05
+
+* Fix `default_function` schema dumping in virtual columns (wizardofelves) #383
+
 ### 8.0.2 / 2023-05-16
 
 * Fix for geometries in generated columns (Tristramg) #377
