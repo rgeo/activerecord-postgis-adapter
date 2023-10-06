@@ -37,4 +37,6 @@ group :development do
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
   gem "mocha"
+  gem "sqlite3"
+  gem "msgpack"
 end
