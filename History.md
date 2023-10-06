@@ -1,3 +1,7 @@
+### 9.0.0 / 2023-10-06
+
+* Rails 7.1 support (seuros) #382
+
 ### 8.0.3 / 2023-10-05
 
 * Fix `default_function` schema dumping in virtual columns (wizardofelves) #383
