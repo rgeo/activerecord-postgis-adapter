@@ -43,11 +43,11 @@ module ActiveRecord  # :nodoc:
           end
 
           def limit_from_options(type, options = {})
-            spatial_type = geo_type(type)
-            spatial_type << "Z" if options[:has_z]
-            spatial_type << "M" if options[:has_m]
-            spatial_type << ",#{options[:srid] || default_srid(options)}"
-            spatial_type
+            has_z = options[:has_z] ? 'Z' : ''
+            has_m = options[:has_m] ? 'M' : ''
+            srid = options[:srid] || default_srid(options)
+            field_type = [geo_type(type), has_z, has_m].compact.join
+            "#{field_type},#{srid}"
           end
 
           def default_srid(options)

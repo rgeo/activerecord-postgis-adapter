@@ -9,18 +9,18 @@ require "rgeo/active_record"
 
 require "active_record/connection_adapters"
 require "active_record/connection_adapters/postgresql_adapter"
-require "active_record/connection_adapters/postgis/version"
-require "active_record/connection_adapters/postgis/column_methods"
-require "active_record/connection_adapters/postgis/schema_statements"
-require "active_record/connection_adapters/postgis/database_statements"
-require "active_record/connection_adapters/postgis/spatial_column_info"
-require "active_record/connection_adapters/postgis/spatial_table_definition"
-require "active_record/connection_adapters/postgis/spatial_column"
-require "active_record/connection_adapters/postgis/arel_tosql"
-require "active_record/connection_adapters/postgis/oid/spatial"
-require "active_record/connection_adapters/postgis/oid/date_time"
-require "active_record/connection_adapters/postgis/type" # has to be after oid/*
-require "active_record/connection_adapters/postgis/create_connection"
+require_relative "postgis/version"
+require_relative "postgis/column_methods"
+require_relative "postgis/schema_statements"
+require_relative "postgis/database_statements"
+require_relative "postgis/spatial_column_info"
+require_relative "postgis/spatial_table_definition"
+require_relative "postgis/spatial_column"
+require_relative "postgis/arel_tosql"
+require_relative "postgis/oid/spatial"
+require_relative "postgis/oid/date_time"
+require_relative "postgis/type" # has to be after oid/*
+require_relative "postgis/create_connection"
 # :startdoc:
 
 module ActiveRecord

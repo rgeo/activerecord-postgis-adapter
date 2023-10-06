@@ -25,7 +25,10 @@ module ActiveRecord
           #   has_z:    false
           #   has_m:    false
           def self.parse_sql_type(sql_type)
-            geo_type, srid, has_z, has_m = nil, 0, false, false
+            geo_type = nil
+            srid = 0
+            has_z = false
+            has_m = false
 
             if sql_type =~ /(geography|geometry)\((.*)\)$/i
               # geometry(Point)

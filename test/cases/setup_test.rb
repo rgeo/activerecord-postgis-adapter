@@ -5,7 +5,7 @@ require_relative "../test_helper"
 module PostGIS
   class SpatialQueriesTest < ActiveSupport::TestCase
     def test_ignore_tables
-      expect_to_ignore = %w(
+      expect_to_ignore = %w[
         geography_columns
         geometry_columns
         layer
@@ -13,7 +13,7 @@ module PostGIS
         raster_overviews
         spatial_ref_sys
         topology
-      )
+      ]
       assert_equal expect_to_ignore, ::ActiveRecord::SchemaDumper.ignore_tables
     end
   end
