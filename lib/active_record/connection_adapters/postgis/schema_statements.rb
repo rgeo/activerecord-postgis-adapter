@@ -8,7 +8,7 @@ module ActiveRecord
         # https://github.com/rails/rails/blob/7-0-stable/activerecord/lib/active_record/connection_adapters/postgresql/schema_statements.rb#L662
         # Create a SpatialColumn instead of a PostgreSQL::Column
         def new_column_from_field(table_name, field, _definitions)
-          column_name, type, default, notnull, oid, fmod, collation, comment, attgenerated = field
+          column_name, type, default, notnull, oid, fmod, collation, comment, identity, attgenerated = field
           type_metadata = fetch_type_metadata(column_name, type, oid.to_i, fmod.to_i)
           default_value = extract_value_from_default(default)
 
@@ -35,6 +35,7 @@ module ActiveRecord
             comment: comment.presence,
             serial: serial,
             generated: attgenerated,
+            identity: identity.presence,
             spatial: spatial
           )
         end
