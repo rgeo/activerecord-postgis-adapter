@@ -1,3 +1,7 @@
+### 9.0.1 / 2023-1016
+
+* Add `identity` attribute to `SpatialColumn`. (joseramonc) #385
+
 ### 9.0.0 / 2023-10-06
 
 * Rails 7.1 support (seuros) #382
