@@ -106,7 +106,8 @@ module PostGIS
     def test_default_value
       create_model
       obj = SpatialModel.create
-      assert_equal factory.point(0, 0).to_s, obj.default_latlon.to_s
+      assert_equal factory.point(0, 0).x, obj.default_latlon.x
+      assert_equal factory.point(0, 0).y, obj.default_latlon.y
     end
 
     def test_custom_factory
@@ -122,7 +123,9 @@ module PostGIS
       object.area = area
       object.save!
       object.reload
-      assert_equal area.to_s, object.area.to_s
+      area_p = MyPolygon.new(area)
+      obj_area_p = MyPolygon.new(object.area)
+      assert_equal area_p, obj_area_p
     end
 
     def test_spatial_factory_attrs_parsing

@@ -9,6 +9,7 @@ require "mocha/minitest"
 require "erb"
 require "byebug" if ENV["BYEBUG"]
 require "activerecord-postgis-adapter"
+require 'rgeo'
 
 if ENV["ARCONN"]
   # only install activerecord schema if we need it
@@ -63,6 +64,19 @@ else
 end
 
 class SpatialModel < ActiveRecord::Base
+end
+
+class MyPolygon
+  attr_accessor :polygon
+
+  def initialize(polygon)
+    @polygon = polygon
+  end
+
+  def ==(other)
+    # Compare polygons based on their WKT (Well-Known Text) representation
+    @polygon.as_text == other.polygon.as_text
+  end
 end
 
 module ActiveSupport
