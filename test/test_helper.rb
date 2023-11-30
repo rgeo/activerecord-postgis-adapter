@@ -9,7 +9,6 @@ require "mocha/minitest"
 require "erb"
 require "byebug" if ENV["BYEBUG"]
 require "activerecord-postgis-adapter"
-require 'rgeo'
 
 if ENV["ARCONN"]
   # only install activerecord schema if we need it
