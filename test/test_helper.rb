@@ -66,19 +66,6 @@ end
 class SpatialModel < ActiveRecord::Base
 end
 
-class MyPolygon
-  attr_accessor :polygon
-
-  def initialize(polygon)
-    @polygon = polygon
-  end
-
-  def ==(other)
-    # Compare polygons based on their WKT (Well-Known Text) representation
-    @polygon.as_text == other.polygon.as_text
-  end
-end
-
 module ActiveSupport
   class TestCase
     self.test_order = :sorted
