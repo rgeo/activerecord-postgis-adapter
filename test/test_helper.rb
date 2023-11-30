@@ -77,8 +77,8 @@ module ActiveSupport
       @postgis_version ||= SpatialModel.connection.select_value("SELECT postgis_lib_version()")
     end
 
-    def factory
-      RGeo::Cartesian.preferred_factory(srid: 3785)
+    def factory(srid: 3785)
+      RGeo::Cartesian.preferred_factory(srid: srid)
     end
 
     def geographic_factory
