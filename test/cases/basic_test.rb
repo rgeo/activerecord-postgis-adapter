@@ -122,9 +122,7 @@ module PostGIS
       object.area = area
       object.save!
       object.reload
-      area_p = MyPolygon.new(area)
-      obj_area_p = MyPolygon.new(object.area)
-      assert_equal area_p, obj_area_p
+      assert_equal area, object.area
     end
 
     def test_spatial_factory_attrs_parsing
