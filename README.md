@@ -222,38 +222,39 @@ development:
 This adapter uses the `rgeo` gem, which has additional dependencies.
 Please see the README documentation for `rgeo` for more information: https://github.com/rgeo/rgeo
 
-## Creating a Spatial Rails App
+## Setup
 
-This section covers starting a new Rails application from scratch. If you need
-to add geospatial capabilities to an existing Rails application (i.e. you need
-to convert a non-spatial database to a spatial database), see the section on
-"Upgrading a Database With Spatial Features" below.
+If you have not created your rails app yet start there.
 
-To create a new Rails application using `activerecord-postgis-adapter`, start by
-using the postgresql adapter.
-
-```rake
+```sh
 rails new my_app --database=postgresql
 ```
 
-Add the adapter gem to the Gemfile:
+Add the gem to your Gemfile.
 
 ```ruby
 gem 'activerecord-postgis-adapter'
 ```
 
-Once you have set up your database config, run:
+And tell ActiveRecord to use the adapter by setting the `adapter` field in `config/database.yml`
 
-```rake
+```yml
+default: &default
+  adapter: postgis
+```
+
+Create the database if you haven't already.
+
+```sh
 rake db:create
 ```
 
-to create your development database. 
+Create a migration to add the PostGIS extension to your database.
 
-Then, create a migration to add the PostGIS extension to your database.
-```rake
-rails g migration AddPostgisExtensionToDatabase
+```sh
+rails generate migration AddPostgisExtensionToDatabase
 ```
+
 The migration should look something like this:
 ```ruby
 class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.0]
@@ -263,36 +264,9 @@ class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.0]
 end
 ```
 
-Then run the migration:
-```rake
-rails db:migrate
-```
+Then run the migration.
 
-Once you have installed the adapter, edit your `config/database.yml` as described above.
-
-## Upgrading an Existing Database
-
-If you have an existing Rails app that uses Postgres,
-and you want to add geospatial features, follow these steps.
-
-First, add the `activerecord-postgis-adapter` gem to the Gemfile, and update
-your bundle by running `bundle install`.
-
-Then, create a migration to add the PostGIS extension to your database.
-```rake
-rails g migration AddPostgisExtensionToDatabase
-```
-The migration should look something like this:
-```ruby
-class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.0]
-  def change
-    enable_extension 'postgis'
-  end
-end
-```
-
-Then run the migration:
-```rake
+```sh
 rails db:migrate
 ```
 
