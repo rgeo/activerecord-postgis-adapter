@@ -248,7 +248,25 @@ Once you have set up your database config, run:
 rake db:create
 ```
 
-to create your development database. The adapter will add the PostGIS extension to your database.
+to create your development database. 
+
+Then, create a migration to add the PostGIS extension to your database.
+```rake
+rails g migration AddPostgisExtensionToDatabase
+```
+The migration should look something like this:
+```ruby
+class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.0]
+  def change
+    enable_extension 'postgis'
+  end
+end
+```
+
+Then run the migration:
+```rake
+rails db:migrate
+```
 
 Once you have installed the adapter, edit your `config/database.yml` as described above.
 
