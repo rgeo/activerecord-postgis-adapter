@@ -1,3 +1,7 @@
+### 9.0.2 / 2024-04-39
+
+* Add `ConnectionHandling` module (copiousfreetime) #390
+
 ### 9.0.1 / 2023-1016
 
 * Add `identity` attribute to `SpatialColumn`. (joseramonc) #385
