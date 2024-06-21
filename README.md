@@ -573,7 +573,7 @@ view into the system catalogs.
 
 ## Development and Support
 
-RDoc Documentation is available at https://rdoc.info/gems/activerecord-postgis-adapter
+RubyDoc Documentation is available at https://rubydoc.info/gems/activerecord-postgis-adapter
 
 Contributions are welcome. See CONTRIBUTING.md for instructions.
 
