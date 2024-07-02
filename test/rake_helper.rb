@@ -3,7 +3,7 @@
 POSTGIS_TEST_HELPER = "test/test_helper.rb"
 
 def ar_root
-  File.join(Gem.loaded_specs["rails"].full_gem_path, "activerecord")
+  Gem.loaded_specs["activerecord"].full_gem_path
 end
 
 def postgis_test_load_paths
