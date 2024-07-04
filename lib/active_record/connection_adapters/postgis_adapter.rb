@@ -5,8 +5,6 @@
 
 # :stopdoc:
 
-require "rgeo/active_record"
-
 require "active_record/connection_adapters/postgresql_adapter"
 require_relative "postgis/version"
 require_relative "postgis/column_methods"
