@@ -5,9 +5,6 @@
 
 # :stopdoc:
 
-require "rgeo/active_record"
-
-require "active_record/connection_adapters"
 require "active_record/connection_adapters/postgresql_adapter"
 require_relative "postgis/version"
 require_relative "postgis/column_methods"
@@ -24,15 +21,6 @@ require_relative "postgis/create_connection"
 # :startdoc:
 
 module ActiveRecord
-  module ConnectionHandling # :nodoc:
-    def postgis_adapter_class
-      ConnectionAdapters::PostGISAdapter
-    end
-
-    def postgis_connection(config)
-      postgis_adapter_class.new(config)
-    end
-  end
 
   module ConnectionAdapters
     class PostGISAdapter < PostgreSQLAdapter
@@ -174,22 +162,4 @@ module ActiveRecord
     topology
   ]
   Tasks::DatabaseTasks.register_task(/postgis/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
-end
-
-# if using JRUBY, create ArJdbc::PostGIS module
-# and prepend it to the PostgreSQL adapter since
-# it is the default adapter_spec.
-# see: https://github.com/jruby/activerecord-jdbc-adapter/blob/master/lib/arjdbc/postgresql/adapter.rb#27
-if RUBY_ENGINE == "jruby"
-  module ArJdbc
-    module PostGIS
-      ADAPTER_NAME = 'PostGIS'
-
-      def adapter_name
-        ADAPTER_NAME
-      end
-    end
-  end
-
-  ArJdbc::PostgreSQL.prepend(ArJdbc::PostGIS)
 end

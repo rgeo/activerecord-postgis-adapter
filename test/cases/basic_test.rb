@@ -180,7 +180,7 @@ module PostGIS
       obj = SpatialModel.new
       assert_match(/"latlon":null/, obj.to_json)
       obj.latlon = factory.point(1.0, 2.0)
-      assert_match(/"latlon":"POINT\s\(1\s2\)"/, obj.to_json)
+      assert_match(/"latlon":"POINT\s\(1(\.0)?\s2(\.0)?\)"/, obj.to_json)
     end
 
     def test_custom_column

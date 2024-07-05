@@ -4,8 +4,6 @@ source "https://rubygems.org"
 gemspec
 
 gem "pg", "~> 1.0", platform: :ruby
-gem "activerecord-jdbcpostgresql-adapter", platform: :jruby
-gem "ffi-geos", platform: :jruby
 gem "byebug" if ENV["BYEBUG"]
 
 def activerecord_version
@@ -30,13 +28,12 @@ def activerecord_version
 
   ver["number"]
 end
-
 # Need to install for tests
 gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
+
 group :development do
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
-  gem "mocha"
   gem "sqlite3"
   gem "msgpack"
 end
