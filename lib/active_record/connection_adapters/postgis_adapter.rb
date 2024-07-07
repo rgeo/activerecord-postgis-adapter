@@ -23,6 +23,8 @@ require_relative "postgis/create_connection"
 module ActiveRecord
 
   module ConnectionAdapters
+    register "postgis", "ActiveRecord::ConnectionAdapters::PostGISAdapter", "active_record/connection_adapters/postgis_adapter"
+
     class PostGISAdapter < PostgreSQLAdapter
       ADAPTER_NAME = 'PostGIS'
 
