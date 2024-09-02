@@ -31,7 +31,7 @@ module ActiveRecord  # :nodoc:
             build_from_sql_type(sql_type_metadata.sql_type)
           end
           super(name, default, sql_type_metadata, null, default_function,
-                collation: collation, comment: comment, serial: serial, generated: generated, identity: identity)
+                collation: collation, comment: comment, serial: serial, identity: identity, generated: generated)
           if spatial? && @srid
             @limit = { srid: @srid, type: to_type_name(geometric_type) }
             @limit[:has_z] = true if @has_z
