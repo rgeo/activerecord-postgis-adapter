@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+$:.unshift(File.expand_path("../lib", __dir__))
+
+# require "bundler/setup"
+# Bundler.require :development
+#
+require "activerecord-postgis-adapter"
+
+db_name = "activerecord_postgis_adapter_console"
+system("psql -c 'drop database if exists #{db_name}' postgres",
+  exception: true)
+system("psql -c 'create database #{db_name}' postgres",
+  exception: true)
+system(psql = "psql -c 'create extension postgis' #{db_name} ", exception: true)
+
+ActiveRecord::Base.establish_connection(
+  adapter: "postgis",
+  database: db_name
+)
+
+class Country < ActiveRecord::Base
+end
+
+ActiveRecord::Schema.define do
+  create_table(:countries) do |t|
+    t.st_polygon(:area, srid: 4326)
+    t.string(:name)
+  end
+end
+
+require "irb"
+IRB.start(__FILE__)
