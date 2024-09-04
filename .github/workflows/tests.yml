@@ -4,9 +4,20 @@ on:
     branches:
       - master
   pull_request:
+    types: [opened, reopened, synchronize]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  test-ubuntu-ruby:
+  # Since the name of the matrix job depends on the version, we define another job with a more stable name.
+  test_results:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Test Results
+    needs: [test]
+    steps:
+      - run: '[[ "${{ needs.test.result }}" == "success" ]]'
+  test:
     runs-on: ubuntu-latest
     services:
       postgis:
@@ -27,8 +38,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # ruby-lang.org/en/downloads/branches
-        ruby: [ruby-head, "3.3", "3.2", "3.1"]
+        # https://ruby-lang.org/en/downloads/branches
+        ruby: ["3.3", "3.2", "3.1"]
         # https://www.postgresql.org/support/versioning/
         pg: [12-master, 13-master, 14-master, 15-master, 16-master]
     steps:
@@ -41,12 +52,18 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Create Database
-        run: psql -d postgresql://postgres:postgres@localhost:5432/postgres -c "create database postgis_adapter_test"
-      - name: Create PostGIS Extension
-        run: psql -d postgresql://postgres:postgres@localhost:5432/postgis_adapter_test -c "create extension postgis"
+      - name: Setup Database
+        run: |
+          psql -d postgresql://postgres:postgres@localhost:5432/postgres \
+            -c "create database postgis_adapter_test" \
+            -c "create database activerecord_unittest" \
+            -c "create database activerecord_unittest2"
+          for db in postgis_adapter_test activerecord_unittest activerecord_unittest2; do
+            psql -d postgresql://postgres:postgres@localhost:5432/$db -c "create extension postgis"
+          done
       - name: Run Tests
         run: bundle exec rake test
         env:
           PGHOST: localhost
+          PGUSER: postgres
           PGPASSWORD: postgres
