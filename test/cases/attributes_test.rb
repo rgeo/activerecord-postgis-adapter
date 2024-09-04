@@ -99,12 +99,12 @@ module PostGIS
     private
 
     def create_foo
-      Foo.connection.create_table :foos, force: true do |t|
+      Foo.lease_connection.create_table :foos, force: true do |t|
       end
     end
 
     def create_spatial_foo
-      SpatialFoo.connection.create_table :spatial_foos, force: true do |t|
+      SpatialFoo.lease_connection.create_table :spatial_foos, force: true do |t|
         t.references :foo
         t.st_point :geo_point, geographic: true, srid: 4326
         t.st_point :cart_point, srid: 3509
@@ -112,7 +112,7 @@ module PostGIS
     end
 
     def create_invalid_attributes
-      InvalidAttribute.connection.create_table :invalid_attributes, force: true do |t|
+      InvalidAttribute.lease_connection.create_table :invalid_attributes, force: true do |t|
       end
     end
   end

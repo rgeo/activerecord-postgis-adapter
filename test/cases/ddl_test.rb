@@ -21,12 +21,12 @@ module PostGIS
     end
 
     def test_type_to_sql
-      adapter = SpatialModel.connection
+      adapter = SpatialModel.lease_connection
       assert_equal "geometry(point,4326)", adapter.type_to_sql(:geometry, limit: "point,4326")
     end
 
     def test_create_simple_geometry
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :geometry
       end
       klass.reset_column_information
@@ -36,12 +36,12 @@ module PostGIS
       assert_equal true, col.spatial?
       assert_equal false, col.geographic?
       assert_equal 0, col.srid
-      klass.connection.drop_table(:spatial_models)
+      klass.lease_connection.drop_table(:spatial_models)
       assert_equal 0, count_geometry_columns
     end
 
     def test_create_simple_geography
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :geometry, geographic: true
       end
       klass.reset_column_information
@@ -54,7 +54,7 @@ module PostGIS
     end
 
     def test_create_point_geometry
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :st_point
       end
       klass.reset_column_information
@@ -62,21 +62,21 @@ module PostGIS
     end
 
     def test_create_geometry_with_index
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :geometry
       end
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.index([:latlon], using: :gist)
       end
       klass.reset_column_information
-      assert_equal :gist, klass.connection.indexes(:spatial_models).last.using
+      assert_equal :gist, klass.lease_connection.indexes(:spatial_models).last.using
     end
 
     def test_add_geometry_column
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column("latlon", :geometry)
       end
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.column("geom2", :st_point, srid: 4326)
         t.column("name", :string)
       end
@@ -95,7 +95,7 @@ module PostGIS
     end
 
     def test_add_geometry_column_null_false
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column("latlon_null", :geometry, null: false)
         t.column("latlon", :geometry)
       end
@@ -108,10 +108,10 @@ module PostGIS
     end
 
     def test_add_geography_column
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column("latlon", :geometry)
       end
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.st_point("geom3", srid: 4326, geographic: true)
         t.column("geom2", :st_point, srid: 4326, geographic: true)
         t.column("name", :string)
@@ -139,11 +139,11 @@ module PostGIS
     end
 
     def test_drop_geometry_column
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column("latlon", :geometry)
         t.column("geom2", :st_point, srid: 4326)
       end
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.remove("geom2")
       end
       klass.reset_column_information
@@ -156,12 +156,12 @@ module PostGIS
     end
 
     def test_drop_geography_column
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column("latlon", :geometry)
         t.column("geom2", :st_point, srid: 4326, geographic: true)
         t.column("geom3", :st_point, srid: 4326)
       end
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.remove("geom2")
       end
       klass.reset_column_information
@@ -176,7 +176,7 @@ module PostGIS
     end
 
     def test_create_simple_geometry_using_shortcut
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.geometry "latlon"
       end
       klass.reset_column_information
@@ -185,12 +185,12 @@ module PostGIS
       assert_equal RGeo::Feature::Geometry, col.geometric_type
       assert_equal false, col.geographic?
       assert_equal 0, col.srid
-      klass.connection.drop_table(:spatial_models)
+      klass.lease_connection.drop_table(:spatial_models)
       assert_equal 0, count_geometry_columns
     end
 
     def test_create_simple_geography_using_shortcut
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.geometry "latlon", geographic: true
       end
       klass.reset_column_information
@@ -202,7 +202,7 @@ module PostGIS
     end
 
     def test_create_point_geometry_using_shortcut
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.st_point "latlon"
       end
       klass.reset_column_information
@@ -210,7 +210,7 @@ module PostGIS
     end
 
     def test_create_geometry_using_shortcut_with_srid
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.geometry "latlon", srid: 4326
       end
       klass.reset_column_information
@@ -220,7 +220,7 @@ module PostGIS
     end
 
     def test_create_polygon_with_options
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "region", :st_polygon, has_m: true, srid: 3785
       end
       klass.reset_column_information
@@ -232,12 +232,12 @@ module PostGIS
       assert_equal true, col.has_m?
       assert_equal 3785, col.srid
       assert_equal({ has_m: true, type: "st_polygon", srid: 3785 }, col.limit)
-      klass.connection.drop_table(:spatial_models)
+      klass.lease_connection.drop_table(:spatial_models)
       assert_equal 0, count_geometry_columns
     end
 
     def test_create_spatial_column_default_value_geometric
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "coordinates", :st_point, srid: 3875, default: "POINT(0.0 0.0)"
       end
       klass.reset_column_information
@@ -251,12 +251,12 @@ module PostGIS
       assert_equal 3875, col.srid
       assert_equal "010100000000000000000000000000000000000000", col.default
       assert_equal({ type: "st_point", srid: 3875 }, col.limit)
-      klass.connection.drop_table(:spatial_models)
+      klass.lease_connection.drop_table(:spatial_models)
       assert_equal 0, count_geometry_columns
     end
 
     def test_create_spatial_column_default_value_geographic
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.geography "coordinates", limit: { srid: 4326, type: "st_point", geographic: true }, default: "POINT(0.0 0.0)"
       end
       klass.reset_column_information
@@ -270,12 +270,12 @@ module PostGIS
       assert_equal 4326, col.srid
       assert_equal "0101000020E610000000000000000000000000000000000000", col.default
       assert_equal({ type: "st_point", srid: 4326, geographic: true }, col.limit)
-      klass.connection.drop_table(:spatial_models)
+      klass.lease_connection.drop_table(:spatial_models)
       assert_equal 0, count_geography_columns
     end
 
     def test_no_query_spatial_column_info
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.string "name"
       end
       klass.reset_column_information
@@ -289,7 +289,7 @@ module PostGIS
     # Ensure that null contraints info is getting captured like the
     # normal adapter.
     def test_null_constraints
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "nulls_allowed", :string, null: true
         t.column "nulls_disallowed", :string, null: false
       end
@@ -300,7 +300,7 @@ module PostGIS
 
     # Ensure column default value works like the Postgres adapter.
     def test_column_defaults
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "sample_integer", :integer, default: -1
       end
       klass.reset_column_information
@@ -309,8 +309,8 @@ module PostGIS
 
     # Ensure virtual column default function works like the Postgres adapter.
     def test_virtual_column_default_function
-      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.connection.supports_virtual_columns?
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.lease_connection.supports_virtual_columns?
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.integer :column1
         t.virtual :column2, type: :integer, as: "(column1 + 1)", stored: true
       end
@@ -322,7 +322,7 @@ module PostGIS
     end
 
     def test_column_types
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "sample_integer", :integer
         t.column "sample_string", :string
         t.column "latlon", :st_point
@@ -334,7 +334,7 @@ module PostGIS
     end
 
     def test_array_columns
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "sample_array", :string, array: true
         t.column "sample_non_array", :string
       end
@@ -344,7 +344,7 @@ module PostGIS
     end
 
     def test_reload_dumped_schema
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.geography "latlon1", limit: { srid: 4326, type: "point", geographic: true }
       end
       klass.reset_column_information
@@ -353,7 +353,7 @@ module PostGIS
     end
 
     def test_non_spatial_column_limits
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.string :foo, limit: 123
       end
       klass.reset_column_information
@@ -362,7 +362,7 @@ module PostGIS
     end
 
     def test_column_comments
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.string :sample_comment, comment: "Comment test"
       end
       klass.reset_column_information
@@ -371,8 +371,8 @@ module PostGIS
     end
 
     def test_generated_geometry_column
-      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.connection.supports_virtual_columns?
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      skip "Virtual Columns are not supported in this version of PostGIS" unless SpatialModel.lease_connection.supports_virtual_columns?
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.st_point :coordinates, limit: { srid: 4326 }
         t.virtual :generated_buffer, type: :st_polygon, limit: { srid: 4326 }, as: "ST_Buffer(coordinates, 10)", stored: true
       end
@@ -390,11 +390,11 @@ module PostGIS
     end
 
     def count_geometry_columns
-      klass.connection.select_value(geo_column_sql("geometry_columns", klass.table_name)).to_i
+      klass.lease_connection.select_value(geo_column_sql("geometry_columns", klass.table_name)).to_i
     end
 
     def count_geography_columns
-      klass.connection.select_value(geo_column_sql("geography_columns", klass.table_name)).to_i
+      klass.lease_connection.select_value(geo_column_sql("geography_columns", klass.table_name)).to_i
     end
 
     def geo_column_sql(postgis_view, table_name)

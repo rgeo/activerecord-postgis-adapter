@@ -17,7 +17,7 @@ if ENV["ARCONN"]
     original_stdout = $stdout
     $stdout = StringIO.new
 
-    load "schema/postgis_specific_schema.rb"
+    load SCHEMA_ROOT + "/postgresql_specific_schema.rb"
 
     ActiveRecord::FixtureSet.reset_cache
   ensure
@@ -44,7 +44,7 @@ if ENV["ARCONN"]
 else
   module ActiveRecord
     class Base
-      DATABASE_CONFIG_PATH = File.dirname(__FILE__) << "/database.yml"
+      DATABASE_CONFIG_PATH = __dir__ + "/database.yml"
 
       def self.test_connection_hash
         conns = YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
@@ -59,22 +59,29 @@ else
   end
 
   ActiveRecord::Base.establish_test_connection
-end
+end # end if ENV["ARCONN"]
 
 class SpatialModel < ActiveRecord::Base
 end
 
+require 'timeout'
+
+module TestTimeoutHelper
+  def time_it
+    t0 = Minitest.clock_time
+
+    timeout = ENV.fetch("TEST_TIMEOUT", 10).to_i
+    Timeout.timeout(timeout, Timeout::Error, "Test took over #{timeout} seconds to finish") do
+      yield
+    end
+  ensure
+    self.time = Minitest.clock_time - t0
+  end
+end
+
 module ActiveSupport
   class TestCase
-    self.test_order = :sorted
-
-    def database_version
-      @database_version ||= SpatialModel.connection.select_value("SELECT version()")
-    end
-
-    def postgis_version
-      @postgis_version ||= SpatialModel.connection.select_value("SELECT postgis_lib_version()")
-    end
+    include TestTimeoutHelper
 
     def factory(srid: 3785)
       RGeo::Cartesian.preferred_factory(srid: srid)

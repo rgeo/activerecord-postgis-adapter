@@ -67,3 +67,4 @@ jobs:
           PGHOST: localhost
           PGUSER: postgres
           PGPASSWORD: postgres
+          TESTOPTS: --verbose --name=/PostgresqlHstoreTest/

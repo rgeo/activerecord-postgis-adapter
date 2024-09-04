@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.version = ActiveRecord::ConnectionAdapters::PostGIS::VERSION
   spec.authors = ["Daniel Azuma", "Tee Parham"]
-  spec.email = ["kfdoggett@gmail.com", "buonomo.ulysse@gmail.com"]
+  spec.email = ["kfdoggett@gmail.com", "buonomo.ulysse@gmail.com", "terminale@gmail.com"]
   spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
   spec.license = "BSD-3-Clause"
 
