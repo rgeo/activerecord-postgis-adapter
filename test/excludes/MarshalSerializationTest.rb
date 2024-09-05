@@ -1,0 +1,4 @@
+exclude "test_deserializing_rails_7_1_marshal_basic", TRIAGE_MSG
+exclude "test_deserializing_rails_6_1_marshal_basic", TRIAGE_MSG
+exclude "test_deserializing_rails_6_1_marshal_with_loaded_association_cache", TRIAGE_MSG
+exclude "test_deserializing_rails_7_1_marshal_with_loaded_association_cache", TRIAGE_MSG

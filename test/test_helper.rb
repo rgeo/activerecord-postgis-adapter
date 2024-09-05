@@ -10,6 +10,8 @@ require "erb"
 require "byebug" if ENV["BYEBUG"]
 require "activerecord-postgis-adapter"
 
+TRIAGE_MSG = "Needs triage and fixes. See #378"
+
 if ENV["ARCONN"]
   # only install activerecord schema if we need it
   require "cases/helper"

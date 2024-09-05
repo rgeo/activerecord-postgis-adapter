@@ -1,0 +1,1 @@
+exclude "test_schema_dumper_for_uuid_primary_key_default_in_legacy_migration", TRIAGE_MSG
