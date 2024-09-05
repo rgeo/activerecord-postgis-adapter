@@ -91,6 +91,8 @@ module DebugSlowTests
 		puts
 		puts "#{name} took #{Minitest.clock_time - t0} seconds"
 		puts
+		pp SpatialModel.lease_connection.instance_variable_get(:@raw_connection).conninfo_hash
+		puts
 		StackProf::Report.new(profile).print_text
 		rv
 	end
