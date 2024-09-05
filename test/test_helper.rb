@@ -135,3 +135,15 @@ module ActiveRecord
     end
   end
 end
+
+conn = SpatialModel.lease_connection.instance_variable_get(:@raw_connection)
+$count = conn.conninfo_hash[:port].count(",")+1
+
+TracePoint.trace(:call) do |tp|
+	conn = SpatialModel.lease_connection.instance_variable_get(:@raw_connection)
+	count = conn.conninfo_hash[:port].count(",")+1
+	next if count == $count
+
+	$count = count
+	puts "port(count=#{count}): #{conn.conninfo_hash[:port][0, 100]}"
+end
