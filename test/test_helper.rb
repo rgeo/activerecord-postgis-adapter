@@ -80,42 +80,9 @@ module TestTimeoutHelper
   end
 end
 
-
-# module DebugSlowTests
-# 	def wrap_the_thing(name)
-# 		rv = nil
-# 		t0 = Minitest.clock_time
-# 		profile = StackProf.run(mode: :wall, interval: 1000) do
-# 			rv = yield
-# 		end
-# 		puts
-# 		puts "#{name} took #{Minitest.clock_time - t0} seconds"
-# 		puts
-# 		pp SpatialModel.lease_connection.instance_variable_get(:@raw_connection).conninfo_hash
-# 		puts
-# 		StackProf::Report.new(profile).print_text
-# 		rv
-# 	end
-# 	def enable_extension!(...)
-# 		wrap_the_thing(__method__) do
-# 			super
-# 		end
-# 	end
-
-# 	def disable_extension!(...)
-# 		wrap_the_thing(__method__) do
-# 			super
-# 		end
-# 	end
-# end
-
-
-
 module ActiveRecord
   class TestCase
     include TestTimeoutHelper
-    # include DebugSlowTests
-    # extend DebugSlowTests
 
     def factory(srid: 3785)
       RGeo::Cartesian.preferred_factory(srid: srid)
@@ -135,48 +102,3 @@ module ActiveRecord
     end
   end
 end
-
-# conn = SpatialModel.lease_connection.instance_variable_get(:@raw_connection)
-# $count = conn.conninfo_hash[:port].count(",")+1
-
-# TracePoint.trace(:call) do |tp|
-# 	conn = SpatialModel.lease_connection.instance_variable_get(:@raw_connection)
-# 	count = conn.conninfo_hash[:port].count(",")+1
-# 	next if count == $count
-
-# 	$count = count
-# 	puts "port(count=#{count}): #{conn.conninfo_hash[:port][0, 100]}"
-# end
-
-module DebugReset
-	def reset
-
-		iopts = conninfo_hash.compact
-		puts "host count before: #{iopts[:host].count(",") + 1}"
-		if iopts[:host] && !iopts[:host].empty? && PG.library_version >= 100000
-			iopts = self.class.send(:resolve_hosts, iopts)
-		end
-		puts "host count after: #{iopts[:host].count(",") + 1}"
-		conninfo = self.class.parse_connect_args( iopts );
-		reset_start2(conninfo)
-		async_connect_or_reset(:reset_poll)
-		self
-	end
-end
-
-module DebugResolve
-def resolve_hosts(iopts)
-		host = iopts[:host]
-		host = host[0, 97] + "..." if host.length > 100
-		puts "resolve_hosts, hosts: #{host.inspect}"
-
-		port = iopts[:port]
-		port = port[0, 97] + "..." if port.length > 100
-		puts "resolve_hosts, ports: #{port.inspect}"
-
-		super
-	end
-end
-
-PG::Connection.prepend(DebugReset)
-PG::Connection.singleton_class.prepend(DebugResolve)
