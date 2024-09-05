@@ -32,6 +32,8 @@ end
 gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
 
 group :development do
+  gem "tracer"
+
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
   gem "sqlite3"

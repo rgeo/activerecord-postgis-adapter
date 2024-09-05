@@ -65,6 +65,7 @@ class SpatialModel < ActiveRecord::Base
 end
 
 require 'timeout'
+require 'tracer'
 
 module TestTimeoutHelper
   def time_it
@@ -72,7 +73,9 @@ module TestTimeoutHelper
 
     timeout = ENV.fetch("TEST_TIMEOUT", 10).to_i
     Timeout.timeout(timeout, Timeout::Error, "Test took over #{timeout} seconds to finish") do
-      yield
+      Tracer.trace_call do
+        yield
+     end
     end
   ensure
     self.time = Minitest.clock_time - t0
