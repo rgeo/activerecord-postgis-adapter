@@ -81,41 +81,41 @@ module TestTimeoutHelper
 end
 
 
-module DebugSlowTests
-	def wrap_the_thing(name)
-		rv = nil
-		t0 = Minitest.clock_time
-		profile = StackProf.run(mode: :wall, interval: 1000) do
-			rv = yield
-		end
-		puts
-		puts "#{name} took #{Minitest.clock_time - t0} seconds"
-		puts
-		pp SpatialModel.lease_connection.instance_variable_get(:@raw_connection).conninfo_hash
-		puts
-		StackProf::Report.new(profile).print_text
-		rv
-	end
-	def enable_extension!(...)
-		wrap_the_thing(__method__) do
-			super
-		end
-	end
+# module DebugSlowTests
+# 	def wrap_the_thing(name)
+# 		rv = nil
+# 		t0 = Minitest.clock_time
+# 		profile = StackProf.run(mode: :wall, interval: 1000) do
+# 			rv = yield
+# 		end
+# 		puts
+# 		puts "#{name} took #{Minitest.clock_time - t0} seconds"
+# 		puts
+# 		pp SpatialModel.lease_connection.instance_variable_get(:@raw_connection).conninfo_hash
+# 		puts
+# 		StackProf::Report.new(profile).print_text
+# 		rv
+# 	end
+# 	def enable_extension!(...)
+# 		wrap_the_thing(__method__) do
+# 			super
+# 		end
+# 	end
 
-	def disable_extension!(...)
-		wrap_the_thing(__method__) do
-			super
-		end
-	end
-end
+# 	def disable_extension!(...)
+# 		wrap_the_thing(__method__) do
+# 			super
+# 		end
+# 	end
+# end
 
 
 
 module ActiveRecord
   class TestCase
     include TestTimeoutHelper
-    include DebugSlowTests
-    extend DebugSlowTests
+    # include DebugSlowTests
+    # extend DebugSlowTests
 
     def factory(srid: 3785)
       RGeo::Cartesian.preferred_factory(srid: srid)
@@ -164,4 +164,19 @@ module DebugReset
 	end
 end
 
+module DebugResolve
+def resolve_hosts(iopts)
+		host = iopts[:host]
+		host = host[0, 97] + "..." if host.length > 100
+		puts "resolve_hosts, hosts: #{host.inspect}"
+
+		port = iopts[:port]
+		port = port[0, 97] + "..." if port.length > 100
+		puts "resolve_hosts, ports: #{port.inspect}"
+
+		super
+	end
+end
+
 PG::Connection.prepend(DebugReset)
+PG::Connection.singleton_class.prepend(DebugResolve)
