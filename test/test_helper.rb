@@ -84,9 +84,27 @@ module TestTimeoutHelper
   end
 end
 
-module ActiveSupport
+
+module DebugSlowTests
+	def enable_extension!(...)
+		t0 = Minitest.clock_time
+		super
+		puts "enable_extension! took #{Minitest.clock_time - t0} seconds"
+	end
+
+	def disable_extension!(...)
+		t0 = Minitest.clock_time
+		super
+		puts "disable_extension! took #{Minitest.clock_time - t0} seconds"
+	end
+end
+
+
+module ActiveRecord
   class TestCase
     include TestTimeoutHelper
+    include DebugSlowTests
+    extend DebugSlowTests
 
     def factory(srid: 3785)
       RGeo::Cartesian.preferred_factory(srid: srid)
