@@ -73,11 +73,7 @@ module TestTimeoutHelper
 
     timeout = ENV.fetch("TEST_TIMEOUT", 10).to_i
     Timeout.timeout(timeout, Timeout::Error, "Test took over #{timeout} seconds to finish") do
-      profile = StackProf.run(mode: :wall, interval: 1000) do
-        yield
-      end
-      puts
-      StackProf::Report.new(profile).print_text
+      yield
     end
   ensure
     self.time = Minitest.clock_time - t0
@@ -86,18 +82,31 @@ end
 
 
 module DebugSlowTests
-	def enable_extension!(...)
+	def wrap_the_thing(name)
+		rv = nil
 		t0 = Minitest.clock_time
-		super
-		puts "enable_extension! took #{Minitest.clock_time - t0} seconds"
+		profile = StackProf.run(mode: :wall, interval: 1000) do
+			rv = yield
+		end
+		puts
+		puts "#{name} took #{Minitest.clock_time - t0} seconds"
+		puts
+		StackProf::Report.new(profile).print_text
+		rv
+	end
+	def enable_extension!(...)
+		wrap_the_thing(__method__) do
+			super
+		end
 	end
 
 	def disable_extension!(...)
-		t0 = Minitest.clock_time
-		super
-		puts "disable_extension! took #{Minitest.clock_time - t0} seconds"
+		wrap_the_thing(__method__) do
+			super
+		end
 	end
 end
+
 
 
 module ActiveRecord
