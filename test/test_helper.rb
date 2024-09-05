@@ -4,7 +4,8 @@ require "bundler/setup"
 Bundler.require :development
 require "minitest/autorun"
 require "minitest/pride"
-require "mocha/minitest"
+require "minitest/excludes"
+
 require "erb"
 require "byebug" if ENV["BYEBUG"]
 require "activerecord-postgis-adapter"
@@ -65,7 +66,6 @@ class SpatialModel < ActiveRecord::Base
 end
 
 require 'timeout'
-require 'stackprof'
 
 module TestTimeoutHelper
   def time_it

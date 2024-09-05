@@ -32,7 +32,7 @@ end
 gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
 
 group :development do
-  gem "stackprof"
+  gem "minitest-excludes", "~> 2.0"
 
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
