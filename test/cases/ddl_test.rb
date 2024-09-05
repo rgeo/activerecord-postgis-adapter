@@ -3,7 +3,7 @@
 require_relative "../test_helper"
 
 module PostGIS
-  class DDLTest < ActiveSupport::TestCase
+  class DDLTest < ActiveRecord::TestCase
     def test_spatial_column_options
       [
         :geography,
@@ -279,11 +279,14 @@ module PostGIS
         t.string "name"
       end
       klass.reset_column_information
-      # `all` queries column info from the database - it should not be called when klass.columns is called
-      ActiveRecord::ConnectionAdapters::PostGIS::SpatialColumnInfo.any_instance.expects(:all).never
-      # first column is id, second is name
-      refute klass.columns[1].spatial?
-      assert_nil klass.columns[1].has_z
+
+      # `SpatialColumnInfo#all` queries column info from the database.
+      # It should not be called when klass.columns is called
+      assert_queries_count(0) do
+        # first column is id, second is name
+        refute klass.columns[1].spatial?
+        assert_nil klass.columns[1].has_z
+      end
     end
 
     # Ensure that null contraints info is getting captured like the

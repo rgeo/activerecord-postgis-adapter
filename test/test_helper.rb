@@ -82,7 +82,7 @@ module TestTimeoutHelper
   end
 end
 
-module ActiveRecord
+module ActiveSupport
   class TestCase
     include TestTimeoutHelper
 

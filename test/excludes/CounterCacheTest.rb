@@ -3,7 +3,9 @@ exclude "test_reset_multiple_counters", TRIAGE_MSG
 exclude "test_increment_counter", TRIAGE_MSG
 exclude "test_decrement_counter_by_specific_amount", TRIAGE_MSG
 exclude "test_update_counters_with_touch:_true", TRIAGE_MSG
+exclude "test_update_counters_doesn't_touch_timestamps_by_default", TRIAGE_MSG
 exclude "test_reset_counter_performs_query_for_correct_counter_with_touch:_true", TRIAGE_MSG
+exclude "test_update_counters_doesn't_touch_timestamps_with_touch:_[]", TRIAGE_MSG
 exclude "test_reset_multiple_counters_with_touch:_%i(_updated_at_written_on_)", TRIAGE_MSG
 exclude "test_update_counter_for_decrement", TRIAGE_MSG
 exclude "test_the_passed_symbol_needs_to_be_an_association_name_or_counter_name", TRIAGE_MSG

@@ -72,4 +72,4 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: postgres
           PGPASSWORD: postgres
-          TESTOPTS: --verbose --profile=3
+          TESTOPTS: --profile=3

@@ -38,4 +38,8 @@ group :development do
   gem "bcrypt"
   gem "sqlite3"
   gem "msgpack"
+
+  # Still used a little bit in our tests.
+  # TODO: get rid of the dependency
+  gem "mocha"
 end
