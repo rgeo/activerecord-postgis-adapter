@@ -19,14 +19,14 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.1.0"
 
-  spec.add_dependency "activerecord", "~> 7.2.0.beta2"
-  spec.add_dependency "rgeo-activerecord", "~> 7.0.0"
+  spec.add_dependency "activerecord", "~> 7.2.1"
+  spec.add_dependency "rgeo-activerecord", "~> 7.0.1"
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.4"
   spec.add_development_dependency "mocha", "~> 2.4"
   spec.add_development_dependency "benchmark-ips", "~> 2.12"
-  spec.add_development_dependency "rubocop", "~> 1.50"
+  spec.add_development_dependency "rubocop", "~> 1.66"
 
   spec.metadata = {
     "rubygems_mfa_required" => "true"
