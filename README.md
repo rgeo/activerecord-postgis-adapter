@@ -166,6 +166,19 @@ The `PostgisDatabaseTasks` module has been removed which means that the rake tas
 
 When upgrading from version 6.x to a newer major version, you may need to modify your `SpatialFactoryStore` configuration. Please see this section of the README in rgeo-activerecord for more details (https://github.com/rgeo/rgeo-activerecord#spatial-factories-for-columns).
 
+
+### Active Storage
+Active Storage must be installed in order to use the postgis adapter.
+Rails does not enable Active Storage by default.
+
+#### [Installing Active Storage](https://guides.rubyonrails.org/active_storage_overview.html#setup)
+```sh
+bin/rails active_storage:install
+bin/rails db:migrate
+```
+> **NOTE**: active storage must be installed *before* making any of the following modifications to `config/database.yml`
+
+
 ##### database.yml
 
 You must modify your `config/database.yml` file to use the postgis
