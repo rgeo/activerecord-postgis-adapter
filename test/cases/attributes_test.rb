@@ -23,7 +23,6 @@ module PostGIS
 
   class AttributesTest < ActiveSupport::TestCase
     def setup
-      reset_spatial_store
       create_foo
       create_spatial_foo
       create_invalid_attributes

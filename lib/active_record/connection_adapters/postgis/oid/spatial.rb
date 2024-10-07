@@ -53,11 +53,21 @@ module ActiveRecord
           end
 
           def spatial_factory
-            pp factory_attrs
-            @spatial_factory ||=
+            return @spatial_factory if defined?(@spatial_factory)
+            @spatial_factory =
               RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
                 factory_attrs
               )
+
+            if @srid != @spatial_factory.srid
+              puts
+              puts "INITIALIZATION ERROR"
+              puts
+            end
+
+            require "tracer"
+            Tracer.trace(@spatial_factory)
+            @spatial_factory
           end
 
           def spatial?

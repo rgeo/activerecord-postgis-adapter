@@ -5,6 +5,7 @@ gemspec
 
 gem "pg", "~> 1.0", platform: :ruby
 gem "byebug" if ENV["BYEBUG"]
+gem "tracer"
 
 def activerecord_version
   return ENV["AR_VERSION"] if ENV["AR_VERSION"]
