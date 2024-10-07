@@ -107,6 +107,11 @@ module ActiveSupport
       RGeo::Geographic.spherical_factory(srid: 4326)
     end
 
+    # TODO: rather than using this, we should somehow make this a
+    #   fixture that has its self-handled lifecycle. Right now we
+    #   are depending on the dev running `reset_spatial_store` if
+    #   they made any update. They can forget it (with the current
+    #   flacky tests we have, it seems that is actually the case).
     def spatial_factory_store
       RGeo::ActiveRecord::SpatialFactoryStore.instance
     end

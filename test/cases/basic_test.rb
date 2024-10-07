@@ -8,6 +8,10 @@ module PostGIS
       reset_spatial_store
     end
 
+    def after
+      reset_spatial_store
+    end
+
     def test_version
       refute_nil ActiveRecord::ConnectionAdapters::PostGIS::VERSION
     end
