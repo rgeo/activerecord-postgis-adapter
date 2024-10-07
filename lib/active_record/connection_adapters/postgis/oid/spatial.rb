@@ -65,8 +65,9 @@ module ActiveRecord
               puts
             end
 
-            require "tracer"
-            Tracer.trace(@spatial_factory)
+            # Tracer is waaay too noisy
+            # require "tracer"
+            # Tracer.trace(@spatial_factory)
             @spatial_factory
           end
 
