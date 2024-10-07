@@ -8,7 +8,7 @@ connections:
       password: <%= ENV["PGPASSWORD"] || "" %>
       setup: default
       schema_search_path: public
-    aruint2:
+    arunit2:
       host: <%= ENV["PGHOST"] || "127.0.0.1" %>
       port: <%= ENV["PGPORT"] || "5432" %>
       database: <%= ENV["PGDATABASE"] || "postgis_adapter_test" %>

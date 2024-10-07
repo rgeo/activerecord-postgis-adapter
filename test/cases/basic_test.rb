@@ -8,19 +8,23 @@ module PostGIS
       reset_spatial_store
     end
 
+    def after
+      reset_spatial_store
+    end
+
     def test_version
       refute_nil ActiveRecord::ConnectionAdapters::PostGIS::VERSION
     end
 
     def test_postgis_available
-      assert_equal "PostGIS", SpatialModel.connection.adapter_name
-      assert_equal postgis_version, SpatialModel.connection.postgis_lib_version
-      valid_version = ["2.", "3."].any? { |major_ver| SpatialModel.connection.postgis_lib_version.start_with? major_ver }
+      assert_equal "PostGIS", SpatialModel.lease_connection.adapter_name
+      assert_equal SpatialModel.lease_connection.select_value("SELECT postgis_lib_version()"), SpatialModel.lease_connection.postgis_lib_version
+      valid_version = ["2.", "3."].any? { |major_ver| SpatialModel.lease_connection.postgis_lib_version.start_with? major_ver }
       assert valid_version
     end
 
     def test_arel_visitor
-      visitor = Arel::Visitors::PostGIS.new(SpatialModel.connection)
+      visitor = Arel::Visitors::PostGIS.new(SpatialModel.lease_connection)
       node = RGeo::ActiveRecord::SpatialConstantNode.new("POINT (1.0 2.0)")
       collector = Arel::Collectors::PlainString.new
       visitor.accept(node, collector)
@@ -28,7 +32,7 @@ module PostGIS
     end
 
     def test_arel_visitor_will_not_visit_string
-      visitor = Arel::Visitors::PostGIS.new(SpatialModel.connection)
+      visitor = Arel::Visitors::PostGIS.new(SpatialModel.lease_connection)
       node = "POINT (1 2)"
       collector = Arel::Collectors::PlainString.new
 
@@ -111,11 +115,12 @@ module PostGIS
 
     def test_custom_factory
       klass = SpatialModel
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.st_polygon(:area, srid: 4326)
       end
       klass.reset_column_information
       custom_factory = RGeo::Geographic.spherical_factory(buffer_resolution: 8, srid: 4326)
+      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(custom_factory, geo_type: "polygon", srid: 4326)
       object = klass.new
       area = custom_factory.point(1, 2).buffer(3)
@@ -123,21 +128,25 @@ module PostGIS
       object.save!
       object.reload
       assert_equal area, object.area
+    ensure
+      spatial_factory_store.registry = old_registry
     end
 
     def test_spatial_factory_attrs_parsing
       klass = SpatialModel
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.multi_polygon(:areas, srid: 4326)
       end
       klass.reset_column_information
       factory = RGeo::Cartesian.preferred_factory(srid: 4326)
+      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(factory, { srid: 4326,
                                                 sql_type: "geometry",
                                                 geo_type: "multi_polygon",
                                                 has_z: false, has_m: false })
 
       # wrong factory for default
+      old_default = spatial_factory_store.default
       spatial_factory_store.default = RGeo::Geographic.spherical_factory(srid: 4326)
 
       object = klass.new
@@ -145,21 +154,25 @@ module PostGIS
       object.save!
       object.reload
       assert_equal(factory, object.areas.factory)
+    ensure
+      spatial_factory_store.registry = old_registry
+      spatial_factory_store.default = old_default
     end
 
     def test_readme_example
       geo_factory = RGeo::Geographic.spherical_factory(srid: 4326)
+      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(geo_factory, geo_type: "point", sql_type: "geography")
 
       klass = SpatialModel
-      klass.connection.create_table(:spatial_models, force: true) do |t|
+      klass.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column(:shape, :geometry)
         t.line_string(:path, srid: 3785)
         t.st_point(:latlon, geographic: true)
       end
       klass.reset_column_information
       assert_includes klass.columns.map(&:name), "shape"
-      klass.connection.change_table(:spatial_models) do |t|
+      klass.lease_connection.change_table(:spatial_models) do |t|
         t.index(:latlon, using: :gist)
       end
 
@@ -173,6 +186,8 @@ module PostGIS
       object.save!
       object.reload
       refute_equal geo_factory, object.shape.factory
+    ensure
+      spatial_factory_store.registry = old_registry
     end
 
     def test_point_to_json
@@ -192,7 +207,7 @@ module PostGIS
     end
 
     def test_multi_polygon_column
-      SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
+      SpatialModel.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "m_poly", :multi_polygon
       end
       SpatialModel.reset_column_information
@@ -212,7 +227,7 @@ module PostGIS
     private
 
     def create_model
-      SpatialModel.connection.create_table(:spatial_models, force: true) do |t|
+      SpatialModel.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :st_point, srid: 3785
         t.column "latlon_geo", :st_point, srid: 4326, geographic: true
         t.column "default_latlon", :st_point, srid: 0, default: "POINT(0.0 0.0)"

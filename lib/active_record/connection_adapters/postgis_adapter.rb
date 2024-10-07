@@ -17,7 +17,6 @@ require_relative "postgis/arel_tosql"
 require_relative "postgis/oid/spatial"
 require_relative "postgis/oid/date_time"
 require_relative "postgis/type" # has to be after oid/*
-require_relative "postgis/create_connection"
 # :startdoc:
 
 module ActiveRecord

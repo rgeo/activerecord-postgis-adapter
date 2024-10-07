@@ -3,7 +3,7 @@ require "rake/testtask"
 require_relative "test/rake_helper"
 
 task default: [:test]
-task test: "test:postgis"
+task test: "test:all"
 
 Rake::TestTask.new(:test_postgis) do |t|
   t.libs << postgis_test_load_paths
