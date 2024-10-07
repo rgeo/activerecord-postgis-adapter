@@ -82,9 +82,22 @@ module TestTimeoutHelper
   end
 end
 
+$something_wrong = false
+$last_test = nil
 module ActiveSupport
   class TestCase
     include TestTimeoutHelper
+
+    teardown do
+      if $something_wrong
+        puts
+        puts "SOMETHING WRONG in test #{name.inspect}"
+        puts "ran after #{$last_test.inspect}"
+        puts
+        $something_wrong = false
+      end
+      $last_test = name
+    end
 
     def factory(srid: 3785)
       RGeo::Cartesian.preferred_factory(srid: srid)

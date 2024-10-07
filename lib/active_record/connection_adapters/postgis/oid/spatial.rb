@@ -71,6 +71,18 @@ module ActiveRecord
           def serialize(value)
             return if value.nil?
             geo_value = cast_value(value)
+            if spatial_factory.srid != @srid
+            	$something_wrong = true
+              puts ?* * 100
+              puts "@geo_type: #{@geo_type}"
+              puts "type.to_s: #{type.to_s}"
+              puts "@srid:     #{@srid}"
+              p spatial_factory # It has srid=0 when bugged
+              p value
+              p geo_value
+              puts
+              puts
+            end
 
             # TODO - only valid types should be allowed
             # e.g. linestring is not valid for point column
