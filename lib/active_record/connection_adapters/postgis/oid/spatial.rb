@@ -53,6 +53,7 @@ module ActiveRecord
           end
 
           def spatial_factory
+            pp factory_attrs
             @spatial_factory ||=
               RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
                 factory_attrs
