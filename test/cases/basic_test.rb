@@ -146,7 +146,7 @@ module PostGIS
                                                 has_z: false, has_m: false })
 
       # wrong factory for default
-      old_default = spatial_factory_store.default
+      old_default = spatial_factory_store.instance_variable_get :@default
       spatial_factory_store.default = RGeo::Geographic.spherical_factory(srid: 4326)
 
       object = klass.new
