@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "../test_helper"
+require "active_record/testing/query_assertions"
 
 module PostGIS
-  class DDLTest < ActiveRecord::TestCase
+  class DDLTest < ActiveSupport::TestCase
+    include ActiveRecord::Assertions::QueryAssertions
+
     def test_spatial_column_options
       [
         :geography,
