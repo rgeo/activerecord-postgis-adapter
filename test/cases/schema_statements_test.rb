@@ -6,7 +6,7 @@ module PostGIS
   class SchemaStatementsTest < ActiveSupport::TestCase
     def test_initialize_type_map
       SpatialModel.with_connection do |connection|
-        assert connection.connected?
+        connection.connect!
         initialized_types = connection.send(:type_map).keys
 
         # PostGIS types must be initialized first, so
