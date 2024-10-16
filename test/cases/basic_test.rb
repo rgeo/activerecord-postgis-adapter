@@ -18,7 +18,8 @@ module PostGIS
 
     def test_postgis_available
       assert_equal "PostGIS", SpatialModel.lease_connection.adapter_name
-      assert_equal SpatialModel.lease_connection.select_value("SELECT postgis_lib_version()"), SpatialModel.lease_connection.postgis_lib_version
+      expected_postgis_lib_version_value = SpatialModel.lease_connection.select_value("SELECT postgis_lib_version()")
+      assert_equal expected_postgis_lib_version_value, SpatialModel.lease_connection.postgis_lib_version
       valid_version = ["2.", "3."].any? { |major_ver| SpatialModel.lease_connection.postgis_lib_version.start_with? major_ver }
       assert valid_version
     end
@@ -146,7 +147,7 @@ module PostGIS
                                                 has_z: false, has_m: false })
 
       # wrong factory for default
-      old_default = spatial_factory_store.default
+      old_default = spatial_factory_store.instance_variable_get :@default
       spatial_factory_store.default = RGeo::Geographic.spherical_factory(srid: 4326)
 
       object = klass.new
