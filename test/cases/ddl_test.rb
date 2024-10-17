@@ -285,7 +285,7 @@ module PostGIS
 
       # `SpatialColumnInfo#all` queries column info from the database.
       # It should not be called when klass.columns is called
-      assert_queries_count(0) do
+      assert_no_queries do
         # first column is id, second is name
         refute klass.columns[1].spatial?
         assert_nil klass.columns[1].has_z

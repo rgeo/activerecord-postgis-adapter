@@ -53,22 +53,10 @@ module ActiveRecord
           end
 
           def spatial_factory
-            return @spatial_factory if defined?(@spatial_factory)
-            @spatial_factory =
+            @spatial_factory ||=
               RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
                 factory_attrs
               )
-
-            if @srid != @spatial_factory.srid
-              puts
-              puts "INITIALIZATION ERROR"
-              puts
-            end
-
-            # Tracer is waaay too noisy
-            # require "tracer"
-            # Tracer.trace(@spatial_factory)
-            @spatial_factory
           end
 
           def spatial?
@@ -83,18 +71,6 @@ module ActiveRecord
           def serialize(value)
             return if value.nil?
             geo_value = cast_value(value)
-            if spatial_factory.srid != @srid
-            	$something_wrong = true
-              puts ?* * 100
-              puts "@geo_type: #{@geo_type}"
-              puts "type.to_s: #{type.to_s}"
-              puts "@srid:     #{@srid}"
-              p spatial_factory # It has srid=0 when bugged
-              p value
-              p geo_value
-              puts
-              puts
-            end
 
             # TODO - only valid types should be allowed
             # e.g. linestring is not valid for point column

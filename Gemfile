@@ -5,7 +5,6 @@ gemspec
 
 gem "pg", "~> 1.0", platform: :ruby
 gem "byebug" if ENV["BYEBUG"]
-gem "tracer"
 
 def activerecord_version
   return ENV["AR_VERSION"] if ENV["AR_VERSION"]
@@ -33,14 +32,8 @@ end
 gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
 
 group :development do
-  gem "minitest-excludes", "~> 2.0"
-
   # Gems used by the ActiveRecord test suite
   gem "bcrypt"
   gem "sqlite3"
   gem "msgpack"
-
-  # Still used a little bit in our tests.
-  # TODO: get rid of the dependency
-  gem "mocha"
 end

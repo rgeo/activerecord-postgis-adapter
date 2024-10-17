@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["lib/**/*", "LICENSE.txt"]
   spec.platform = Gem::Platform::RUBY
 
-  # # ruby-lang.org/en/downloads/branches
+  # ruby-lang.org/en/downloads/branches
   spec.required_ruby_version = ">= 3.1.0"
 
   spec.add_dependency "activerecord", "~> 7.2.0"
@@ -25,10 +25,12 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.4"
+  spec.add_development_dependency "minitest-excludes", "~> 2.0"
   spec.add_development_dependency "benchmark-ips", "~> 2.12"
   spec.add_development_dependency "rubocop", "~> 1.50"
 
   spec.metadata = {
+    "funding_uri" => "https://opencollective.com/rgeo",
     "rubygems_mfa_required" => "true"
   }
 end

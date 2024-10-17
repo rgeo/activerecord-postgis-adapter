@@ -29,7 +29,7 @@ def activerecord_test_files
       .map { |file| File.join ar_root, file.strip }
       .sort
       .prepend(POSTGIS_TEST_HELPER)
-      .then{ FileList[*_1] }
+      .then { FileList[*_1] }
   else
     FileList["#{ar_root}/test/cases/**/*_test.rb"]
       .reject { _1.include?("/adapters/") || _1.include?("/encryption/performance") }
