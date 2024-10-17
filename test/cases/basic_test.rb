@@ -4,11 +4,7 @@ require_relative "../test_helper"
 
 module PostGIS
   class BasicTest < ActiveSupport::TestCase
-    def before
-      reset_spatial_store
-    end
-
-    def after
+    def teardown
       reset_spatial_store
     end
 
@@ -121,7 +117,6 @@ module PostGIS
       end
       klass.reset_column_information
       custom_factory = RGeo::Geographic.spherical_factory(buffer_resolution: 8, srid: 4326)
-      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(custom_factory, geo_type: "polygon", srid: 4326)
       object = klass.new
       area = custom_factory.point(1, 2).buffer(3)
@@ -129,8 +124,6 @@ module PostGIS
       object.save!
       object.reload
       assert_equal area, object.area
-    ensure
-      spatial_factory_store.registry = old_registry
     end
 
     def test_spatial_factory_attrs_parsing
@@ -140,14 +133,12 @@ module PostGIS
       end
       klass.reset_column_information
       factory = RGeo::Cartesian.preferred_factory(srid: 4326)
-      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(factory, { srid: 4326,
                                                 sql_type: "geometry",
                                                 geo_type: "multi_polygon",
                                                 has_z: false, has_m: false })
 
       # wrong factory for default
-      old_default = spatial_factory_store.instance_variable_get :@default
       spatial_factory_store.default = RGeo::Geographic.spherical_factory(srid: 4326)
 
       object = klass.new
@@ -155,14 +146,10 @@ module PostGIS
       object.save!
       object.reload
       assert_equal(factory, object.areas.factory)
-    ensure
-      spatial_factory_store.registry = old_registry
-      spatial_factory_store.default = old_default
     end
 
     def test_readme_example
       geo_factory = RGeo::Geographic.spherical_factory(srid: 4326)
-      old_registry = spatial_factory_store.registry
       spatial_factory_store.register(geo_factory, geo_type: "point", sql_type: "geography")
 
       klass = SpatialModel
@@ -187,8 +174,6 @@ module PostGIS
       object.save!
       object.reload
       refute_equal geo_factory, object.shape.factory
-    ensure
-      spatial_factory_store.registry = old_registry
     end
 
     def test_point_to_json
