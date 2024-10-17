@@ -292,7 +292,7 @@ module PostGIS
       end
     end
 
-    # Ensure that null contraints info is getting captured like the
+    # Ensure that null constraints info is getting captured like the
     # normal adapter.
     def test_null_constraints
       klass.lease_connection.create_table(:spatial_models, force: true) do |t|
