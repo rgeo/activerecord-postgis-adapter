@@ -1,4 +1,8 @@
-### 9.0.2 / 2024-04-39
+### 10.0.0 / 2024-11-04
+
+* ActiveRecord 7.2 support #405
+
+### 9.0.2 / 2024-04-30
 
 * Add `ConnectionHandling` module (copiousfreetime) #390
 

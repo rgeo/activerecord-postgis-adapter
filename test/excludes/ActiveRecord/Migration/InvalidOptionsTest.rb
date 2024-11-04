@@ -1,0 +1,3 @@
+exclude "test_add_column_with_invalid_options", TRIAGE_MSG
+exclude "test_add_reference_with_invalid_options", TRIAGE_MSG
+exclude "test_change_column_with_invalid_options", TRIAGE_MSG

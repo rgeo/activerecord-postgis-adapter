@@ -57,6 +57,14 @@ Gemfile:
 gem 'activerecord-postgis-adapter'
 ```
 
+#### Version 10.x supports ActiveRecord 7.2
+
+```
+ActiveRecord 7.2
+Ruby 3.1.0+
+PostGIS 2.0+
+```
+
 #### Version 9.x supports ActiveRecord 7.1
 
 ```

@@ -10,25 +10,27 @@ Gem::Specification.new do |spec|
 
   spec.version = ActiveRecord::ConnectionAdapters::PostGIS::VERSION
   spec.authors = ["Daniel Azuma", "Tee Parham"]
-  spec.email = ["dazuma@gmail.com", "parhameter@gmail.com", "kfdoggett@gmail.com"]
+  spec.email = ["kfdoggett@gmail.com", "buonomo.ulysse@gmail.com", "terminale@gmail.com"]
   spec.homepage = "http://github.com/rgeo/activerecord-postgis-adapter"
   spec.license = "BSD-3-Clause"
 
   spec.files = Dir["lib/**/*", "LICENSE.txt"]
   spec.platform = Gem::Platform::RUBY
 
+  # ruby-lang.org/en/downloads/branches
   spec.required_ruby_version = ">= 3.1.0"
 
-  spec.add_dependency "activerecord", "~> 7.2.0.beta2"
-  spec.add_dependency "rgeo-activerecord", "~> 7.0.0"
+  spec.add_dependency "activerecord", "~> 7.2.0"
+  spec.add_dependency "rgeo-activerecord", "~> 8.0.0"
 
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.4"
-  spec.add_development_dependency "mocha", "~> 2.4"
+  spec.add_development_dependency "minitest-excludes", "~> 2.0"
   spec.add_development_dependency "benchmark-ips", "~> 2.12"
   spec.add_development_dependency "rubocop", "~> 1.50"
 
   spec.metadata = {
+    "funding_uri" => "https://opencollective.com/rgeo",
     "rubygems_mfa_required" => "true"
   }
 end
