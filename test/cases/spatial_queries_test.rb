@@ -115,11 +115,19 @@ module PostGIS
       assert_nil(obj3)
     end
 
+    def test_geo_safe_where
+      create_model
+      SpatialModel.create!(latlon_geo: geographic_factory.point(-72.1, 42.1))
+      SpatialModel.create!(latlon_geo: geographic_factory.point(10.0, 10.0))
+      assert_equal 1, SpatialModel.where("ST_DWITHIN(latlon_geo, ?, 500)", geographic_factory.point(-72.099, 42.099)).count
+    end
+
     private
 
     def create_model
       SpatialModel.lease_connection.create_table(:spatial_models, force: true) do |t|
         t.column "latlon", :st_point, srid: 3785
+        t.column "latlon_geo", :st_point, srid: 4326, geographic: true
         t.column "points", :multi_point, srid: 3785
         t.column "path", :line_string, srid: 3785
       end
