@@ -16,6 +16,7 @@ require_relative "postgis/spatial_column"
 require_relative "postgis/arel_tosql"
 require_relative "postgis/oid/spatial"
 require_relative "postgis/oid/date_time"
+require_relative "postgis/quoting"
 require_relative "postgis/type" # has to be after oid/*
 # :startdoc:
 
@@ -42,6 +43,7 @@ module ActiveRecord
       # http://postgis.17.x6.nabble.com/Default-SRID-td5001115.html
       DEFAULT_SRID = 0
 
+      include PostGIS::Quoting
       include PostGIS::SchemaStatements
       include PostGIS::DatabaseStatements
 
