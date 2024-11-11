@@ -7,7 +7,6 @@ connections:
       username: <%= ENV["PGUSER"] || "postgres" %>
       password: <%= ENV["PGPASSWORD"] || "" %>
       setup: default
-      schema_search_path: public
     arunit2:
       host: <%= ENV["PGHOST"] || "127.0.0.1" %>
       port: <%= ENV["PGPORT"] || "5432" %>
@@ -15,7 +14,6 @@ connections:
       username: <%= ENV["PGUSER"] || "postgres" %>
       password: <%= ENV["PGPASSWORD"] || "" %>
       setup: default
-      schema_search_path: public
     arunit_without_prepared_statements:
       min_messages: warning
       prepared_statements: false
@@ -25,4 +23,3 @@ connections:
       username: <%= ENV["PGUSER"] || "postgres" %>
       password: <%= ENV["PGPASSWORD"] || "" %>
       setup: default
-      schema_search_path: public

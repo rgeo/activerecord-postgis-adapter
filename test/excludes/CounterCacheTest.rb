@@ -30,7 +30,7 @@ exclude "test_increment_counter_by_specific_amount", TRIAGE_MSG
 exclude "test_decrement_counter", TRIAGE_MSG
 exclude "test_reset_counters_with_touch:_true", TRIAGE_MSG
 exclude "test_reset_the_right_counter_if_two_have_the_same_foreign_key", TRIAGE_MSG
-exclude "test_inactive_conter_cache", TRIAGE_MSG
+exclude "test_inactive_counter_cache", TRIAGE_MSG
 exclude "test_update_counters_of_multiple_records", TRIAGE_MSG
 exclude "test_counters_are_updated_both_in_memory_and_in_the_database_on_create", TRIAGE_MSG
 exclude "test_update_counter_with_initial_null_value", TRIAGE_MSG
@@ -47,7 +47,7 @@ exclude "test_removing_association_updates_counter", TRIAGE_MSG
 exclude "test_reset_counters_with_touch:_:written_on", TRIAGE_MSG
 exclude "test_reset_counters_for_cpk_model", TRIAGE_MSG
 exclude "test_reset_the_right_counter_if_two_have_the_same_class_name", TRIAGE_MSG
-exclude "test_active_conter_cache", TRIAGE_MSG
+exclude "test_active_counter_cache", TRIAGE_MSG
 exclude "test_increment_counters_with_touch:_:written_on", TRIAGE_MSG
 exclude "test_update_multiple_counters_with_touch:_:written_on", TRIAGE_MSG
 exclude "test_counter_cache_column?", TRIAGE_MSG
