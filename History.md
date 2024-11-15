@@ -1,3 +1,8 @@
+### 10.0.1 / 2024-11-15
+
+* Fix `Quoting` of RGeo objects #417 (JamesChevalier)
+* Fix loading issue in multi-db environments #418 (dorner)
+
 ### 10.0.0 / 2024-11-04
 
 * ActiveRecord 7.2 support #405
