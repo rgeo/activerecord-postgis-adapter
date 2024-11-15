@@ -162,5 +162,4 @@ module ActiveRecord
     spatial_ref_sys
     topology
   ]
-  Tasks::DatabaseTasks.register_task(/postgis/, "ActiveRecord::Tasks::PostgreSQLDatabaseTasks")
 end
