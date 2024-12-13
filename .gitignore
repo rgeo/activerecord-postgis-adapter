@@ -8,5 +8,6 @@ Gemfile.lock
 /travis/*.lock
 /test/database_local.yml
 .idea
-debug.log
+debug.log*
 /test/db/*
+/test/storage/
