@@ -39,7 +39,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      BUNDLE_GEMFILE: ${{matrix.gemfile}}
+      AR_VERSION: 8.0.0.1
     strategy:
       fail-fast: false
       matrix:
