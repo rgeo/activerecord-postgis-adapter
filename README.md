@@ -73,7 +73,7 @@ _JRuby support for Rails 4.0 and 4.1 was added in version 2.2.0_
 
 ```
 ActiveRecord 7.1
-Ruby 3.0.0+
+Ruby 2.7.0+
 PostGIS 2.0+
 ```
 
