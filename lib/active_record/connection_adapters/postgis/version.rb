@@ -3,7 +3,7 @@
 module ActiveRecord
   module ConnectionAdapters
     module PostGIS
-      VERSION = "10.0.1"
+      VERSION = "11.0.0"
     end
   end
 end
