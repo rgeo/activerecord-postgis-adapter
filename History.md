@@ -1,6 +1,6 @@
 ### 11.0.0 / 2025-02-06
 
-* ActiveREcord 8.0 support (teeparham) #421
+* ActiveRecord 8.0 support (teeparham) #421
 
 ### 10.0.1 / 2024-11-15
 
