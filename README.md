@@ -60,7 +60,7 @@ gem 'activerecord-postgis-adapter'
 #### Version 11.x supports ActiveRecord 8.0
 
 ```
-ActiveRecord 7.2
+ActiveRecord 8.0
 Ruby 3.2.0+
 PostGIS 2.0+
 ```
