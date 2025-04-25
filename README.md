@@ -51,128 +51,21 @@ sudo apt-get install postgis postgresql-16-postgis-3
 
 PostGIS is likely available as an optional package via your Postgresql installer. If not, refer to the installation guide.
 
-Gemfile:
+### Version compatibility
 
-```ruby
-gem 'activerecord-postgis-adapter'
-```
-
-#### Version 11.x supports ActiveRecord 8.0
-
-```
-ActiveRecord 8.0
-Ruby 3.2.0+
-PostGIS 2.0+
-```
-
-#### Version 10.x supports ActiveRecord 7.2
-
-```
-ActiveRecord 7.2
-Ruby 3.1.0+
-PostGIS 2.0+
-```
-
-#### Version 9.x supports ActiveRecord 7.1
-
-```
-ActiveRecord 7.1
-Ruby 3.0.0+
-PostGIS 2.0+
-```
-
-#### Version 8.x supports ActiveRecord 7.0
-
-Requirements:
-
-```
-ActiveRecord 7.0
-Ruby 2.7.0+
-PostGIS 2.0+
-```
-
-#### Version 7.x supports ActiveRecord 6.1
-
-Requirements:
-
-```
-ActiveRecord 6.1
-Ruby 2.5.0+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 6.x supports ActiveRecord 6.0
-
-Requirements:
-
-```
-ActiveRecord 6.0
-Ruby 2.5.0+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 5.x supports ActiveRecord 5.1 and 5.2
-
-Requirements:
-
-```
-ActiveRecord 5.1 or 5.2
-Ruby 2.2.2+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 4.x supports ActiveRecord 5.0
-
-Requirements:
-
-```
-ActiveRecord 5.0
-Ruby 2.2.2+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 3.x supports ActiveRecord 4.2
-
-Requirements:
-
-```
-ActiveRecord 4.2
-Ruby 1.9.3+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 2.x supports ActiveRecord 4.0.x and 4.1.x
-
-_If you are using version 2.x, you should read [the version 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
-
-Requirements:
-
-```
-ActiveRecord 4.0.0 - 4.1.x
-Ruby 1.9.3+, JRuby
-PostGIS 2.0+
-```
-
-#### Version 0.6.x supports ActiveRecord 3.x
-
-_If you are using version 0.6.x, you should read [the version 0.6.x / 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md)_
-
-Requirements:
-
-```
-ActiveRecord 3.x only
-Ruby 1.8.7+, JRuby, Rubinius
-PostGIS 1.5+
-```
-
-Gemfile:
-
-```ruby
-gem 'activerecord-postgis-adapter', '~> 0.6.6'
-```
-
-Please read [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md)
-if you would like to use the adapter with an older version of PostGIS.
+| Version | ActiveRecord  | Ruby                    | PostGIS | Note |
+| ------- | ------------- | ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 11.x    | 8.0           | 3.2.0+                  | 2.0+    |     |
+| 10.x    | 7.2           | 3.1.0+                  | 2.0+    |     |
+| 9.x     | 7.1           | 3.0.0+                  | 2.0+    |     |
+| 8.x     | 7.0           | 2.7.0+                  | 2.0+    |     |
+| 7.x     | 6.1           | 2.5.0+, JRuby           | 2.0+    |     |
+| 6.x     | 6.0           | 2.5.0+, JRuby           | 2.0+    |     |
+| 5.x     | 5.1, 5.2      | 2.2.2+, JRuby           | 2.0+    |     |
+| 4.x     | 5.0           | 2.2.2+, JRuby           | 2.0+    |     |
+| 3.x     | 4.2           | 1.9.3+, JRuby           | 2.0+    |     |
+| 2.x     | 4.0.0 - 4.1.x | 1.9.3+, JRuby           | 2.0+    | [Read 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md) |
+| 0.6.x   | 3.x           | 1.8.7+, JRuby, Rubinius | 1.5+    | [Read 0.6.x / 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md) <br /> [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md) |
 
 #### Upgrading to version 8.x
 
@@ -260,6 +153,7 @@ rails generate migration AddPostgisExtensionToDatabase
 ```
 
 The migration should look something like this:
+
 ```ruby
 class AddPostgisExtensionToDatabase < ActiveRecord::Migration[7.2]
   def change
