@@ -122,6 +122,14 @@ module PostGIS
       assert_equal 1, SpatialModel.where("ST_DWITHIN(latlon_geo, ?, 500)", geographic_factory.point(-72.099, 42.099)).count
     end
 
+    def test_geo_query_matches_sql
+      value = geographic_factory.point(-72.099, 42.099)
+      assert_match(
+        RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value),
+        SpatialModel.where("ST_DWITHIN(latlon_geo, ?, 500)", value).explain.inspect
+      )
+    end
+
     private
 
     def create_model
