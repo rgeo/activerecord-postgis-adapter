@@ -46,7 +46,7 @@ AR_VERSION=7.0.1 bundle exec rake test
 
 To run a specific test, use the `POSTGIS_TEST_FILES` environment variable:
 
-`POSTGIS_TEST_FILES=test/cases/ddl_test.rb bundle exec rake`
+`POSTGIS_TEST_FILES=test/cases/ddl_test.rb bundle exec rake test:postgis`
 
 If you are testing a feature against the ActiveRecord test suite run:
 

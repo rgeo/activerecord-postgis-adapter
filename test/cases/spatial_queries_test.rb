@@ -122,6 +122,14 @@ module PostGIS
       assert_equal 1, SpatialModel.where("ST_DWITHIN(latlon_geo, ?, 500)", geographic_factory.point(-72.099, 42.099)).count
     end
 
+    def test_geo_safe_where_with_srids
+      create_model
+      center  = RGeo::Geos.factory(srid: 4326).point(3.833, 43.698)
+      polygon = RGeo::Geos.factory(srid: 4326).parse_wkt("POLYGON ((3.9 43.68, 3.8 43.62, 3.77 43.75, 3.9 43.68))")
+      SpatialModel.create!(polygon: polygon)
+      assert_equal 1, SpatialModel.where("ST_Within(?, polygon)", center).count
+    end
+
     private
 
     def create_model
@@ -130,6 +138,7 @@ module PostGIS
         t.column "latlon_geo", :st_point, srid: 4326, geographic: true
         t.column "points", :multi_point, srid: 3785
         t.column "path", :line_string, srid: 3785
+        t.column "polygon", :st_polygon, srid: 4326
       end
       SpatialModel.reset_column_information
     end
