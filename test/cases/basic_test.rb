@@ -210,6 +210,18 @@ module PostGIS
       assert_equal wkt, rec.m_poly.to_s
     end
 
+    def test_spatial_column_matching_enum
+      SpatialModel.lease_connection.create_enum(:point_type, ["point", "line_string", "polygon"])
+      SpatialModel.lease_connection.create_table(:spatial_models, force: true) do |t|
+        t.column "latlon", :st_point, srid: 3785
+        t.column "latlon_geo", :st_point, srid: 4326, geographic: true
+        t.column "default_latlon", :st_point, srid: 0, default: "POINT(0.0 0.0)"
+        t.enum "point_type", enum_type: :point_type
+      end
+      SpatialModel.reset_column_information
+      point_type = SpatialModel.columns.find { |c| c.name == "point_type" }
+      assert_nil point_type.geometric_type
+    end
     private
 
     def create_model

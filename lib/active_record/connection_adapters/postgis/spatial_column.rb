@@ -12,7 +12,9 @@ module ActiveRecord  # :nodoc:
                        serial: nil, generated: nil, spatial: nil, identity: nil)
           @sql_type_metadata = sql_type_metadata
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
-          if spatial
+          if sql_type_metadata.type == :enum
+            # noop - enum types are not spatial but their names may match against the regexes below
+          elsif spatial
             # This case comes from an entry in the geometry_columns table
             set_geometric_type_from_name(spatial[:type])
             @srid = spatial[:srid].to_i
