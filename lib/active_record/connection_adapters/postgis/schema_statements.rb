@@ -12,11 +12,11 @@ module ActiveRecord
           type_metadata = fetch_type_metadata(column_name, type, oid.to_i, fmod.to_i)
           default_value = extract_value_from_default(default)
 
-          if attgenerated.present?
-            default_function = default
-          else
-            default_function = extract_default_function(default_value, default)
-          end
+          default_function = if attgenerated.present?
+                               default
+                             else
+                               extract_default_function(default_value, default)
+                             end
 
           if (match = default_function&.match(/\Anextval\('"?(?<sequence_name>.+_(?<suffix>seq\d*))"?'::regclass\)\z/))
             serial = sequence_name_from_parts(table_name, column_name, match[:suffix]) == match[:sequence_name]
@@ -27,6 +27,7 @@ module ActiveRecord
 
           SpatialColumn.new(
             column_name,
+            get_oid_type(oid.to_i, fmod.to_i, column_name, type),
             default_value,
             type_metadata,
             !notnull,

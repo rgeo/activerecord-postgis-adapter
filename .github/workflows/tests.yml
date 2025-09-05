@@ -39,14 +39,14 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      AR_VERSION: 8.0.0.1
+      AR_VERSION: 8.1.0.rc1
     strategy:
       fail-fast: false
       matrix:
         # https://ruby-lang.org/en/downloads/branches
         ruby: ["3.4", "3.3", "3.2"]
         # https://www.postgresql.org/support/versioning/
-        pg: [12-master, 13-master, 14-master, 15-master, 16-master]
+        pg: [13-master, 14-master, 15-master, 16-master, 17-master]
     steps:
       - name: Set Up Actions
         uses: actions/checkout@v4

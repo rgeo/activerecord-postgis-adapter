@@ -10,6 +10,7 @@ module ActiveRecord
         # Responsible for parsing sql_types returned from the database and WKT features.
         class Spatial < Type::Value
           def initialize(geo_type: "geometry", srid: 0, has_z: false, has_m: false, geographic: false)
+            super()
             @geo_type = geo_type
             @srid = srid
             @has_z = has_z
@@ -25,6 +26,11 @@ module ActiveRecord
           #   has_z:    false
           #   has_m:    false
           def self.parse_sql_type(sql_type)
+            # Could be nil during type registration
+            if sql_type.nil?
+              return [nil, 0, false, false, false]
+            end
+
             geo_type = nil
             srid = 0
             has_z = false
@@ -53,10 +59,16 @@ module ActiveRecord
           end
 
           def spatial_factory
-            @spatial_factory ||=
+            if frozen?
               RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
                 factory_attrs
               )
+            else
+              @spatial_factory ||=
+                RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
+                  factory_attrs
+                )
+            end
           end
 
           def spatial?

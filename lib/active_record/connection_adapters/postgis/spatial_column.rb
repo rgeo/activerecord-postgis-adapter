@@ -7,7 +7,7 @@ module ActiveRecord  # :nodoc:
         # sql_type examples:
         #   "Geometry(Point,4326)"
         #   "Geography(Point,4326)"
-        def initialize(name, default, sql_type_metadata = nil, null = true,
+        def initialize(name, cast_type, default, sql_type_metadata = nil, null = true,
                        default_function = nil, collation: nil, comment: nil,
                        serial: nil, generated: nil, spatial: nil, identity: nil)
           @sql_type_metadata = sql_type_metadata
@@ -30,7 +30,7 @@ module ActiveRecord  # :nodoc:
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type_metadata.sql_type)
           end
-          super(name, default, sql_type_metadata, null, default_function,
+          super(name, cast_type, default, sql_type_metadata, null, default_function,
                 collation: collation, comment: comment, serial: serial, generated: generated, identity: identity)
           if spatial? && @srid
             @limit = { srid: @srid, type: to_type_name(geometric_type) }
