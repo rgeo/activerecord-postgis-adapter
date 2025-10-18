@@ -59,16 +59,9 @@ module ActiveRecord
           end
 
           def spatial_factory
-            if frozen?
-              RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
-                factory_attrs
-              )
-            else
-              @spatial_factory ||=
-                RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
-                  factory_attrs
-                )
-            end
+            RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
+              factory_attrs
+            )
           end
 
           def spatial?
