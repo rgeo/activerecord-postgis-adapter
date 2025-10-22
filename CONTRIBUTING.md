@@ -40,8 +40,8 @@ Make sure the tests pass:
 Run tests with a specific ActiveRecord version:
 
 ```sh
-AR_VERSION=7.0.1 bundle install
-AR_VERSION=7.0.1 bundle exec rake test
+AR_VERSION=8.1.0 bundle install
+AR_VERSION=8.1.0 bundle exec rake test
 ```
 
 To run a specific test, use the `POSTGIS_TEST_FILES` environment variable:

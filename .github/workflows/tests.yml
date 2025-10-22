@@ -39,7 +39,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      AR_VERSION: 8.1.0.rc1
+      AR_VERSION: 8.1.0
     strategy:
       fail-fast: false
       matrix:

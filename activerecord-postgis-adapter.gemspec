@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   # ruby-lang.org/en/downloads/branches
   spec.required_ruby_version = ">= 3.2.0"
 
-  spec.add_dependency "activerecord", "~> 8.1.0.rc1"
+  spec.add_dependency "activerecord", "~> 8.1.0"
   spec.add_dependency "rgeo-activerecord"
 
   spec.add_development_dependency "rake", "~> 13.0"
