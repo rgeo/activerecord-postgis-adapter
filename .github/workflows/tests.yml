@@ -46,7 +46,7 @@ jobs:
         # https://ruby-lang.org/en/downloads/branches
         ruby: ["3.4", "3.3", "3.2"]
         # https://www.postgresql.org/support/versioning/
-        pg: [14-master, 15-master, 16-master, 17-master, 18-master]
+        pg: [14-master, 15-master, 16-master, 17-master, 18-3.6-alpine]
     steps:
       - name: Set Up Actions
         uses: actions/checkout@v4
