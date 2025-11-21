@@ -11,12 +11,16 @@ module ActiveRecord
         class Spatial < Type::Value
           def initialize(geo_type: "geometry", srid: 0, has_z: false, has_m: false, geographic: false)
             super()
-            @geo_type = geo_type
-            @srid = srid
-            @has_z = has_z
-            @has_m = has_m
-            @geographic = geographic
+            @geographic = geographic.freeze
+            @factory_attrs = {
+              geo_type: geo_type.underscore.freeze,
+              has_m: has_m.freeze,
+              has_z: has_z.freeze,
+              srid: srid.freeze,
+              sql_type: type.to_s.freeze
+            }.freeze
           end
+          protected attr_reader :geographic, :factory_attrs
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
           #
@@ -26,11 +30,6 @@ module ActiveRecord
           #   has_z:    false
           #   has_m:    false
           def self.parse_sql_type(sql_type)
-            # Could be nil during type registration
-            if sql_type.nil?
-              return [nil, 0, false, false, false]
-            end
-
             geo_type = nil
             srid = 0
             has_z = false
@@ -85,6 +84,17 @@ module ActiveRecord
                                      .generate(geo_value)
           end
 
+          def ==(other)
+            super &&
+              @geographic == other.geographic &&
+              @factory_attrs == other.factory_attrs
+          end
+          alias eql? ==
+
+          def hash
+            super ^ [@geographic, @factory_attrs].hash
+          end
+
           private
 
           def cast_value(value)
@@ -109,16 +119,6 @@ module ActiveRecord
             else
               RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
             end
-          end
-
-          def factory_attrs
-            {
-              geo_type: @geo_type.underscore,
-              has_m: @has_m,
-              has_z: @has_z,
-              srid: @srid,
-              sql_type: type.to_s
-            }
           end
         end
       end

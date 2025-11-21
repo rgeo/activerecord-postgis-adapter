@@ -12,7 +12,7 @@ require_relative "postgis/schema_statements"
 require_relative "postgis/database_statements"
 require_relative "postgis/spatial_column_info"
 require_relative "postgis/spatial_table_definition"
-require_relative "postgis/spatial_column"
+require_relative "postgis/column"
 require_relative "postgis/arel_tosql"
 require_relative "postgis/oid/spatial"
 require_relative "postgis/oid/date_time"
@@ -84,7 +84,7 @@ module ActiveRecord
               #   "geometry(Polygon,4326) NOT NULL"
               #   "geometry(Geography,4326)"
               geo_type, srid, has_z, has_m, geographic = PostGIS::OID::Spatial.parse_sql_type(sql_type)
-              PostGIS::OID::Spatial.new(geo_type: geo_type, srid: srid, has_z: has_z, has_m: has_m, geographic: geographic)
+              PostGIS::OID::Spatial.new(geo_type: geo_type, srid: srid, has_z: has_z, has_m: has_m, geographic: geographic).freeze
             end
           end
 
@@ -92,9 +92,7 @@ module ActiveRecord
         end
 
         def native_database_types
-          @native_database_types ||= begin
-            default_types = PostgreSQLAdapter.native_database_types
-            default_types.merge({
+          @native_database_types ||= super.merge({
               geography:           { name: "geography" },
               geometry:            { name: "geometry" },
               geometry_collection: { name: "geometry_collection" },
@@ -106,7 +104,6 @@ module ActiveRecord
               st_point:            { name: "st_point" },
               st_polygon:          { name: "st_polygon" }
             })
-          end
         end
       end
 
