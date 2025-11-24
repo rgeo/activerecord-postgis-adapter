@@ -10,7 +10,7 @@ on:
 
 # This allows a subsequently queued workflow run to interrupt previous runs.
 concurrency:
-  group: "${{ github.workflow }} @ ${{ github.ref }}"
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         # https://ruby-lang.org/en/downloads/branches
-        ruby: ["3.4", "3.3", "3.2"]
+        ruby: ['3.4', '3.3', '3.2']
         # https://www.postgresql.org/support/versioning/
         pg: [14-master, 15-master, 16-master, 17-master, 18-3.6-alpine]
     steps:
@@ -59,11 +59,9 @@ jobs:
           bundler-cache: true
       - name: Setup Database
         run: |
-          psql -d postgresql://postgres:postgres@localhost:5432/postgres \
-            -c "create database postgis_adapter_test" \
-            -c "create database activerecord_unittest" \
-            -c "create database activerecord_unittest2"
-          for db in postgis_adapter_test activerecord_unittest activerecord_unittest2; do
+          for db in activerecord_unittest activerecord_unittest2; do
+            psql -d postgresql://postgres:postgres@localhost:5432/postgres \
+            	   -c "create database $db"
             psql -d postgresql://postgres:postgres@localhost:5432/$db -c "create extension postgis"
           done
       - name: Run Tests

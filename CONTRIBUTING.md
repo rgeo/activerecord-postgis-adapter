@@ -4,12 +4,14 @@ Fork the repo:
 
 `git clone git@github.com:rgeo/activerecord-postgis-adapter.git`
 
-Set up your test database:
+Set up your test databases:
 
 ```sh
 createuser -s postgres
-psql -U postgres -c "create database postgis_adapter_test"
-psql -U postgres -d postgis_adapter_test -c "create extension postgis"
+for db in activerecord_unittest activerecord_unittest2; do
+	psql -U postgres -c "create database $db"
+	psql -U postgres -d $db -c "create extension postgis"
+done
 ```
 
 You may also set up environment variables to define the database connection.
@@ -21,10 +23,11 @@ export PGUSER=postgis_test
 export PGPASSWORD=password123
 export PGPORT=95432
 export PGHOST=127.0.0.2
-export PGDATABASE=postgis_adapter_test
 
-psql -c "create database postgis_adapter_test"
-psql -c "create extension postgis"
+for db in activerecord_unittest activerecord_unittest2; do
+	psql -U postgres -c "create database $db"
+	psql -U postgres -d $db -c "create extension postgis"
+done
 ```
 
 Install dependencies:
