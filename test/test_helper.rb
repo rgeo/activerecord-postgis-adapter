@@ -91,3 +91,43 @@ module ActiveSupport
     end
   end
 end
+
+if ENV["JSON_REPORTER"]
+  puts "Generating JSON report: #{ENV["JSON_REPORTER"]}"
+  module Minitest
+    class JSONReporter < StatisticsReporter
+      def report
+        super
+        io.write(
+          {
+            seed: Minitest.seed,
+            assertions: assertions,
+            count: count,
+            failed_tests: results.reject(&:skipped?), # .failure.message
+            total_time: total_time,
+            failures: failures,
+            errors: errors,
+            warnings: warnings,
+            skips: skips,
+          }.to_json
+        )
+      end
+    end
+
+    def self.plugin_json_reporter_init(*)
+      reporter << JSONReporter.new(File.open(ENV["JSON_REPORTER"], "w"))
+    end
+
+    self.load_plugins
+    self.extensions << "json_reporter"
+  end
+end
+
+# Using '--fail-fast' may cause the rails plugin to raise Interrupt when recording
+# a test. This would prevent other plugins from recording it. Hence we make sure
+# that rails plugin is loaded last.
+Minitest.load_plugins
+if Minitest.extensions.include?("rails")
+  Minitest.extensions.delete("rails")
+  Minitest.extensions << "rails"
+end
