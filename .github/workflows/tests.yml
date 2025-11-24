@@ -14,8 +14,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  orchestrate:
+    name: Orchestrate matrix from Docker Hub
+    runs-on: ubuntu-latest
+    outputs:
+      postgis_tags: ${{ steps.prepare.outputs.postgis_tags }}
+    steps:
+      - name: Query Docker Hub tags and build matrix
+        id: prepare
+        run: |
+          # https://www.postgresql.org/support/versioning/
+          pg_targets='[14, 15, 16, 17, 18]'
+
+          tags=$(
+            curl -s "https://hub.docker.com/v2/repositories/postgis/postgis/tags?page_size=100" |
+            jq --compact-output '
+              .results
+              | map(.name) as $tags
+              | '"$pg_targets"'
+              | map(
+                . as $target
+                | $tags
+                | map(select(test("^\($target)-\\d+\\.\\d+$")))[0]
+              )
+            '
+          )
+
+          if [[ "$(echo "$tags" | jq 'length')" -ne "$(echo "$pg_targets" | jq 'length')" ]]; then
+            echo "Error: Could not find tags for all PostgreSQL targets" >&2
+            exit 1
+          fi
+
+          echo "postgis_tags=$tags" >> $GITHUB_OUTPUT
   test:
     runs-on: ubuntu-latest
+    needs: [orchestrate]
     services:
       postgis:
         image: postgis/postgis:${{matrix.pg}}
@@ -36,7 +69,8 @@ jobs:
         # https://ruby-lang.org/en/downloads/branches
         ruby: ['3.4', '3.3', '3.2']
         # https://www.postgresql.org/support/versioning/
-        pg: [14-master, 15-master, 16-master, 17-master, 18-3.6-alpine]
+        # See (and update!) `pg_targets` above for selected pg versions.
+        pg: ${{ fromJson(needs.orchestrate.outputs.postgis_tags) }}
     steps:
       - name: Set Up Actions
         uses: actions/checkout@v4
