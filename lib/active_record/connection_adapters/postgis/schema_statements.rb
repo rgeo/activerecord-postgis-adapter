@@ -51,6 +51,12 @@ module ActiveRecord
           @spatial_column_info ||= {}
           @spatial_column_info[table_name.to_sym] ||= SpatialColumnInfo.new(self, table_name.to_s)
         end
+
+        # OVERRIDE: Do not show postgis internal views
+        # Returns an array of view names defined in the database.
+        def views
+          query_values(data_source_sql(type: "VIEW"), "SCHEMA") - %w[geography_columns geometry_columns]
+        end
       end
     end
   end
