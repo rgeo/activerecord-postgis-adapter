@@ -7,8 +7,6 @@ gem "pg", "~> 1.0", platform: :ruby
 gem "byebug" if ENV["BYEBUG"]
 
 def activerecord_version
-  return ENV["AR_VERSION"] if ENV["AR_VERSION"]
-
   require "uri"
   require "yaml"
   require "net/http"
@@ -29,7 +27,7 @@ def activerecord_version
   ver["number"]
 end
 # Need to install for tests
-gem "rails", github: "rails/rails", tag: "v#{activerecord_version}"
+gem "rails", github: "rails/rails", ref: ENV.fetch("AR_VERSION", "v#{activerecord_version}")
 
 group :development do
   # Gems used by the ActiveRecord test suite

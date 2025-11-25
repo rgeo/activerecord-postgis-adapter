@@ -10,20 +10,45 @@ on:
 
 # This allows a subsequently queued workflow run to interrupt previous runs.
 concurrency:
-  group: "${{ github.workflow }} @ ${{ github.ref }}"
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
-  # Since the name of the matrix job depends on the version, we define another job with a more stable name.
-  test_results:
-    if: ${{ always() }}
+  orchestrate:
+    name: Orchestrate matrix from Docker Hub
     runs-on: ubuntu-latest
-    name: Test Results
-    needs: [test]
+    outputs:
+      postgis_tags: ${{ steps.prepare.outputs.postgis_tags }}
     steps:
-      - run: '[[ "${{ needs.test.result }}" == "success" ]]'
+      - name: Query Docker Hub tags and build matrix
+        id: prepare
+        run: |
+          # https://www.postgresql.org/support/versioning/
+          pg_targets='[14, 15, 16, 17, 18]'
+
+          tags=$(
+            curl -s "https://hub.docker.com/v2/repositories/postgis/postgis/tags?page_size=100" |
+            jq --compact-output '
+              .results
+              | map(.name) as $tags
+              | '"$pg_targets"'
+              | map(
+                . as $target
+                | $tags
+                | map(select(test("^\($target)-\\d+\\.\\d+$")))[0]
+              )
+            '
+          )
+
+          if [[ $(jq 'length' <<< "$tags") -ne $(jq 'length' <<< "$tags") ]]; then
+            echo "Error: Could not find tags for all PostgreSQL targets" >&2
+            exit 1
+          fi
+
+          echo "postgis_tags=$tags" >> $GITHUB_OUTPUT
   test:
     runs-on: ubuntu-latest
+    needs: [orchestrate]
     services:
       postgis:
         image: postgis/postgis:${{matrix.pg}}
@@ -38,15 +63,14 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    env:
-      AR_VERSION: 8.0.0.1
     strategy:
       fail-fast: false
       matrix:
         # https://ruby-lang.org/en/downloads/branches
-        ruby: ["3.4", "3.3", "3.2"]
+        ruby: ['3.4', '3.3', '3.2']
         # https://www.postgresql.org/support/versioning/
-        pg: [12-master, 13-master, 14-master, 15-master, 16-master]
+        # See (and update!) `pg_targets` above for selected pg versions.
+        pg: ${{ fromJson(needs.orchestrate.outputs.postgis_tags) }}
     steps:
       - name: Set Up Actions
         uses: actions/checkout@v4
@@ -59,11 +83,9 @@ jobs:
           bundler-cache: true
       - name: Setup Database
         run: |
-          psql -d postgresql://postgres:postgres@localhost:5432/postgres \
-            -c "create database postgis_adapter_test" \
-            -c "create database activerecord_unittest" \
-            -c "create database activerecord_unittest2"
-          for db in postgis_adapter_test activerecord_unittest activerecord_unittest2; do
+          for db in activerecord_unittest activerecord_unittest2; do
+            psql -d postgresql://postgres:postgres@localhost:5432/postgres \
+                 -c "create database $db"
             psql -d postgresql://postgres:postgres@localhost:5432/$db -c "create extension postgis"
           done
       - name: Run Tests
@@ -74,3 +96,86 @@ jobs:
           PGPASSWORD: postgres
           TESTOPTS: --profile=3
           TEST_TIMEOUT: 30
+          RAILS_MINITEST_PLUGIN: '1'
+          JSON_REPORTER: 'report.json'
+      - name: Upload Report
+        if: ${{ failure() && steps.test.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.pg }}-${{ matrix.ruby }}
+          path: report.json
+  # Since the name of the matrix job depends on the version,
+  # we define another job with a more stable name. This jobs
+  # also gives a nice summary of failing tests.
+  test_results:
+    if: always()
+    runs-on: ubuntu-latest
+    name: Test Results
+    needs: [test]
+    steps:
+      - name: Check Success
+        run: |
+          result="${{ needs.test.result }}"
+
+          if [[ $result == "success" || $result == "skipped" ]]; then
+            echo "All tests passed :taco:" >>$GITHUB_STEP_SUMMARY
+            exit 0
+          else
+            exit 1
+          fi
+      - name: Download Reports
+        if: failure()
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+      - name: Aggregate Reports
+        if: failure()
+        run: |
+          cat <<EOF >>$GITHUB_STEP_SUMMARY
+          # Failing Tests
+
+          <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Test</th>
+              <th>Failure</th>
+            </tr>
+          </thead>
+          <tbody>
+          EOF
+
+          jq --slurp --raw-output '
+            map(.failed_tests) | flatten | map({
+              klass,
+              NAME,
+              failure: .failures[0],
+              source_url: (
+                .source_location | if (.[0] | contains("/gems/")) then
+                  (.[0] | capture("rails-(?<sha>.*?)/(?<path>.*)")) *
+                  {line: .[1], server: "https://github.com", repo: "rails/rails"}
+                else
+                  (.[0] | capture("activerecord-postgis-adapter/(?<path>test/.*)") *
+                  {line: .[1], sha: $ENV.GITHUB_SHA, repo: $ENV.GITHUB_REPOSITORY, server: $ENV.GITHUB_SERVER_URL}
+                end | "\(.server)/\(.repo)/blob/\(.sha)/\(.path)#L\(.line)"
+              )
+            }) | group_by(.) | map(.[0] * { count: length }) | sort[0:100][]
+            | "<tr>"
+            +   "<td><strong>\(.count)</strong></td>"
+            +   "<td><a href=\"\(.source_url)\">\(.klass)#\(.NAME)</a></td>"
+            +   "<td><pre>\(.failure)</pre></td>"
+            + "</tr>"
+          ' reports/*/report.json >>$GITHUB_STEP_SUMMARY
+
+          cat <<EOF >>$GITHUB_STEP_SUMMARY
+          </tbody>
+          </table>
+          EOF
+
+          # Do not print json if too large.
+          [[ "$(du -s reports | cut -f1)" -gt 124 ]] && exit 0
+
+          echo >>$GITHUB_STEP_SUMMARY
+          echo '```json' >>$GITHUB_STEP_SUMMARY
+          jq --slurp --compact-output '.' reports/*/report.json >>$GITHUB_STEP_SUMMARY
+          echo '```' >>$GITHUB_STEP_SUMMARY

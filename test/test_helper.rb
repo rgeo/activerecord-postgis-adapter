@@ -9,65 +9,47 @@ require "minitest/excludes"
 require "erb"
 require "byebug" if ENV["BYEBUG"]
 require "activerecord-postgis-adapter"
+require "timeout"
 
 TRIAGE_MSG = "Needs triage and fixes. See #378"
 
-if ENV["ARCONN"]
-  # only install activerecord schema if we need it
-  require "cases/helper"
+ENV["ARCONN"] ||= "postgis"
 
+# We need to require this before the original `cases/helper`
+# to make sure we patch load schema before it runs.
+require "support/load_schema_helper"
+
+module LoadSchemaHelperExt
+  # Postgis uses the postgresql specific schema.
+  # We need to explicit that behavior.
   def load_postgis_specific_schema
+    # silence verbose schema loading
+    shh do
+      load SCHEMA_ROOT + "/postgresql_specific_schema.rb"
+
+      ActiveRecord::FixtureSet.reset_cache
+    end
+  end
+
+  def load_schema
+    super
+    load_postgis_specific_schema
+  end
+
+  private def shh
     original_stdout = $stdout
     $stdout = StringIO.new
-
-    load SCHEMA_ROOT + "/postgresql_specific_schema.rb"
-
-    ActiveRecord::FixtureSet.reset_cache
+    yield
   ensure
     $stdout = original_stdout
   end
+end
+LoadSchemaHelper.prepend(LoadSchemaHelperExt)
 
-  load_postgis_specific_schema
-
-  module ARTestCaseOverride
-    def with_postgresql_datetime_type(type)
-      adapter = ActiveRecord::ConnectionAdapters::PostGISAdapter
-      adapter.remove_instance_variable(:@native_database_types) if adapter.instance_variable_defined?(:@native_database_types)
-      datetime_type_was = adapter.datetime_type
-      adapter.datetime_type = type
-      yield
-    ensure
-      adapter = ActiveRecord::ConnectionAdapters::PostGISAdapter
-      adapter.datetime_type = datetime_type_was
-      adapter.remove_instance_variable(:@native_database_types) if adapter.instance_variable_defined?(:@native_database_types)
-    end
-  end
-
-  ActiveRecord::TestCase.prepend(ARTestCaseOverride)
-else
-  module ActiveRecord
-    class Base
-      DATABASE_CONFIG_PATH = __dir__ + "/database.yml"
-
-      def self.test_connection_hash
-        conns = YAML.load(ERB.new(File.read(DATABASE_CONFIG_PATH)).result)
-        conn_hash = conns["connections"]["postgis"]["arunit"]
-        conn_hash.merge(adapter: "postgis")
-      end
-
-      def self.establish_test_connection
-        establish_connection test_connection_hash
-      end
-    end
-  end
-
-  ActiveRecord::Base.establish_test_connection
-end # end if ENV["ARCONN"]
+require "cases/helper"
 
 class SpatialModel < ActiveRecord::Base
 end
-
-require 'timeout'
 
 module TestTimeoutHelper
   def time_it
@@ -108,4 +90,44 @@ module ActiveSupport
       spatial_factory_store.default = nil
     end
   end
+end
+
+if ENV["JSON_REPORTER"]
+  puts "Generating JSON report: #{ENV["JSON_REPORTER"]}"
+  module Minitest
+    class JSONReporter < StatisticsReporter
+      def report
+        super
+        io.write(
+          {
+            seed: Minitest.seed,
+            assertions: assertions,
+            count: count,
+            failed_tests: results.reject(&:skipped?), # .failure.message
+            total_time: total_time,
+            failures: failures,
+            errors: errors,
+            warnings: warnings,
+            skips: skips,
+          }.to_json
+        )
+      end
+    end
+
+    def self.plugin_json_reporter_init(*)
+      reporter << JSONReporter.new(File.open(ENV["JSON_REPORTER"], "w"))
+    end
+
+    self.load_plugins
+    self.extensions << "json_reporter"
+  end
+end
+
+# Using '--fail-fast' may cause the rails plugin to raise Interrupt when recording
+# a test. This would prevent other plugins from recording it. Hence we make sure
+# that rails plugin is loaded last.
+Minitest.load_plugins
+if Minitest.extensions.include?("rails")
+  Minitest.extensions.delete("rails")
+  Minitest.extensions << "rails"
 end

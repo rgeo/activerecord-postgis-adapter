@@ -10,12 +10,17 @@ module ActiveRecord
         # Responsible for parsing sql_types returned from the database and WKT features.
         class Spatial < Type::Value
           def initialize(geo_type: "geometry", srid: 0, has_z: false, has_m: false, geographic: false)
-            @geo_type = geo_type
-            @srid = srid
-            @has_z = has_z
-            @has_m = has_m
-            @geographic = geographic
+            super()
+            @geographic = geographic.freeze
+            @factory_attrs = {
+              geo_type: geo_type.underscore.freeze,
+              has_m: has_m.freeze,
+              has_z: has_z.freeze,
+              srid: srid.freeze,
+              sql_type: type.to_s.freeze
+            }.freeze
           end
+          protected attr_reader :geographic, :factory_attrs
 
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
           #
@@ -53,10 +58,9 @@ module ActiveRecord
           end
 
           def spatial_factory
-            @spatial_factory ||=
-              RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
-                factory_attrs
-              )
+            RGeo::ActiveRecord::SpatialFactoryStore.instance.factory(
+              factory_attrs
+            )
           end
 
           def spatial?
@@ -78,6 +82,17 @@ module ActiveRecord
 
             RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true)
                                      .generate(geo_value)
+          end
+
+          def ==(other)
+            super &&
+              @geographic == other.geographic &&
+              @factory_attrs == other.factory_attrs
+          end
+          alias eql? ==
+
+          def hash
+            super ^ [@geographic, @factory_attrs].hash
           end
 
           private
@@ -104,16 +119,6 @@ module ActiveRecord
             else
               RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
             end
-          end
-
-          def factory_attrs
-            {
-              geo_type: @geo_type.underscore,
-              has_m: @has_m,
-              has_z: @has_z,
-              srid: @srid,
-              sql_type: type.to_s
-            }
           end
         end
       end

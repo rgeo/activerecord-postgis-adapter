@@ -12,11 +12,11 @@ module ActiveRecord
           type_metadata = fetch_type_metadata(column_name, type, oid.to_i, fmod.to_i)
           default_value = extract_value_from_default(default)
 
-          if attgenerated.present?
-            default_function = default
-          else
-            default_function = extract_default_function(default_value, default)
-          end
+          default_function = if attgenerated.present?
+                               default
+                             else
+                               extract_default_function(default_value, default)
+                             end
 
           if (match = default_function&.match(/\Anextval\('"?(?<sequence_name>.+_(?<suffix>seq\d*))"?'::regclass\)\z/))
             serial = sequence_name_from_parts(table_name, column_name, match[:suffix]) == match[:sequence_name]
@@ -25,8 +25,9 @@ module ActiveRecord
           # {:dimension=>2, :has_m=>false, :has_z=>false, :name=>"latlon", :srid=>0, :type=>"GEOMETRY"}
           spatial = spatial_column_info(table_name).get(column_name, type_metadata.sql_type)
 
-          SpatialColumn.new(
+          Column.new(
             column_name,
+            get_oid_type(oid.to_i, fmod.to_i, column_name, type),
             default_value,
             type_metadata,
             !notnull,
@@ -49,6 +50,11 @@ module ActiveRecord
         def spatial_column_info(table_name)
           @spatial_column_info ||= {}
           @spatial_column_info[table_name.to_sym] ||= SpatialColumnInfo.new(self, table_name.to_s)
+        end
+
+        # Returns an array of view names defined in the database.
+        def views
+          super - %w[geography_columns geometry_columns]
         end
       end
     end
