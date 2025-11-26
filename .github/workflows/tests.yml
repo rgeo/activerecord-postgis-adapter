@@ -89,6 +89,7 @@ jobs:
             psql -d postgresql://postgres:postgres@localhost:5432/$db -c "create extension postgis"
           done
       - name: Run Tests
+        id: test
         run: bundle exec rake test
         env:
           PGHOST: localhost
