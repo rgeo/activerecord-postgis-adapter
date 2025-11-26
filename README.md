@@ -54,16 +54,17 @@ PostGIS is likely available as an optional package via your Postgresql installer
 ### Version compatibility
 
 | Version | ActiveRecord  | Ruby                    | PostGIS | Note |
-| ------- | ------------- | ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 11.x    | 8.0           | 3.2.0+                  | 2.0+    |     |
-| 10.x    | 7.2           | 3.1.0+                  | 2.0+    |     |
-| 9.x     | 7.1           | 3.0.0+                  | 2.0+    |     |
-| 8.x     | 7.0           | 2.7.0+                  | 2.0+    |     |
-| 7.x     | 6.1           | 2.5.0+, JRuby           | 2.0+    |     |
-| 6.x     | 6.0           | 2.5.0+, JRuby           | 2.0+    |     |
-| 5.x     | 5.1, 5.2      | 2.2.2+, JRuby           | 2.0+    |     |
-| 4.x     | 5.0           | 2.2.2+, JRuby           | 2.0+    |     |
-| 3.x     | 4.2           | 1.9.3+, JRuby           | 2.0+    |     |
+| ------- | ------------- | ----------------------- | ------- | ---- |
+| 11.1.x  | 8.1           | 3.2.0+                  | 2.0+    |      |
+| 11.0.x  | 8.0           | 3.2.0+                  | 2.0+    |      |
+| 10.x    | 7.2           | 3.1.0+                  | 2.0+    |      |
+| 9.x     | 7.1           | 3.0.0+                  | 2.0+    |      |
+| 8.x     | 7.0           | 2.7.0+                  | 2.0+    |      |
+| 7.x     | 6.1           | 2.5.0+, JRuby           | 2.0+    |      |
+| 6.x     | 6.0           | 2.5.0+, JRuby           | 2.0+    |      |
+| 5.x     | 5.1, 5.2      | 2.2.2+, JRuby           | 2.0+    |      |
+| 4.x     | 5.0           | 2.2.2+, JRuby           | 2.0+    |      |
+| 3.x     | 4.2           | 1.9.3+, JRuby           | 2.0+    |      |
 | 2.x     | 4.0.0 - 4.1.x | 1.9.3+, JRuby           | 2.0+    | [Read 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md) |
 | 0.6.x   | 3.x           | 1.8.7+, JRuby, Rubinius | 1.5+    | [Read 0.6.x / 2.x README](https://github.com/rgeo/activerecord-postgis-adapter/blob/2.0-stable/README.md) <br /> [PostGIS 1 Notes](https://github.com/rgeo/activerecord-postgis-adapter/blob/master/PostGIS_1.md) |
 
