@@ -5,8 +5,9 @@ module ActiveRecord
     module PostGIS
       module Quoting
         def type_cast(value)
-          case value
-          when RGeo::Feature::Instance
+          if RGeo::Feature::Geometry.check_type(value)
+            RGeo::WKRep::WKBGenerator.new(hex_format: true, type_format: :ewkb, emit_ewkb_srid: true).generate(value)
+          elsif value.is_a?(RGeo::Cartesian::BoundingBox)
             value.to_s
           else
             super
