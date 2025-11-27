@@ -12,6 +12,7 @@ module ActiveRecord
           def initialize(geo_type: "geometry", srid: 0, has_z: false, has_m: false, geographic: false)
             super()
             @geographic = geographic.freeze
+            @srid = srid.freeze
             @factory_attrs = {
               geo_type: geo_type.underscore.freeze,
               has_m: has_m.freeze,
