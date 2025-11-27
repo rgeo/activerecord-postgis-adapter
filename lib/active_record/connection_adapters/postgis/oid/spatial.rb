@@ -115,9 +115,9 @@ module ActiveRecord
 
           def wkt_parser(string)
             if binary_string?(string)
-              RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true, default_srid: @srid)
+              RGeo::WKRep::WKBParser.new(spatial_factory, support_ewkb: true, default_srid: @factory_attrs[:srid])
             else
-              RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @srid)
+              RGeo::WKRep::WKTParser.new(spatial_factory, support_ewkt: true, default_srid: @factory_attrs[:srid])
             end
           end
         end
