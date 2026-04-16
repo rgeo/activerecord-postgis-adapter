@@ -1,3 +1,7 @@
+### 10.0.3 / 2026-04-16
+
+* Fix activerecord versioning
+
 ### 10.0.2 / 2026-02-24
 
 * Fix limit data dropping from schema on migrate (conormi) #440
