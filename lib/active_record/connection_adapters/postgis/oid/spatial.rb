@@ -35,17 +35,17 @@ module ActiveRecord
             has_z = false
             has_m = false
 
-            if sql_type =~ /(geography|geometry)\((.*)\)$/i
+            if (outer_match = sql_type.match(/(geography|geometry)\((.*)\)$/i))
               # geometry(Point)
               # geometry(Point,4326)
-              params = Regexp.last_match(2).split(",")
-              if params.first =~ /([a-z]+[^zm])(z?)(m?)/i
-                has_z = Regexp.last_match(2).length > 0
-                has_m = Regexp.last_match(3).length > 0
-                geo_type = Regexp.last_match(1)
+              params = outer_match[2].split(",")
+              if (type_match = params.first.match(/([a-z]+[^zm])(z?)(m?)/i))
+                has_z = !type_match[2].empty?
+                has_m = !type_match[3].empty?
+                geo_type = type_match[1]
               end
-              if params.last =~ /(\d+)/
-                srid = Regexp.last_match(1).to_i
+              if (srid_match = params.last.match(/(\d+)/))
+                srid = srid_match[1].to_i
               end
             else
               # geometry

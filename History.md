@@ -1,3 +1,10 @@
+### 11.2.0 / 2026-06-09
+
+* Ruby 4.0 support: add Ruby 4.0 to CI matrix
+* Replace `=~` + `Regexp.last_match` with thread-safe `.match()` / `.match?()` throughout
+* Fix EWKT regex in `arel_tosql.rb` (`[\d+]{0,}` → `\d+`)
+* Update RuboCop `TargetRubyVersion` to 4.0
+
 ### 11.1.1 / 2025-11-27
 
 * Fix usage of `OID::Spatial#wkt_parser` (oleksii-leonov)
