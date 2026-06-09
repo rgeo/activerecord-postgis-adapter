@@ -12,7 +12,7 @@ module ActiveRecord  # :nodoc:
                        serial: nil, generated: nil, spatial: nil, identity: nil)
           super(name, cast_type, default, sql_type_metadata, null, default_function,
                 collation: collation, comment: comment, serial: serial, generated: generated, identity: identity)
-          @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
+          @geographic = sql_type_metadata.sql_type.match?(/geography\(/i)
           if spatial
             # This case comes from an entry in the geometry_columns table
             set_geometric_type_from_name(spatial[:type])
@@ -24,9 +24,9 @@ module ActiveRecord  # :nodoc:
             @srid = 4326
             @has_z = @has_m = false
             build_from_sql_type(sql_type_metadata.sql_type)
-          elsif sql_type =~ /geography|geometry|point|linestring|polygon/i
+          elsif sql_type.match?(/geography|geometry|point|linestring|polygon/i)
             build_from_sql_type(sql_type_metadata.sql_type)
-          elsif sql_type_metadata.sql_type =~ /geography|geometry|point|linestring|polygon/i
+          elsif sql_type_metadata.sql_type.match?(/geography|geometry|point|linestring|polygon/i)
             # A geometry column with no geometry_columns entry.
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type_metadata.sql_type)

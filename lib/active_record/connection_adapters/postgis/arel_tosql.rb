@@ -7,7 +7,7 @@ module RGeo
     module SpatialToPostGISSql
       def visit_in_spatial_context(node, collector)
         # Use ST_GeomFromEWKT for EWKT geometries
-        if node.is_a?(String) && node =~ /SRID=[\d+]{0,};/
+        if node.is_a?(String) && node.match?(/SRID=\d+;/)
           collector << "#{st_func('ST_GeomFromEWKT')}(#{quote(node)})"
         else
           super(node, collector)
