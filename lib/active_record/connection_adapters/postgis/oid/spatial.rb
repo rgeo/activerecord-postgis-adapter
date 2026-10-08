@@ -84,6 +84,27 @@ module ActiveRecord
                                      .generate(geo_value)
           end
 
+          def as_schema_json
+            super.merge!(
+              "geo_type" => @factory_attrs[:geo_type],
+              "srid" => @factory_attrs[:srid],
+              "has_z" => @factory_attrs[:has_z],
+              "has_m" => @factory_attrs[:has_m],
+              "geographic" => @geographic
+            )
+          end
+
+          def init_from_schema_json(coder, references)
+            initialize(
+              geo_type: coder["geo_type"],
+              srid: coder["srid"],
+              has_z: coder["has_z"],
+              has_m: coder["has_m"],
+              geographic: coder["geographic"]
+            )
+            super
+          end
+
           def ==(other)
             super &&
               @geographic == other.geographic &&

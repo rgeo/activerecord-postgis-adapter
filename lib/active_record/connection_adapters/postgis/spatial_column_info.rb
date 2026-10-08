@@ -10,28 +10,43 @@ module ActiveRecord  # :nodoc:
           @table_name = table_name
         end
 
-        def all
-          info = @adapter.query(
-            "SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'"
-          )
-          result = {}
-          info.each do |row|
-            name = row[0]
-            type = row[3]
-            dimension = row[1].to_i
+        # Query geometry_columns for several tables at once.
+        # Returns { table_name => { column_name => info } }.
+        def self.fetch(adapter, table_names)
+          sql = "SELECT f_table_name,f_geometry_column,coord_dimension,srid,type FROM geometry_columns " \
+                "WHERE f_table_name IN (#{table_names.map { |name| adapter.quote(name.to_s) }.join(',')})"
+          # Rails 8.2 replaced `query` with `query_rows`
+          rows = adapter.respond_to?(:query_rows) ? adapter.query_rows(sql) : adapter.query(sql)
+          result = table_names.to_h { |name| [name.to_s, {}] }
+          rows.each do |table_name, name, dimension, srid, type|
+            next unless (columns = result[table_name])
+
+            dimension = dimension.to_i
             has_m = !!(type =~ /m$/i)
-            type.sub!(/m$/, "")
+            type = type.sub(/m$/, "")
             has_z = dimension > 3 || (dimension == 3 && !has_m)
-            result[name] = {
+            columns[name] = {
               dimension: dimension,
               has_m:     has_m,
               has_z:     has_z,
               name:      name,
-              srid:      row[2].to_i,
+              srid:      srid.to_i,
               type:      type,
             }
           end
           result
+        end
+
+        def all
+          self.class.fetch(@adapter, [@table_name]).fetch(@table_name)
+        end
+
+        def loaded?
+          !@spatial_column_info.nil?
+        end
+
+        def load(info)
+          @spatial_column_info = info
         end
 
         # do not query the database for non-spatial columns/tables

@@ -31,12 +31,7 @@ module ActiveRecord  # :nodoc:
             # @geometric_type = geo_type_from_sql_type(sql_type)
             build_from_sql_type(sql_type_metadata.sql_type)
           end
-          if spatial? && @srid
-            @limit = { srid: @srid, type: to_type_name(geometric_type) }
-            @limit[:has_z] = true if @has_z
-            @limit[:has_m] = true if @has_m
-            @limit[:geographic] = true if @geographic
-          end
+          build_limit
         end
 
         attr_reader :geographic,
@@ -77,6 +72,21 @@ module ActiveRecord  # :nodoc:
           super
         end
 
+        # JSON can't hold the geometric type module or the symbol keys of
+        # limit, so store the type name and rebuild limit when loading.
+        def as_schema_json
+          data = super
+          data["geometric_type"] = @geometric_type&.type_name
+          data.delete("limit")
+          data
+        end
+
+        def init_from_schema_json(coder, references)
+          super
+          @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(@geometric_type) if @geometric_type
+          build_limit
+        end
+
         def ==(other)
           other.is_a?(Column) &&
             super &&
@@ -104,6 +114,15 @@ module ActiveRecord  # :nodoc:
 
         def set_geometric_type_from_name(name)
           @geometric_type = RGeo::ActiveRecord.geometric_type_from_name(name) || RGeo::Feature::Geometry
+        end
+
+        def build_limit
+          return unless spatial? && @srid
+
+          @limit = { srid: @srid, type: to_type_name(geometric_type) }
+          @limit[:has_z] = true if @has_z
+          @limit[:has_m] = true if @has_m
+          @limit[:geographic] = true if @geographic
         end
 
         def build_from_sql_type(sql_type)

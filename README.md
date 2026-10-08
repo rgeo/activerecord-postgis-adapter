@@ -55,6 +55,8 @@ PostGIS is likely available as an optional package via your Postgresql installer
 
 | Version | ActiveRecord  | Ruby                    | PostGIS | Note |
 | ------- | ------------- | ----------------------- | ------- | ---- |
+| 11.2.x  | 8.2           | 3.3.5+                  | 2.0+    |      |
+| 11.2.x  | 8.1           | 3.2.0+                  | 2.0+    |      |
 | 11.1.x  | 8.1           | 3.2.0+                  | 2.0+    |      |
 | 11.0.x  | 8.0           | 3.2.0+                  | 2.0+    |      |
 | 10.x    | 7.2           | 3.1.0+                  | 2.0+    |      |

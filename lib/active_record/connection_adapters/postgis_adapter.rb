@@ -150,7 +150,7 @@ module ActiveRecord
       end
     end
   end
-  SchemaDumper.ignore_tables |= %w[
+  postgis_tables = %w[
     geography_columns
     geometry_columns
     layer
@@ -159,4 +159,21 @@ module ActiveRecord
     spatial_ref_sys
     topology
   ]
+
+  # Rails 8.2 deprecated SchemaDumper.ignore_tables in favor of ActiveRecord.schema_ignored_tables
+  if ActiveRecord.respond_to?(:schema_ignored_tables)
+    ActiveRecord.schema_ignored_tables |= postgis_tables
+  else
+    SchemaDumper.ignore_tables |= postgis_tables
+  end
+
+  # Rails 8.2 can dump the schema cache as JSON, which only handles registered classes
+  if ConnectionAdapters.const_defined?(:JSONSchemaCacheSerializer, false)
+    begin
+      ConnectionAdapters::JSONSchemaCacheSerializer.register("postgis_column", ConnectionAdapters::PostGIS::Column)
+      ConnectionAdapters::JSONSchemaCacheSerializer.register("postgis_spatial", ConnectionAdapters::PostGIS::OID::Spatial)
+    rescue LoadError
+      # json gem is too old for the JSON schema cache format, so it can't be used anyway
+    end
+  end
 end

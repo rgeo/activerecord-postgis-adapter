@@ -56,6 +56,28 @@ module ActiveRecord
         def views
           super - %w[geography_columns geometry_columns]
         end
+
+        private
+
+        # Rails 8.2 reads the columns of many tables in one query, so look up
+        # what else they need in one query each too, rather than one per table:
+        # the extension types (geometry, geography), which Rails loads on first
+        # use, and the geometry_columns info
+        def fetch_column_definitions(tables)
+          definitions = super
+          load_additional_types(definitions.values.flatten(1).map { |field| field[4] })
+          unloaded = definitions.filter_map do |table_name, fields|
+            next if spatial_column_info(table_name).loaded?
+
+            table_name if fields.any? { |field| PostGISAdapter.spatial_column_options(field[1].to_sym) }
+          end
+          unless unloaded.empty?
+            SpatialColumnInfo.fetch(self, unloaded).each do |table_name, info|
+              spatial_column_info(table_name).load(info)
+            end
+          end
+          definitions
+        end
       end
     end
   end
