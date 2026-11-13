@@ -9,9 +9,9 @@ module ActiveRecord  # :nodoc:
         #   "Geography(Point,4326)"
         def initialize(name, cast_type, default, sql_type_metadata = nil, null = true,
                        default_function = nil, collation: nil, comment: nil,
-                       serial: nil, generated: nil, spatial: nil, identity: nil)
+                       serial: nil, generated: nil, spatial: nil, identity: nil, slot: nil)
           super(name, cast_type, default, sql_type_metadata, null, default_function,
-                collation: collation, comment: comment, serial: serial, generated: generated, identity: identity)
+                collation: collation, comment: comment, serial: serial, generated: generated, identity: identity, slot: slot)
           @geographic = !!(sql_type_metadata.sql_type =~ /geography\(/i)
           if spatial
             # This case comes from an entry in the geometry_columns table
