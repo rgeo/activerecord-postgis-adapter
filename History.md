@@ -1,3 +1,7 @@
+### 11.2.0 / 2026-10-08
+
+* ActiveRecord 8.2 support (theonlyriddle)
+
 ### 11.1.1 / 2025-11-27
 
 * Fix usage of `OID::Spatial#wkt_parser` (oleksii-leonov)

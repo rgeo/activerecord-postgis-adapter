@@ -71,6 +71,20 @@ jobs:
         # https://www.postgresql.org/support/versioning/
         # See (and update!) `pg_targets` above for selected pg versions.
         pg: ${{ fromJson(needs.orchestrate.outputs.postgis_tags) }}
+        rails: ['8.2', '8.1']
+        include:
+          # Branch of rails/rails to test against, see `AR_VERSION` in the Gemfile.
+          # Rails 8.2 is not released yet, so it is tested against main.
+          - rails: '8.2'
+            ar_version: main
+          - rails: '8.1'
+            ar_version: 8-1-stable
+        exclude:
+          # Rails 8.2 requires Ruby 3.3.5+
+          - rails: '8.2'
+            ruby: '3.2'
+    env:
+      AR_VERSION: ${{ matrix.ar_version }}
     steps:
       - name: Set Up Actions
         uses: actions/checkout@v4
@@ -103,7 +117,7 @@ jobs:
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
-          name: report-${{ matrix.pg }}-${{ matrix.ruby }}
+          name: report-${{ matrix.pg }}-${{ matrix.ruby }}-${{ matrix.rails }}
           path: report.json
   # Since the name of the matrix job depends on the version,
   # we define another job with a more stable name. This jobs
